@@ -1,0 +1,7 @@
+{
+  "name": "VitaRingApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
