@@ -13,6 +13,10 @@ import { provideAnalytics, getAnalytics } from '@angular/fire/analytics'; // Ens
 
 import { environment } from '../environments/environment';
 
+// Debug Firebase Configuration
+console.log('🔥 Firebase Config being used:', environment.firebase);
+console.log('📦 Environment production mode:', environment.production);
+
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideRouter(routes, withComponentInputBinding()),

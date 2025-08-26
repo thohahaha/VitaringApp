@@ -5,7 +5,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput, IonLa
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { personOutline, mailOutline, lockClosedOutline, fitnessOutline, alertCircleOutline, hourglassOutline, logoGoogle, logoFacebook } from 'ionicons/icons';
+import { personOutline, mailOutline, lockClosedOutline, fitnessOutline, alertCircleOutline, hourglassOutline, logoGoogle } from 'ionicons/icons';
 import { DynamicBackgroundComponent } from '../shared/dynamic-background/dynamic-background.component';
 
 @Component({
@@ -56,8 +56,7 @@ export class RegisterPage {
       fitnessOutline,
       alertCircleOutline,
       hourglassOutline,
-      logoGoogle,
-      logoFacebook
+      logoGoogle
     });
   }
 
@@ -127,6 +126,29 @@ export class RegisterPage {
     } finally {
       this.isLoading = false;
       console.log('Registration process completed');
+    }
+  }
+
+  async registerWithGoogle() {
+    console.log('Register with Google clicked');
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.showError = false;
+
+    try {
+      console.log('Calling AuthService.googleLogin...');
+      const result = await this.authService.googleLogin().toPromise();
+      console.log('Google registration successful:', result);
+      console.log('Navigating to home page...');
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Google registration failed:', error);
+      console.error('Error message:', error.message);
+      this.showErrorMessage(error.message || 'Login dengan Google gagal. Silakan coba lagi.');
+    } finally {
+      this.isLoading = false;
+      console.log('Google registration process completed');
     }
   }
 

@@ -133,14 +133,14 @@
             </div>
             
             <div class="social-buttons">
-              <button type="button" class="social-btn google-btn neu-button-subtle">
+              <button 
+                type="button" 
+                class="social-btn google-btn neu-button-subtle"
+                (click)="registerWithGoogle()"
+                [disabled]="isLoading"
+              >
                 <ion-icon name="logo-google"></ion-icon>
                 <span>Google</span>
-              </button>
-              
-              <button type="button" class="social-btn facebook-btn neu-button-subtle">
-                <ion-icon name="logo-facebook"></ion-icon>
-                <span>Facebook</span>
               </button>
             </div>
           </div>

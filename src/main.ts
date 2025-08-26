@@ -64,6 +64,16 @@ addIcons({
 
 if (environment.production) {
   enableProdMode();
+  
+  // Clear service worker cache to ensure fresh app load
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        console.log('Unregistering service worker:', registration);
+        registration.unregister();
+      }
+    });
+  }
 }
 
 bootstrapApplication(AppComponent, appConfig)

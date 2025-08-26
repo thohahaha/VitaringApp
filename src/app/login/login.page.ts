@@ -131,29 +131,6 @@ export class LoginPage {
     }
   }
 
-  /**
-   * Login dengan Google menggunakan redirect
-   */
-  async loginWithGoogleRedirect() {
-    console.log('Google redirect login method called');
-    
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.showError = false;
-
-    console.log('Starting Google redirect login process...');
-    
-    try {
-      console.log('Calling AuthService.googleLoginRedirect...');
-      // Karena ini redirect, user akan diredirect ke Google
-      await this.authService.googleLoginRedirect().toPromise();
-    } catch (error: any) {
-      console.error('Google redirect login failed:', error);
-      this.showErrorMessage(error.message || 'Login Google gagal. Silakan coba lagi.');
-      this.isLoading = false;
-    }
-  }
-
   private showErrorMessage(message: string) {
     console.log('Showing error message:', message);
     this.errorMessage = message;
