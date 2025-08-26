@@ -1,0 +1,283 @@
+// Dynamic Background Effects for VitaRing App
+// Orange gradient with floating bubbles animation
+
+.dynamic-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  
+  // Orange gradient background
+  background: linear-gradient(
+    135deg,
+    #ff9f1c 0%,
+    #ffb84d 25%,
+    #ffc873 50%,
+    #ffd699 75%,
+    #ffe4bf 100%
+  );
+  
+  // Fallback for older browsers
+  background: -webkit-linear-gradient(
+    135deg,
+    #ff9f1c 0%,
+    #ffb84d 25%,
+    #ffc873 50%,
+    #ffd699 75%,
+    #ffe4bf 100%
+  );
+}
+
+// Floating bubbles container
+.floating-bubbles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+// Individual bubble styles
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  
+  // Bubble size variations
+  &.size-1 {
+    width: 20px;
+    height: 20px;
+  }
+  
+  &.size-2 {
+    width: 35px;
+    height: 35px;
+  }
+  
+  &.size-3 {
+    width: 50px;
+    height: 50px;
+  }
+  
+  &.size-4 {
+    width: 75px;
+    height: 75px;
+  }
+  
+  &.size-5 {
+    width: 100px;
+    height: 100px;
+  }
+  
+  // Opacity variations
+  &.opacity-1 { opacity: 0.1; }
+  &.opacity-2 { opacity: 0.15; }
+  &.opacity-3 { opacity: 0.2; }
+  &.opacity-4 { opacity: 0.25; }
+  &.opacity-5 { opacity: 0.3; }
+}
+
+// Animation keyframes for different movement patterns
+@keyframes float-1 {
+  0% {
+    transform: translate(0, 100vh) rotate(0deg);
+  }
+  100% {
+    transform: translate(-20px, -100px) rotate(360deg);
+  }
+}
+
+@keyframes float-2 {
+  0% {
+    transform: translate(0, 100vh) rotate(0deg);
+  }
+  50% {
+    transform: translate(30px, 50vh) rotate(180deg);
+  }
+  100% {
+    transform: translate(-10px, -100px) rotate(360deg);
+  }
+}
+
+@keyframes float-3 {
+  0% {
+    transform: translate(0, 100vh) rotate(0deg);
+  }
+  33% {
+    transform: translate(-25px, 66vh) rotate(120deg);
+  }
+  66% {
+    transform: translate(25px, 33vh) rotate(240deg);
+  }
+  100% {
+    transform: translate(0, -100px) rotate(360deg);
+  }
+}
+
+@keyframes float-4 {
+  0% {
+    transform: translate(0, 100vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(40px, 75vh) rotate(90deg);
+  }
+  50% {
+    transform: translate(-20px, 50vh) rotate(180deg);
+  }
+  75% {
+    transform: translate(15px, 25vh) rotate(270deg);
+  }
+  100% {
+    transform: translate(-5px, -100px) rotate(360deg);
+  }
+}
+
+@keyframes float-5 {
+  0% {
+    transform: translate(0, 100vh) rotate(0deg);
+  }
+  20% {
+    transform: translate(-30px, 80vh) rotate(72deg);
+  }
+  40% {
+    transform: translate(35px, 60vh) rotate(144deg);
+  }
+  60% {
+    transform: translate(-15px, 40vh) rotate(216deg);
+  }
+  80% {
+    transform: translate(20px, 20vh) rotate(288deg);
+  }
+  100% {
+    transform: translate(0, -100px) rotate(360deg);
+  }
+}
+
+// Apply animations to bubbles
+.bubble {
+  &.anim-1 {
+    animation: float-1 15s linear infinite;
+    animation-delay: 0s;
+  }
+  
+  &.anim-2 {
+    animation: float-2 18s linear infinite;
+    animation-delay: -3s;
+  }
+  
+  &.anim-3 {
+    animation: float-3 22s linear infinite;
+    animation-delay: -6s;
+  }
+  
+  &.anim-4 {
+    animation: float-4 20s linear infinite;
+    animation-delay: -9s;
+  }
+  
+  &.anim-5 {
+    animation: float-5 25s linear infinite;
+    animation-delay: -12s;
+  }
+  
+  &.anim-6 {
+    animation: float-1 16s linear infinite;
+    animation-delay: -15s;
+  }
+  
+  &.anim-7 {
+    animation: float-2 19s linear infinite;
+    animation-delay: -18s;
+  }
+  
+  &.anim-8 {
+    animation: float-3 23s linear infinite;
+    animation-delay: -21s;
+  }
+  
+  &.anim-9 {
+    animation: float-4 21s linear infinite;
+    animation-delay: -24s;
+  }
+  
+  &.anim-10 {
+    animation: float-5 24s linear infinite;
+    animation-delay: -27s;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .bubble {
+    &.size-4 {
+      width: 60px;
+      height: 60px;
+    }
+    
+    &.size-5 {
+      width: 80px;
+      height: 80px;
+    }
+  }
+  
+  // Reduce animation intensity on mobile for performance
+  .bubble {
+    &.anim-1, &.anim-6 { animation-duration: 18s; }
+    &.anim-2, &.anim-7 { animation-duration: 21s; }
+    &.anim-3, &.anim-8 { animation-duration: 25s; }
+    &.anim-4, &.anim-9 { animation-duration: 23s; }
+    &.anim-5, &.anim-10 { animation-duration: 27s; }
+  }
+}
+
+@media (max-width: 480px) {
+  .bubble {
+    &.size-3 {
+      width: 40px;
+      height: 40px;
+    }
+    
+    &.size-4 {
+      width: 50px;
+      height: 50px;
+    }
+    
+    &.size-5 {
+      width: 65px;
+      height: 65px;
+    }
+  }
+}
+
+// Prefers reduced motion for accessibility
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+  }
+  
+  .floating-bubbles {
+    display: none;
+  }
+}
+
+// Performance optimizations
+.dynamic-background {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.bubble {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

@@ -10,20 +10,20 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+@use "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+@use "@ionic/angular/css/normalize.css";
+@use "@ionic/angular/css/structure.css";
+@use "@ionic/angular/css/typography.css";
+@use "@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
+@use "@ionic/angular/css/padding.css";
+@use "@ionic/angular/css/float-elements.css";
+@use "@ionic/angular/css/text-alignment.css";
+@use "@ionic/angular/css/text-transformation.css";
+@use "@ionic/angular/css/flex-utils.css";
 
 /**
  * Ionic Dark Mode
@@ -32,6 +32,474 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* Force light mode and white background */
+:root {
+  --ion-color-primary: #ff9f1c;
+  --ion-color-primary-rgb: 255, 159, 28;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e6900f;
+  --ion-color-primary-tint: #ffb84d;
+  
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #1f2937;
+  --ion-text-color-rgb: 31, 41, 55;
+}
+
+/* @use "@ionic/angular/css/palettes/dark.always.css"; */
+/* @use "@ionic/angular/css/palettes/dark.class.css"; */
+/* @use "@ionic/angular/css/palettes/dark.system.css"; */
+
+/* Tailwind CSS imports */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ============================================
+ * GLOBAL SCROLL BAR HIDING CSS
+ * ============================================
+ * Comprehensive solution to hide scroll bars on all scrollable elements
+ * while maintaining scroll functionality for clean, minimalist UI
+ */
+
+/* WebKit Browsers (Chrome, Safari, Edge) - Primary Implementation */
+::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Alternative WebKit approach with width */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer and Edge */
+}
+
+*::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  display: none !important;
+}
+
+/* ============================================
+ * IONIC SPECIFIC SCROLL BAR HIDING
+ * ============================================ */
+
+/* Hide scroll bars on all ion-content elements */
+ion-content {
+  --scrollbar-width: 0px !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+ion-content::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* Target Ionic scroll content wrapper */
+ion-content .scroll-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+ion-content .scroll-content::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* Hide scroll bars on Ionic list components */
+ion-list,
+ion-item-group,
+ion-virtual-scroll,
+ion-item,
+ion-card,
+ion-grid,
+ion-row,
+ion-col {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+ion-list::-webkit-scrollbar,
+ion-item-group::-webkit-scrollbar,
+ion-virtual-scroll::-webkit-scrollbar,
+ion-item::-webkit-scrollbar,
+ion-card::-webkit-scrollbar,
+ion-grid::-webkit-scrollbar,
+ion-row::-webkit-scrollbar,
+ion-col::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* ============================================
+ * ROOT LEVEL SCROLL BAR HIDING
+ * ============================================ */
+
+/* Hide scroll bars on root elements */
+html,
+body,
+ion-app,
+ion-router-outlet,
+ion-page {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+ion-app::-webkit-scrollbar,
+ion-router-outlet::-webkit-scrollbar,
+ion-page::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* ============================================
+ * UTILITY CLASSES
+ * ============================================ */
+
+/* Utility class for explicit scroll bar hiding */
+.hide-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* ================================================================================================
+ * DYNAMIC BACKGROUND SYSTEM IMPORTS
+ * ================================================================================================ */
+@import './theme/dynamic-background.scss';
+
+/* Hide scroll bars on ion-list and list items */
+ion-list,
+ion-item-group,
+ion-virtual-scroll {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+ion-list::-webkit-scrollbar,
+ion-item-group::-webkit-scrollbar,
+ion-virtual-scroll::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* ============================================
+ * FORUM POST & NEWS LIST SCROLL BAR HIDING
+ * ============================================ */
+
+/* Forum post lists and news feed containers */
+.forum-posts,
+.news-list,
+.post-list,
+.feed-container,
+.content-list,
+.scrollable-list {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+}
+
+.forum-posts::-webkit-scrollbar,
+.news-list::-webkit-scrollbar,
+.post-list::-webkit-scrollbar,
+.feed-container::-webkit-scrollbar,
+.content-list::-webkit-scrollbar,
+.scrollable-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Individual post items that might have overflow content */
+.forum-post,
+.news-item,
+.post-item,
+.content-item {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.forum-post::-webkit-scrollbar,
+.news-item::-webkit-scrollbar,
+.post-item::-webkit-scrollbar,
+.content-item::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* ============================================
+ * COMMON SCROLLABLE ELEMENTS
+ * ============================================ */
+
+/* Hide scroll bars on divs, sections, and main content areas */
+div,
+section,
+main,
+article,
+aside,
+nav,
+ul,
+ol {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+div::-webkit-scrollbar,
+section::-webkit-scrollbar,
+main::-webkit-scrollbar,
+article::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+ul::-webkit-scrollbar,
+ol::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Text areas and input fields with scroll */
+textarea,
+.text-content,
+.scrollable-text {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+textarea::-webkit-scrollbar,
+.text-content::-webkit-scrollbar,
+.scrollable-text::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* ============================================
+ * ROOT LEVEL SCROLL BAR HIDING
+ * ============================================ */
+
+/* Hide scroll bars on html and body */
+html,
+body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Hide scroll bars on ion-app root */
+ion-app {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+}
+
+ion-app::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* ============================================
+ * UTILITY CLASSES FOR SCROLL BAR HIDING
+ * ============================================ */
+
+/* Utility class to explicitly hide scroll bars */
+.hide-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Utility class for horizontal scroll hiding only */
+.hide-horizontal-scrollbar {
+  overflow-x: hidden;
+}
+
+.hide-horizontal-scrollbar::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0px !important;
+}
+
+/* Utility class for vertical scroll hiding only */
+.hide-vertical-scrollbar {
+  scrollbar-width: none !important;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar:vertical {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* Dynamic Background Effects */
+@import './theme/dynamic-background.scss';
+
+/* Global overrides for dynamic background pages */
+.login-content,
+.register-content {
+  --background: transparent !important;
+  background: transparent !important;
+}
+
+ion-content.login-content,
+ion-content.register-content {
+  --background: transparent !important;
+  background: transparent !important;
+}
+
+/* Ensure app root has no background interference */
+ion-app {
+  background: transparent;
+}
+
+/* Remove any default ion-content backgrounds on dynamic pages */
+.login-content .scroll-content,
+.register-content .scroll-content {
+  background: transparent !important;
+}
+
+/* Hide scrollbars globally while maintaining scroll functionality */
+/* More comprehensive scrollbar hiding for all browsers */
+
+/* Universal selector for all elements */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) - More specific selectors */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  display: none !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-corner {
+  display: none !important;
+  background: transparent !important;
+}
+
+/* Hide scrollbars for body and html */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+}
+
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Hide scrollbars in ion-content with higher specificity */
+ion-content {
+  --scrollbar-width: 0px !important;
+  overflow-x: hidden;
+}
+
+ion-content .scroll-content {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+ion-content .scroll-content::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Hide scrollbars in ion-app */
+ion-app {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow-x: hidden;
+}
+
+ion-app::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Hide scrollbars in specific containers with higher specificity */
+.faq-list,
+.privacy-content,
+.main-content,
+.profile-view,
+.main-container {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.faq-list::-webkit-scrollbar,
+.privacy-content::-webkit-scrollbar,
+.main-content::-webkit-scrollbar,
+.profile-view::-webkit-scrollbar,
+.main-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+/* Additional Chrome-specific fixes */
+::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+::-webkit-scrollbar-track-piece {
+  display: none !important;
+}
+
+/* Force white background globally */
+body {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+ion-app {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+ion-content {
+  --background: #ffffff !important;
+  --color: #1f2937 !important;
+}
+
+/* About app page specific */
+.about-container {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}

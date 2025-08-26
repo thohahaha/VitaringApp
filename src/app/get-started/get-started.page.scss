@@ -1,0 +1,229 @@
+// GetStarted Page - Orange Theme Design with Dynamic Background
+.get-started-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.content-wrapper {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+// Logo Section
+.logo-section {
+  margin-bottom: 60px;
+  animation: slideInDown 1s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.logo-circle {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.logo-icon {
+  font-size: 60px;
+  color: white;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.app-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 8px 0;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: -1px;
+}
+
+.app-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+// Welcome Section
+.welcome-section {
+  margin-bottom: 50px;
+  animation: slideInUp 1s ease-out 0.3s both;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 20px 0;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 400;
+}
+
+// Button Section
+.button-section {
+  margin-bottom: 40px;
+  animation: slideInUp 1s ease-out 0.6s both;
+}
+
+.get-started-btn {
+  --background: rgba(255, 255, 255, 0.95);
+  --background-hover: white;
+  --color: #ff9f1c;
+  --border-radius: 50px;
+  --padding-start: 32px;
+  --padding-end: 32px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  
+  font-size: 1.1rem;
+  font-weight: 600;
+  height: 56px;
+  
+  --box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  
+  transition: all 0.3s ease;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.get-started-btn:hover {
+  transform: translateY(-2px);
+  --box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.get-started-btn:active {
+  transform: translateY(0);
+}
+
+.get-started-btn ion-icon {
+  font-size: 20px;
+  margin-left: 8px;
+}
+
+// Footer Section
+.footer-section {
+  animation: fadeIn 1s ease-out 0.9s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-style: italic;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .get-started-container {
+    padding: 16px;
+  }
+  
+  .logo-circle {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+  }
+  
+  .logo-icon {
+    font-size: 50px;
+  }
+  
+  .app-title {
+    font-size: 2.5rem;
+  }
+  
+  .app-subtitle {
+    font-size: 1rem;
+  }
+  
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+  
+  .welcome-description {
+    font-size: 0.95rem;
+  }
+  
+  .welcome-section {
+    margin-bottom: 40px;
+  }
+  
+  .button-section {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-title {
+    font-size: 2.2rem;
+  }
+  
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+}

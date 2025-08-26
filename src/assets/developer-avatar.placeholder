@@ -1,0 +1,8 @@
+<!-- Developer Avatar Placeholder -->
+<!-- This file serves as a placeholder for the developer avatar image -->
+<!-- Actual image should be placed at: src/assets/developer-avatar.jpg -->
+<!-- Recommended size: 512x512px or higher for best quality -->
+<!-- Supported formats: JPG, PNG, WebP -->
+
+<!-- Alternative: Use a service like Gravatar or generate a professional avatar -->
+<!-- If image is not available, the fallback icon will be displayed automatically -->

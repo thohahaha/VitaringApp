@@ -1,0 +1,333 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 800; color: white;">Detail Post</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="onSharePost(post)" *ngIf="post$ | async as post">
+        <ion-icon name="share-outline" color="light"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear">
+        <ion-icon name="ellipsis-vertical" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content 
+      pulling-icon="chevron-down-circle-outline"
+      pulling-text="Tarik untuk refresh"
+      refreshing-spinner="circles"
+      refreshing-text="Memuat ulang...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ng-container *ngIf="post$ | async as post; else loadingTemplate">
+    <div class="post-detail-container">
+      
+      <!-- Main Post Card -->
+      <div class="main-post-card">
+        <!-- Post Header -->
+        <div class="post-header">
+          <div class="author-info">
+            <img 
+              [src]="post.authorAvatar" 
+              [alt]="post.authorName"
+              class="author-avatar"
+              (error)="onImageError($event)"
+            />
+            <div class="author-details">
+              <span class="author-name">{{ post.authorName }}</span>
+              <span class="post-date">{{ post.createdAt | timeAgo }}</span>
+            </div>
+          </div>
+
+          <!-- Pinned Badge -->
+          <div class="pinned-badge" *ngIf="post.isPinned">
+            <ion-icon name="pin"></ion-icon>
+            <span>Pinned</span>
+          </div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-content">
+          <h1 class="post-title">{{ post.title }}</h1>
+          <div class="post-body" [innerHTML]="post.content"></div>
+          
+          <!-- Tags -->
+          <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+            <ion-badge 
+              *ngFor="let tag of post.tags" 
+              color="warning"
+              class="tag-badge">
+              {{ tag }}
+            </ion-badge>
+          </div>
+        </div>
+
+        <!-- Post Stats -->
+        <div class="post-stats">
+          <div class="stat-item">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>{{ post.views }} views</span>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            <span>{{ post.commentsCount }} balasan</span>
+          </div>
+          <div class="stat-item likes" [class.liked]="isPostLikedByUser(post)">
+            <ion-icon [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"></ion-icon>
+            <span>{{ post.likes.length }} suka</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <ion-button 
+            fill="outline"
+            (click)="onLikePost(post)"
+            [class.liked]="isPostLikedByUser(post)"
+            class="like-button">
+            <ion-icon 
+              [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"
+              slot="start">
+            </ion-icon>
+            {{ isPostLikedByUser(post) ? 'Disukai' : 'Suka' }}
+          </ion-button>
+          
+          <ion-button 
+            fill="outline"
+            (click)="onSharePost(post)"
+            class="share-button">
+            <ion-icon name="share-outline" slot="start"></ion-icon>
+            Bagikan
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <div class="comments-section">
+        <div class="comments-header">
+          <h3 class="comments-title">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            Balasan ({{ post.commentsCount }})
+          </h3>
+        </div>
+
+        <!-- Comments List -->
+        <ng-container *ngIf="comments$ | async as comments">
+          <div *ngIf="comments.length > 0; else noCommentsTemplate" class="comments-list">
+            <div 
+              class="comment-card" 
+              *ngFor="let comment of comments"
+            >
+              <!-- Comment Header -->
+              <div class="comment-header">
+                <div class="comment-author-info">
+                  <img 
+                    [src]="comment.authorAvatar" 
+                    [alt]="comment.authorName"
+                    class="comment-author-avatar"
+                    (error)="onImageError($event)"
+                  />
+                  <div class="comment-author-details">
+                    <span class="comment-author-name">{{ comment.authorName }}</span>
+                    <span class="comment-date">{{ comment.createdAt | timeAgo }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comment Content -->
+              <div class="comment-content">
+                <p>{{ comment.content }}</p>
+              </div>
+
+              <!-- Comment Footer -->
+              <div class="comment-footer">
+                <div class="comment-stats">
+                  <div class="stat-item likes" [class.liked]="isCommentLikedByUser(comment)">
+                    <ion-icon [name]="isCommentLikedByUser(comment) ? 'heart' : 'heart-outline'"></ion-icon>
+                    <span>{{ comment.likes.length }}</span>
+                  </div>
+                </div>
+
+                <ion-button 
+                  fill="clear"
+                  size="small"
+                  (click)="onLikeComment(comment)"
+                  [class.liked]="isCommentLikedByUser(comment)"
+                  class="comment-like-button">
+                  <ion-icon 
+                    [name]="isCommentLikedByUser(comment) ? 'heart' : 'heart-outline'"
+                    slot="start">
+                  </ion-icon>
+                  {{ isCommentLikedByUser(comment) ? 'Liked' : 'Like' }}
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noCommentsTemplate>
+            <div class="no-comments">
+              <ion-icon name="chatbubble-outline" class="no-comments-icon"></ion-icon>
+              <h4>Belum ada balasan</h4>
+              <p>Jadilah yang pertama memberikan tanggapan!</p>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <!-- Comment Form -->
+      <div class="comment-form" *ngIf="isLoggedIn">
+        <div class="form-header">
+          <h4>Tulis Balasan</h4>
+        </div>
+        <div class="form-content">
+          <ion-item class="comment-input-item">
+            <ion-textarea
+              [(ngModel)]="newComment"
+              placeholder="Tulis tanggapan Anda..."
+              [rows]="3"
+              [autoGrow]="true"
+              [disabled]="isSubmittingComment"
+              class="comment-textarea">
+            </ion-textarea>
+          </ion-item>
+          <ion-button 
+            (click)="onSubmitComment()"
+            [disabled]="newComment.trim() === '' || isSubmittingComment"
+            fill="solid"
+            color="warning"
+            class="submit-button">
+            <ion-icon name="send-outline" slot="start"></ion-icon>
+            {{ isSubmittingComment ? 'Mengirim...' : 'Kirim Balasan' }}
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Login Prompt -->
+      <div class="login-prompt" *ngIf="!isLoggedIn">
+        <div class="prompt-content">
+          <ion-icon name="person-circle-outline" class="prompt-icon"></ion-icon>
+          <h4>Masuk untuk berpartisipasi</h4>
+          <p>Silakan masuk untuk memberikan like dan menulis balasan</p>
+          <ion-button [routerLink]="['/login']" fill="solid" color="warning">
+            Masuk Sekarang
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <ion-spinner color="warning"></ion-spinner>
+      <ion-text>Memuat post...</ion-text>
+    </div>
+  </ng-template>
+</ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer>
+  <ion-tab-bar 
+    slot="bottom" 
+    class="neu-footer bg-white border-t-2 border-gray-100 shadow-lg scrollable-tabs"
+    scrollable="true"
+  >
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="heart-half-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Dasbor
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="stats-chart-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Performa
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToNews()"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="newspaper-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Berita
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToForum()"
+      class="tab-button-custom active-tab"
+    >
+      <ion-icon 
+        name="people" 
+        class="text-orange-500"
+      ></ion-icon>
+      <span 
+        class="text-orange-600"
+      >
+        Forum
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="wifi-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Perangkat
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="person-circle-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Profil
+      </span>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

@@ -1,0 +1,303 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 800; color: white;">Forum Diskusi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="search-outline" color="light"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear">
+        <ion-icon name="menu-outline" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Search Bar -->
+  <ion-toolbar style="--background: rgba(249, 115, 22, 0.9); --color: white;">
+    <ion-searchbar
+      (ionInput)="onSearchChange($event)"
+      placeholder="Cari topik, tag, atau kata kunci..."
+      color="light"
+      style="--background: rgba(255, 255, 255, 0.2); --border-radius: 16px; margin: 8px;">
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <!-- Filter Tabs -->
+  <ion-toolbar style="--background: white; --border-color: rgba(249, 115, 22, 0.1);">
+    <ion-segment 
+      (ionChange)="onFilterChange($event)" 
+      [value]="selectedFilter"
+      style="--background: transparent; padding: 8px 16px;">
+      <ion-segment-button value="newest">
+        <ion-label style="color: #374151; font-weight: 600;">
+          <ion-icon name="trending-up" style="margin-right: 4px;"></ion-icon>
+          Terbaru
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="featured">
+        <ion-label style="color: #374151; font-weight: 600;">
+          <ion-icon name="heart" style="margin-right: 4px;"></ion-icon>
+          Unggulan
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="popular">
+        <ion-label style="color: #374151; font-weight: 600;">
+          <ion-icon name="people" style="margin-right: 4px;"></ion-icon>
+          Populer
+        </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content 
+      pulling-icon="chevron-down-circle-outline"
+      pulling-text="Tarik untuk refresh"
+      refreshing-spinner="circles"
+      refreshing-text="Memuat ulang...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="forum-page-container">
+    <!-- Forum Stats (Optional) -->
+    <div class="forum-stats" *ngIf="forumStats$ | async as stats">
+      <div class="stats-card">
+        <div class="stat-item">
+          <ion-icon name="people" class="stat-icon"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-number">{{ stats.totalMembers }}</span>
+            <span class="stat-label">Members</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <ion-icon name="chatbubble-outline" class="stat-icon"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-number">{{ stats.totalPosts }}</span>
+            <span class="stat-label">Posts</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <ion-icon name="trending-up" class="stat-icon"></ion-icon>
+          <div class="stat-info">
+            <span class="stat-number">{{ stats.activeToday }}</span>
+            <span class="stat-label">Active Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posts List -->
+    <ng-container *ngIf="posts$ | async as posts; else loadingTemplate">
+      <div *ngIf="posts.length > 0; else emptyTemplate" class="posts-container">
+        <div 
+          class="post-card" 
+          *ngFor="let post of posts; trackBy: trackByPostId"
+          (click)="navigateToPostDetail(post.id!)"
+        >
+          <!-- Pinned Badge -->
+          <div class="pinned-badge" *ngIf="post.isPinned">
+            <ion-icon name="pin"></ion-icon>
+            <span>Pinned</span>
+          </div>
+
+          <!-- Post Header -->
+          <div class="post-header">
+            <div class="author-info">
+              <img 
+                [src]="post.authorAvatar" 
+                [alt]="post.authorName"
+                class="author-avatar"
+                (error)="onImageError($event)"
+              />
+              <div class="author-details">
+                <span class="author-name">{{ post.authorName }}</span>
+                <span class="post-date">{{ post.createdAt | timeAgo }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Post Content -->
+          <div class="post-content">
+            <h3 class="post-title">{{ post.title }}</h3>
+            <p class="post-excerpt">{{ post.content | slice:0:150 }}{{ post.content.length > 150 ? '...' : '' }}</p>
+            
+            <!-- Tags -->
+            <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+              <ion-badge 
+                *ngFor="let tag of post.tags.slice(0, 3)" 
+                color="warning"
+                class="tag-badge">
+                {{ tag }}
+              </ion-badge>
+            </div>
+          </div>
+
+          <!-- Post Footer -->
+          <div class="post-footer">
+            <div class="post-stats">
+              <div class="stat-item">
+                <ion-icon name="eye-outline"></ion-icon>
+                <span>{{ post.views }}</span>
+              </div>
+              <div class="stat-item">
+                <ion-icon name="chatbubble-outline"></ion-icon>
+                <span>{{ post.commentsCount }}</span>
+              </div>
+              <div class="stat-item likes" [class.liked]="isPostLikedByUser(post)">
+                <ion-icon [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"></ion-icon>
+                <span>{{ post.likes.length }}</span>
+              </div>
+            </div>
+
+            <ion-button 
+              fill="clear"
+              size="small"
+              (click)="onLike(post, $event)"
+              [class.liked]="isPostLikedByUser(post)"
+              class="like-button">
+              <ion-icon 
+                [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"
+                slot="start">
+              </ion-icon>
+              {{ isPostLikedByUser(post) ? 'Liked' : 'Like' }}
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #emptyTemplate>
+      <div class="empty-state">
+        <ion-icon name="chatbubble-outline" class="empty-icon"></ion-icon>
+        <h3>Belum Ada Diskusi</h3>
+        <p>Jadilah yang pertama memulai diskusi menarik!</p>
+        <ion-button (click)="onCreatePost()" fill="solid" color="warning">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Buat Post Pertama
+        </ion-button>
+      </div>
+    </ng-template>
+
+    <ng-template #loadingTemplate>
+      <div class="loading-container">
+        <ion-spinner color="warning"></ion-spinner>
+        <ion-text>Memuat forum...</ion-text>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button 
+      (click)="onCreatePost()"
+      color="warning"
+      class="fab-button">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer>
+  <ion-tab-bar 
+    slot="bottom" 
+    class="neu-footer bg-white border-t-2 border-gray-100 shadow-lg scrollable-tabs"
+    scrollable="true"
+  >
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="heart-half-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Dasbor
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="stats-chart-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Performa
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToNews()"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="newspaper-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Berita
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      class="tab-button-custom active-tab"
+    >
+      <ion-icon 
+        name="people" 
+        class="text-orange-500"
+      ></ion-icon>
+      <span 
+        class="text-orange-600"
+      >
+        Forum
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="wifi-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Perangkat
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="person-circle-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Profil
+      </span>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

@@ -1,0 +1,186 @@
+<ion-header class="neu-header">
+  <ion-toolbar color="light" class="neu-toolbar">
+    <div class="header-content">
+      <button class="back-btn neu-button-subtle" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1 class="page-title">Kebijakan Privasi</h1>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="privacy-content">
+  <div class="privacy-container">
+    
+    <!-- Introduction Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Pendahuluan</h2>
+      <p class="section-text">
+        VitaRing berkomitmen untuk melindungi privasi dan keamanan data pribadi Anda. 
+        Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, 
+        dan melindungi informasi Anda saat menggunakan aplikasi dan perangkat VitaRing.
+      </p>
+    </div>
+
+    <!-- Data Collection Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Informasi yang Kami Kumpulkan</h2>
+      <div class="subsection">
+        <h3 class="subsection-title">Data Kesehatan</h3>
+        <p class="section-text">
+          Kami mengumpulkan data kesehatan melalui perangkat VitaRing Anda, termasuk:
+        </p>
+        <ul class="data-list">
+          <li>Detak jantung dan variabilitas detak jantung</li>
+          <li>Suhu tubuh dan fluktuasinya</li>
+          <li>Level hidrasi dan aktivitas fisik</li>
+          <li>Pola tidur dan pemulihan</li>
+          <li>Data aktivitas harian dan kalori terbakar</li>
+        </ul>
+      </div>
+      
+      <div class="subsection">
+        <h3 class="subsection-title">Data Akun</h3>
+        <p class="section-text">
+          Informasi yang Anda berikan saat mendaftar:
+        </p>
+        <ul class="data-list">
+          <li>Nama lengkap dan alamat email</li>
+          <li>Tanggal lahir dan jenis kelamin</li>
+          <li>Informasi profil dan preferensi</li>
+          <li>Data aktivitas di forum dan komunitas</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Data Usage Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Penggunaan Data</h2>
+      <p class="section-text">
+        Data Anda digunakan untuk:
+      </p>
+      <ul class="usage-list">
+        <li>
+          <div class="usage-item">
+            <ion-icon name="analytics-outline" class="usage-icon"></ion-icon>
+            <div class="usage-content">
+              <h4>Analisis Kesehatan</h4>
+              <p>Memberikan wawasan personalized tentang kesehatan dan kebugaran Anda</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="usage-item">
+            <ion-icon name="notifications-outline" class="usage-icon"></ion-icon>
+            <div class="usage-content">
+              <h4>Notifikasi & Reminder</h4>
+              <p>Mengirimkan pemberitahuan penting tentang kesehatan dan aktivitas</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="usage-item">
+            <ion-icon name="trending-up-outline" class="usage-icon"></ion-icon>
+            <div class="usage-content">
+              <h4>Peningkatan Layanan</h4>
+              <p>Mengembangkan fitur baru dan meningkatkan kualitas aplikasi</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Data Protection Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Perlindungan Data</h2>
+      <div class="protection-grid">
+        <div class="protection-item neu-card-subtle">
+          <ion-icon name="shield-checkmark-outline" class="protection-icon"></ion-icon>
+          <h4>Enkripsi End-to-End</h4>
+          <p>Data Anda dienkripsi dari perangkat hingga server kami</p>
+        </div>
+        <div class="protection-item neu-card-subtle">
+          <ion-icon name="lock-closed-outline" class="protection-icon"></ion-icon>
+          <h4>Akses Terbatas</h4>
+          <p>Hanya personel yang berwenang yang dapat mengakses data Anda</p>
+        </div>
+        <div class="protection-item neu-card-subtle">
+          <ion-icon name="server-outline" class="protection-icon"></ion-icon>
+          <h4>Server Aman</h4>
+          <p>Data disimpan di server dengan standar keamanan tinggi</p>
+        </div>
+        <div class="protection-item neu-card-subtle">
+          <ion-icon name="eye-off-outline" class="protection-icon"></ion-icon>
+          <h4>Privasi Terjamin</h4>
+          <p>Data pribadi tidak dibagikan tanpa persetujuan eksplisit</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Rights Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Hak Pengguna</h2>
+      <p class="section-text">
+        Anda memiliki hak untuk:
+      </p>
+      <div class="rights-list">
+        <div class="right-item">
+          <div class="right-number neu-badge">1</div>
+          <div class="right-content">
+            <h4>Akses Data</h4>
+            <p>Melihat dan mengunduh semua data pribadi yang kami miliki</p>
+          </div>
+        </div>
+        <div class="right-item">
+          <div class="right-number neu-badge">2</div>
+          <div class="right-content">
+            <h4>Koreksi Data</h4>
+            <p>Memperbarui atau memperbaiki informasi yang tidak akurat</p>
+          </div>
+        </div>
+        <div class="right-item">
+          <div class="right-number neu-badge">3</div>
+          <div class="right-content">
+            <h4>Penghapusan Data</h4>
+            <p>Meminta penghapusan data pribadi dari sistem kami</p>
+          </div>
+        </div>
+        <div class="right-item">
+          <div class="right-number neu-badge">4</div>
+          <div class="right-content">
+            <h4>Portabilitas</h4>
+            <p>Memindahkan data Anda ke layanan lain</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="content-section neu-card-raised">
+      <h2 class="section-title">Hubungi Kami</h2>
+      <p class="section-text">
+        Jika Anda memiliki pertanyaan tentang kebijakan privasi ini atau ingin menggunakan hak-hak Anda, 
+        silakan hubungi tim privasi kami:
+      </p>
+      <div class="contact-info">
+        <div class="contact-item">
+          <ion-icon name="mail-outline" class="contact-icon"></ion-icon>
+          <span>privacy&#64;vitaring.com</span>
+        </div>
+        <div class="contact-item">
+          <ion-icon name="call-outline" class="contact-icon"></ion-icon>
+          <span>+62 21 1234 5678</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="update-info neu-card-subtle">
+      <p class="update-text">
+        <ion-icon name="calendar-outline"></ion-icon>
+        Terakhir diperbarui: 20 Agustus 2025
+      </p>
+    </div>
+
+  </div>
+</ion-content>

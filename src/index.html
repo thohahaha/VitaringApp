@@ -3,24 +3,115 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Ionic App</title>
-
+  <title>VitaRing App</title>
   <base href="/" />
 
+  <!-- Mobile viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  
+  <!-- Icons & Theme -->
+  <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="assets/icon/favicon.png" />
+  <meta name="theme-color" content="#1f1f1f" />
+  
+  <!-- SEO -->
+  <meta name="description" content="VitaRing - Aplikasi Monitoring Kesehatan" />
+  <meta name="keywords" content="health, monitoring, vitaring, ionic, angular" />
+  <meta name="author" content="VitaRing Team" />
+  
+  <!-- Performance -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
-
-  <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
-
-  <!-- add to homescreen for ios -->
+  
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.google-analytics.com" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  
+  <!-- Hide scrollbars for all browsers - Inline CSS for maximum priority -->
+  <style>
+    /* Hide scrollbars globally with maximum specificity */
+    * {
+      scrollbar-width: none !important; /* Firefox */
+      -ms-overflow-style: none !important; /* IE */
+    }
+    
+    *::-webkit-scrollbar {
+      display: none !important; /* Chrome, Safari, Edge */
+      width: 0 !important;
+      height: 0 !important;
+    }
+    
+    html, body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      overflow-x: hidden !important;
+    }
+    
+    html::-webkit-scrollbar, 
+    body::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    
+    /* Force hide for all webkit scrollbar parts */
+    ::-webkit-scrollbar,
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-thumb,
+    ::-webkit-scrollbar-corner,
+    ::-webkit-scrollbar-button,
+    ::-webkit-scrollbar-track-piece {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  </style>
+  
+  <!-- iOS specific -->
+  <meta name="apple-mobile-web-app-title" content="VitaRing" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  
+  <!-- Android specific -->
+  <meta name="theme-color" content="#1f1f1f" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  <!-- Windows specific -->
+  <meta name="msapplication-TileColor" content="#1f1f1f" />
+  <meta name="msapplication-tap-highlight" content="no" />
 </head>
 
 <body>
   <app-root></app-root>
+  
+  <!-- Load scripts after the app is bootstrapped -->
+  <script>
+    // Hanya aktifkan service worker di production
+    if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+      window.addEventListener('load', () => {
+        // Pastikan kita hanya register di production
+        if (window.location.hostname !== 'localhost') {
+          navigator.serviceWorker.register('/ngsw-worker.js')
+            .then(registration => console.log('ServiceWorker registration successful'))
+            .catch(err => console.log('ServiceWorker registration failed: ', err));
+        } else {
+          console.log('ServiceWorker disabled in development mode');
+        }
+      });
+    }
+  </script>
 </body>
 
 </html>

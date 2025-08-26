@@ -1,0 +1,770 @@
+/* VitaRing About App Page - Neuromorphic Design */
+
+/* ================================================================================================
+ * VARIABLES & THEME
+ * ================================================================================================ */
+:host {
+  --ion-background-color: #ffffff;
+  --ion-text-color: #1f2937;
+}
+
+:root {
+  --vita-primary: #ff9f1c;
+  --vita-primary-light: #ffb84d;
+  --vita-primary-dark: #e6900f;
+  --vita-secondary: #f8f9fa;
+  --vita-accent: #2563eb;
+  --vita-success: #10b981;
+  --vita-warning: #f59e0b;
+  --vita-error: #ef4444;
+  --vita-text-primary: #1f2937;
+  --vita-text-secondary: #6b7280;
+  --vita-text-light: #9ca3af;
+  --vita-background: #ffffff;
+  --vita-surface: #f9fafb;
+  --vita-border: #e5e7eb;
+  --vita-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --vita-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --vita-radius: 16px;
+  --vita-radius-sm: 8px;
+  --vita-radius-lg: 24px;
+}
+
+/* ================================================================================================
+ * BASE STYLES
+ * ================================================================================================ */
+.vita-content {
+  --background: #ffffff;
+  --color: var(--vita-text-primary);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+ion-content {
+  --background: #ffffff !important;
+  --color: #1f2937 !important;
+}
+
+ion-content.vita-content {
+  --background: #ffffff !important;
+  --color: #1f2937 !important;
+}
+
+.about-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 2rem;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* ================================================================================================
+ * HEADER STYLES
+ * ================================================================================================ */
+.vita-toolbar {
+  --background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  --color: white;
+  --border-color: transparent;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.vita-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.vita-back-button {
+  --background: rgba(255, 255, 255, 0.2);
+  --color: white;
+  --border-radius: 12px;
+  margin-left: 8px;
+}
+
+/* ================================================================================================
+ * CARD STYLES
+ * ================================================================================================ */
+.vita-card {
+  background: var(--vita-background);
+  border-radius: var(--vita-radius);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--vita-shadow);
+  border: 1px solid var(--vita-border);
+  transition: all 0.3s ease;
+}
+
+.vita-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vita-shadow-lg);
+}
+
+.vita-card-premium {
+  background: linear-gradient(135deg, var(--vita-background), #fef3e2);
+  border: 2px solid var(--vita-primary);
+  box-shadow: 0 20px 25px -5px rgba(255, 159, 28, 0.1);
+}
+
+/* ================================================================================================
+ * HERO SECTION
+ * ================================================================================================ */
+.app-hero-section {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 159, 28, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 50%);
+  z-index: 0;
+}
+
+.app-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================================================
+ * APP LOGO
+ * ================================================================================================ */
+.app-logo-section {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.app-logo-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1rem;
+}
+
+.vita-logo-ring {
+  border-radius: 50%;
+  padding: 8px;
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  box-shadow: 
+    0 0 0 6px rgba(255, 159, 28, 0.2),
+    0 15px 35px rgba(255, 159, 28, 0.3);
+  animation: vita-logo-pulse 3s infinite;
+}
+
+@keyframes vita-logo-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 0 6px rgba(255, 159, 28, 0.2),
+      0 15px 35px rgba(255, 159, 28, 0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 
+      0 0 0 10px rgba(255, 159, 28, 0.3),
+      0 20px 40px rgba(255, 159, 28, 0.4);
+  }
+}
+
+.app-logo {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-icon {
+  font-size: 3rem;
+  color: var(--vita-primary);
+  filter: drop-shadow(0 2px 4px rgba(255, 159, 28, 0.3));
+}
+
+.logo-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(255, 159, 28, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: logo-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes logo-glow {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+.vita-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--vita-success), #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.status-icon {
+  font-size: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
+/* ================================================================================================
+ * TYPOGRAPHY
+ * ================================================================================================ */
+.vita-gradient-text {
+  background: linear-gradient(135deg, var(--vita-text-primary), var(--vita-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.vita-subtitle {
+  color: var(--vita-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.app-description {
+  color: var(--vita-text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vita-version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--vita-accent), #1d4ed8);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.version-icon {
+  font-size: 1.25rem;
+}
+
+/* ================================================================================================
+ * SECTION HEADERS
+ * ================================================================================================ */
+.vita-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--vita-border);
+}
+
+.vita-icon-container {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  border-radius: var(--vita-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
+}
+
+.vita-icon-container ion-icon {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vita-text-primary);
+  margin: 0;
+}
+
+/* ================================================================================================
+ * FEATURES GRID
+ * ================================================================================================ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.vita-feature-card {
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vita-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--vita-primary), var(--vita-primary-light));
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.vita-feature-card:hover::before {
+  transform: translateX(0);
+}
+
+.vita-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vita-shadow-lg);
+  border-color: var(--vita-primary);
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--vita-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.feature-icon ion-icon {
+  font-size: 2rem;
+  color: white;
+}
+
+.feature-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.feature-description {
+  color: var(--vita-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Feature Icon Colors */
+.heart-color { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.activity-color { background: linear-gradient(135deg, #10b981, #059669); }
+.sleep-color { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.battery-color { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+/* ================================================================================================
+ * TECH STACK
+ * ================================================================================================ */
+.tech-stack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.vita-tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--vita-surface), white);
+  border: 1px solid var(--vita-border);
+  border-radius: 20px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  color: var(--vita-text-primary);
+  transition: all 0.3s ease;
+}
+
+.vita-tech-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.2);
+  border-color: var(--vita-primary);
+  background: linear-gradient(135deg, #fef3e2, white);
+}
+
+.tech-icon {
+  font-size: 1.25rem;
+  color: var(--vita-primary);
+}
+
+/* ================================================================================================
+ * STATS GRID
+ * ================================================================================================ */
+.app-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.vita-stat-card {
+  display: flex;
+  align-items: center;
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.vita-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vita-shadow-lg);
+  border-color: var(--vita-primary);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--vita-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.stat-icon ion-icon {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vita-text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--vita-text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Stat Colors */
+.users-color { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.monitoring-color { background: linear-gradient(135deg, #10b981, #059669); }
+.uptime-color { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+/* ================================================================================================
+ * PRIVACY SECTION
+ * ================================================================================================ */
+.privacy-content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.privacy-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--vita-surface);
+  border-radius: var(--vita-radius-sm);
+  border-left: 4px solid var(--vita-success);
+}
+
+.privacy-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.privacy-icon ion-icon {
+  font-size: 1.5rem;
+}
+
+.privacy-title {
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.privacy-description {
+  color: var(--vita-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ================================================================================================
+ * CREDITS SECTION
+ * ================================================================================================ */
+.credits-content {
+  text-align: center;
+}
+
+.developer-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--vita-surface);
+  border-radius: var(--vita-radius);
+  border: 1px solid var(--vita-border);
+}
+
+.developer-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-icon {
+  font-size: 4rem;
+  color: var(--vita-primary);
+}
+
+.developer-details {
+  text-align: left;
+}
+
+.developer-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--vita-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.developer-role {
+  color: var(--vita-primary);
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.developer-bio {
+  color: var(--vita-text-secondary);
+  margin: 0;
+}
+
+.vita-btn-outline {
+  background: transparent;
+  border: 2px solid var(--vita-primary);
+  color: var(--vita-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--vita-radius-sm);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vita-btn-outline:hover {
+  background: var(--vita-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
+}
+
+/* ================================================================================================
+ * APP DETAILS
+ * ================================================================================================ */
+.app-details {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--vita-surface);
+  border-radius: var(--vita-radius-sm);
+  border: 1px solid var(--vita-border);
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--vita-text-secondary);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--vita-text-primary);
+}
+
+/* ================================================================================================
+ * FOOTER & LEGAL
+ * ================================================================================================ */
+.vita-footer {
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.copyright-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.copyright-icon {
+  flex-shrink: 0;
+}
+
+.copyright-icon ion-icon {
+  font-size: 2rem;
+}
+
+.copyright-text {
+  text-align: left;
+}
+
+.copyright-main {
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.copyright-sub {
+  color: var(--vita-text-secondary);
+  margin: 0 0 0.25rem 0;
+}
+
+.build-info {
+  color: var(--vita-text-light);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.legal-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.legal-link {
+  background: transparent;
+  border: 1px solid var(--vita-border);
+  color: var(--vita-text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--vita-radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legal-link:hover {
+  border-color: var(--vita-primary);
+  color: var(--vita-primary);
+  background: rgba(255, 159, 28, 0.05);
+}
+
+/* ================================================================================================
+ * RESPONSIVE DESIGN
+ * ================================================================================================ */
+@media (max-width: 768px) {
+  .about-container {
+    padding: 0.75rem;
+  }
+  
+  .vita-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .app-hero-section {
+    padding: 2rem 1rem;
+  }
+  
+  .vita-gradient-text {
+    font-size: 2.25rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .developer-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .developer-details {
+    text-align: center;
+  }
+  
+  .copyright-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .copyright-text {
+    text-align: center;
+  }
+  
+  .legal-links {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .vita-gradient-text {
+    font-size: 2rem;
+  }
+  
+  .vita-subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .app-logo-container {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .logo-icon {
+    font-size: 2.5rem;
+  }
+}

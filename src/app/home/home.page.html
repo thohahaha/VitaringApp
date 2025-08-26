@@ -1,20 +1,601 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding bg-gray-100 text-gray-800" *ngIf="isLoggedIn" [fullscreen]="true" [scrollY]="true">
+  <div class="main-container">
+    <div *ngIf="selectedDevice">
+      <!-- Dashboard View -->
+      <div *ngIf="activeTab === 'dashboard'" class="space-y-8">
+        <!-- Header Section -->
+        <div class="flex items-center justify-between bg-white rounded-2xl p-6 shadow-sm">
+          <div class="space-y-2">
+            <h1 class="text-3xl font-bold text-gray-800">Dasbor</h1>
+            <p class="text-gray-600">Performa Hari Ini</p>
+            <p class="text-sm text-gray-500">Akun: <span class="text-orange-500 font-semibold">{{ currentUserEmail || 'Guest' }}</span></p>
+          </div>
+          <div class="flex items-center space-x-3 bg-orange-50 px-4 py-3 rounded-xl">
+            <ion-icon name="battery-half-outline" class="w-5 h-5 text-orange-500"></ion-icon>
+            <span class="text-sm font-medium text-orange-700">{{ selectedDevice.batteryLevel.toFixed(0) }}%</span>
+          </div>
+        </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <!-- Heart Rate Card -->
+        <div class="neu-card-highlighted neu-shadow p-8 bg-gradient-to-r from-orange-50 to-orange-100">
+          <div class="flex items-center justify-between">
+            <div class="space-y-3">
+              <h3 class="text-xl font-bold text-gray-800">Detak Jantung</h3>
+              <div class="text-4xl font-bold text-orange-600">{{ selectedDevice.heartRate.toFixed(0) }} <span class="text-xl">BPM</span></div>
+              <p class="text-gray-600 font-medium">Zona: Aerobik</p>
+            </div>
+            <div class="w-20 h-20 relative">
+              <div class="w-full h-full rounded-full neu-pulse-border flex items-center justify-center bg-white shadow-lg">
+                <ion-icon name="heart" class="w-10 h-10 text-red-500 animate-pulse"></ion-icon>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+        <!-- Vital Signs Grid -->
+        <div class="grid grid-cols-2 gap-6">
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="thermometer-outline" class="w-6 h-6 text-emerald-500"></ion-icon>
+              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Normal</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">{{ selectedDevice.temperature.toFixed(1) }}°C</div>
+            <div class="text-sm text-gray-600">Suhu Tubuh</div>
+          </div>
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="water-outline" class="w-6 h-6 text-blue-500"></ion-icon>
+              <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Baik</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">{{ selectedDevice.hydration.toFixed(0) }}%</div>
+            <div class="text-sm text-gray-600">Hidrasi</div>
+          </div>
+        </div>
+
+        <!-- Activity Metrics Grid -->
+        <div class="grid grid-cols-2 gap-6">
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="walk-outline" class="w-6 h-6 text-orange-500"></ion-icon>
+              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+12%</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">12,847</div>
+            <div class="text-sm text-gray-600">Langkah</div>
+          </div>
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="flame-outline" class="w-6 h-6 text-red-500"></ion-icon>
+              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+8%</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">2,340</div>
+            <div class="text-sm text-gray-600">Kalori</div>
+          </div>
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="moon-outline" class="w-6 h-6 text-indigo-500"></ion-icon>
+              <span class="text-xs text-red-600 bg-red-50 px-2 py-1 rounded-full">-5%</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">7j 23m</div>
+            <div class="text-sm text-gray-600">Tidur</div>
+          </div>
+          <div class="neu-card p-6 bg-white">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="target-outline" class="w-6 h-6 text-emerald-500"></ion-icon>
+              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+15%</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">82%</div>
+            <div class="text-sm text-gray-600">Pemulihan</div>
+          </div>
+        </div>
+
+        <!-- Training Zones -->
+        <div class="neu-card p-8 bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Zona Pelatihan Hari Ini</h3>
+          <div class="space-y-4">
+            <div *ngFor="let zone of trainingZones" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div class="flex items-center space-x-4">
+                <div class="w-4 h-4 rounded-full" [ngClass]="zone.colorClass"></div>
+                <span class="text-gray-700 font-medium">{{ zone.zone }}</span>
+              </div>
+              <div class="flex items-center space-x-4">
+                <div class="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full transition-all duration-500 rounded-full" [ngClass]="zone.colorClass" [ngStyle]="{'width': zone.percentage + '%'}"></div>
+                </div>
+                <span class="text-gray-600 text-sm font-medium w-16 text-right">{{ zone.time }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- News Section -->
+        <div class="neu-card p-8 bg-white" *ngIf="latestNews$ | async as latestNews">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">Berita Terbaru</h3>
+            <button 
+              (click)="navigateToNews()" 
+              class="text-orange-500 text-sm font-semibold hover:text-orange-600 transition-colors"
+            >
+              Lihat Semua
+            </button>
+          </div>
+          
+          <!-- Latest News Cards -->
+          <div class="space-y-4" *ngIf="latestNews.length > 0">
+            <div 
+              *ngFor="let news of latestNews.slice(0, 3); trackBy: trackByNewsId" 
+              class="flex p-4 bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 hover:bg-orange-50 hover:shadow-md"
+              (click)="navigateToNewsDetail(news.id!)"
+            >
+              <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden mr-4">
+                <img 
+                  [src]="news.imageUrl" 
+                  [alt]="news.title"
+                  class="w-full h-full object-cover bg-gray-200"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-semibold text-gray-800 line-clamp-2 mb-2">{{ news.title }}</h4>
+                <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <span>{{ news.author }}</span>
+                  <span>•</span>
+                  <span>{{ news.date | timeAgo }}</span>
+                  <span>•</span>
+                  <span class="flex items-center gap-1">
+                    <ion-icon name="eye-outline" class="text-xs"></ion-icon>
+                    {{ news.views || 0 }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Empty State -->
+          <div *ngIf="latestNews.length === 0" class="text-center py-8">
+            <ion-icon name="newspaper-outline" class="text-4xl text-gray-300 mb-3"></ion-icon>
+            <p class="text-gray-500">Belum ada berita terbaru</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance View -->
+      <div *ngIf="activeTab === 'performance'" class="space-y-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Analitik Performa</h1>
+          <p class="text-gray-600">Statistik dan tren performa Anda</p>
+        </div>
+        
+        <div class="neu-card p-8 bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Beban Pelatihan Mingguan</h3>
+          <div class="grid grid-cols-7 gap-4 mb-6">
+            <div *ngFor="let day of historicalDays" class="text-center">
+              <div class="text-sm text-gray-600 mb-3 font-medium">{{ day.name }}</div>
+              <div class="neu-bar-bg h-24 flex items-end justify-center p-2 rounded-lg">
+                <div class="bg-gradient-to-t from-orange-400 to-orange-500 rounded-lg w-full transition-all duration-500" [ngStyle]="{'height': day.height + '%'}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-orange-50 rounded-xl">
+            <span class="text-gray-700 font-medium">Volume Pelatihan</span>
+            <span class="text-orange-600 font-semibold">+12% dibandingkan minggu lalu</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+          <div class="neu-card p-8 bg-white">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-gray-800">VO2 Max</h3>
+              <ion-icon name="trending-up" class="w-6 h-6 text-emerald-500"></ion-icon>
+            </div>
+            <div class="flex items-baseline space-x-3 mb-6">
+              <span class="text-4xl font-bold text-gray-800">58.2</span>
+              <span class="text-gray-600 text-lg">ml/kg/min</span>
+              <span class="text-sm text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">+2.1 bulan ini</span>
+            </div>
+            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 w-3/4 transition-all duration-1000 rounded-full"></div>
+            </div>
+          </div>
+
+          <div class="neu-card p-8 bg-white">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-gray-800">Skor Pemulihan</h3>
+              <ion-icon name="target" class="w-6 h-6 text-orange-500"></ion-icon>
+            </div>
+            <div class="flex items-center justify-center mb-6">
+              <div class="relative w-40 h-40">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-gray-200" stroke="currentColor" stroke-width="3" fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="text-orange-500" stroke="currentColor" stroke-width="3" stroke-dasharray="82, 100"
+                    stroke-linecap="round" fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-3xl font-bold text-gray-800">82%</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-center text-gray-600 font-medium">Siap untuk latihan intensif</p>
+          </div>
+
+          <div class="neu-card p-8 bg-white">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-gray-800">Skor Tidur</h3>
+              <ion-icon name="moon-outline" class="w-6 h-6 text-indigo-500"></ion-icon>
+            </div>
+            <div class="flex justify-between items-end mb-6">
+              <div class="flex items-baseline space-x-2">
+                <span class="text-4xl font-bold" [ngClass]="{'text-emerald-600': selectedDevice.sleepGoalAchieved, 'text-red-600': !selectedDevice.sleepGoalAchieved}">78</span>
+                <span class="text-gray-600 text-lg">/100</span>
+              </div>
+              <p class="text-gray-600 text-sm">Tadi malam: 7j 23m</p>
+            </div>
+            <div class="flex items-center p-4 rounded-xl" [ngClass]="{'bg-emerald-50': selectedDevice.sleepGoalAchieved, 'bg-red-50': !selectedDevice.sleepGoalAchieved}">
+              <span class="w-3 h-3 rounded-full mr-3" [ngClass]="{'bg-emerald-500': selectedDevice.sleepGoalAchieved, 'bg-red-500': !selectedDevice.sleepGoalAchieved}"></span>
+              <span class="font-medium" [ngClass]="{'text-emerald-700': selectedDevice.sleepGoalAchieved, 'text-red-700': !selectedDevice.sleepGoalAchieved}">
+                {{ selectedDevice.sleepGoalAchieved ? 'Target tidur tercapai!' : 'Target tidur tidak tercapai.' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Device View -->
+      <div *ngIf="activeTab === 'device'" class="space-y-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Perangkat Vita Ring</h1>
+          <p class="text-gray-600">Detail perangkat: <span class="font-semibold text-orange-600">{{ selectedDevice.name }}</span></p>
+        </div>
+
+        <div class="neu-card p-8 bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Status Perangkat</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+              <span class="text-gray-600 font-medium">Model Perangkat</span>
+              <span class="font-semibold text-gray-800">{{ selectedDevice.model }}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+              <span class="text-gray-600 font-medium">Nomor Seri</span>
+              <span class="font-semibold text-gray-800">{{ selectedDevice.serial }}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+              <span class="text-gray-600 font-medium">Versi Firmware</span>
+              <span class="font-semibold text-gray-800">{{ selectedDevice.firmware }}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+              <span class="text-gray-600 font-medium">Baterai</span>
+              <div class="flex items-center space-x-3">
+                <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': selectedDevice.batteryLevel > 20, 'text-red-500': selectedDevice.batteryLevel <= 20}"></ion-icon>
+                <span class="font-semibold" [ngClass]="{'text-orange-600': selectedDevice.batteryLevel > 20, 'text-red-600': selectedDevice.batteryLevel <= 20}">
+                  {{ selectedDevice.batteryLevel.toFixed(0) }}% 
+                  <span class="text-sm">({{ selectedDevice.batteryLevel > 20 ? '5 hari tersisa' : 'Segera isi daya!' }})</span>
+                </span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+              <span class="text-gray-600 font-medium">Koneksi</span>
+              <div class="flex items-center space-x-3">
+                <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': selectedDevice.isConnected, 'text-red-500': !selectedDevice.isConnected}"></ion-icon>
+                <span class="font-semibold" [ngClass]="{'text-emerald-600': selectedDevice.isConnected, 'text-red-600': !selectedDevice.isConnected}">
+                  {{ selectedDevice.isConnected ? 'Terhubung' : 'Terputus' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="neu-card p-8 bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Kontrol Cincin</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              (click)="handleFindRing(selectedDevice)"
+              [disabled]="findRingActive"
+              class="neu-button p-6 text-center transition-all duration-200 rounded-2xl border-2"
+              [ngClass]="{'opacity-50 cursor-not-allowed neu-pressed border-orange-200': findRingActive, 'neu-raised hover:shadow-lg border-orange-100 hover:border-orange-300': !findRingActive}"
+            >
+              <div class="flex flex-col items-center space-y-3">
+                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="search-outline" class="w-6 h-6 text-orange-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">{{ findRingActive ? 'Mencari...' : 'Temukan Cincin' }}</span>
+              </div>
+            </button>
+            
+            <button
+              (click)="handleRingReset(selectedDevice)"
+              class="neu-button neu-raised p-6 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-red-100 hover:border-red-300"
+            >
+              <div class="flex flex-col items-center space-y-3">
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="refresh-circle-outline" class="w-6 h-6 text-red-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Reset Cincin</span>
+              </div>
+            </button>
+            
+            <button
+              (click)="handleToggleLed(selectedDevice)"
+              class="neu-button p-6 text-center transition-all duration-200 rounded-2xl border-2"
+              [ngClass]="selectedDevice.ledStatus ? 'neu-pressed border-yellow-200' : 'neu-raised hover:shadow-lg border-yellow-100 hover:border-yellow-300'"
+            >
+              <div class="flex flex-col items-center space-y-3">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center" [ngClass]="{'bg-yellow-100': selectedDevice.ledStatus, 'bg-gray-100': !selectedDevice.ledStatus}">
+                  <ion-icon name="bulb-outline" class="w-6 h-6" [ngClass]="{'text-yellow-500': selectedDevice.ledStatus, 'text-gray-500': !selectedDevice.ledStatus}"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">{{ selectedDevice.ledStatus ? 'Matikan LED' : 'Nyalakan LED' }}</span>
+              </div>
+            </button>
+            
+            <button
+              (click)="handleTestNotification(selectedDevice)"
+              class="neu-button neu-raised p-6 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-blue-100 hover:border-blue-300"
+            >
+              <div class="flex flex-col items-center space-y-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="notifications-outline" class="w-6 h-6 text-blue-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Tes Notifikasi</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Section -->
+      <div *ngIf="activeTab === 'profile' && !showEditProfile" class="profile-view">
+        <!-- Profile Header -->
+        <div class="profile-header neu-card-raised">
+          <div class="profile-avatar">
+            <div class="avatar-circle">
+              <ion-icon name="person"></ion-icon>
+            </div>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-name">{{ userProfile.name }}</h2>
+            <p class="profile-handle">{{ userProfile.username }}</p>
+          </div>
+          <button class="edit-profile-btn neu-button-raised" (click)="openEditProfile()">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Edit Profile</span>
+          </button>
+        </div>
+
+        <!-- Menu Options -->
+        <div class="profile-menu">
+          <div class="menu-section">
+            <button class="menu-item neu-card-subtle" (click)="handleAddDevice()">
+              <div class="menu-icon add-device">
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </div>
+              <span class="menu-text">Tambah Perangkat</span>
+              <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+            </button>
+
+            <button class="menu-item neu-card-subtle" (click)="handleRemoveDevice()">
+              <div class="menu-icon remove-device">
+                <ion-icon name="trash-outline"></ion-icon>
+              </div>
+              <span class="menu-text">Hapus Perangkat</span>
+              <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+            </button>
+
+            <button class="menu-item neu-card-subtle" (click)="openPrivacyPolicy()">
+              <div class="menu-icon privacy-policy">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+              </div>
+              <span class="menu-text">Kebijakan Privasi</span>
+              <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+            </button>
+
+            <button class="menu-item neu-card-subtle" (click)="openFaq()">
+              <div class="menu-icon faq">
+                <ion-icon name="help-circle-outline"></ion-icon>
+              </div>
+              <span class="menu-text">FnQ</span>
+              <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+            </button>
+
+            <button class="menu-item neu-card-subtle" (click)="openAboutApp()">
+              <div class="menu-icon about-app">
+                <ion-icon name="information-circle-outline"></ion-icon>
+              </div>
+              <span class="menu-text">Tentang Aplikasi</span>
+              <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+          <button class="logout-btn neu-button-raised" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+            <span>Log out</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Edit Profile View -->
+      <div *ngIf="activeTab === 'profile' && showEditProfile" class="edit-profile-view">
+        <!-- Header with Save Button -->
+        <div class="edit-header neu-card-raised">
+          <button class="back-btn neu-button-subtle" (click)="closeEditProfile()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
+          <h2 class="edit-title">Edit Profile</h2>
+          <button class="save-btn neu-button-raised" (click)="saveProfile()">
+            <span>Save</span>
+          </button>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="edit-form">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <div class="input-wrapper neu-inset">
+              <input 
+                type="text" 
+                [(ngModel)]="userProfile.name" 
+                class="form-input"
+                placeholder="Enter your name"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <div class="input-wrapper neu-inset disabled">
+              <input 
+                type="email" 
+                [ngModel]="userProfile.email" 
+                class="form-input"
+                placeholder="Enter your email"
+                disabled
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">User name</label>
+            <div class="input-wrapper neu-inset">
+              <input 
+                type="text" 
+                [(ngModel)]="userProfile.username" 
+                class="form-input"
+                placeholder="Enter your username"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper neu-inset">
+              <input 
+                type="password" 
+                [(ngModel)]="userProfile.password" 
+                class="form-input"
+                placeholder="Enter new password"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone number</label>
+            <div class="input-wrapper neu-inset">
+              <input 
+                type="tel" 
+                [(ngModel)]="userProfile.phone" 
+                class="form-input"
+                placeholder="Enter your phone number"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer *ngIf="isLoggedIn">
+  <ion-tab-bar 
+    slot="bottom" 
+    class="neu-footer bg-white border-t-2 border-gray-100 shadow-lg scrollable-tabs"
+    scrollable="true"
+  >
+    <ion-tab-button 
+      (click)="setActiveTab('dashboard')" 
+      [ngClass]="{'active-tab': activeTab === 'dashboard'}"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="heart-half-outline" 
+        [ngClass]="{'text-orange-500': activeTab === 'dashboard', 'text-gray-400': activeTab !== 'dashboard'}"
+      ></ion-icon>
+      <span 
+        [ngClass]="{'text-orange-600': activeTab === 'dashboard', 'text-gray-500': activeTab !== 'dashboard'}"
+      >
+        Dasbor
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="setActiveTab('performance')" 
+      [ngClass]="{'active-tab': activeTab === 'performance'}"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="stats-chart-outline" 
+        [ngClass]="{'text-orange-500': activeTab === 'performance', 'text-gray-400': activeTab !== 'performance'}"
+      ></ion-icon>
+      <span 
+        [ngClass]="{'text-orange-600': activeTab === 'performance', 'text-gray-500': activeTab !== 'performance'}"
+      >
+        Performa
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToNews()"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="newspaper-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Berita
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToForum()"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="people" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Forum
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="setActiveTab('device')" 
+      [ngClass]="{'active-tab': activeTab === 'device'}"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="wifi-outline" 
+        [ngClass]="{'text-orange-500': activeTab === 'device', 'text-gray-400': activeTab !== 'device'}"
+      ></ion-icon>
+      <span 
+        [ngClass]="{'text-orange-600': activeTab === 'device', 'text-gray-500': activeTab !== 'device'}"
+      >
+        Perangkat
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="setActiveTab('profile')" 
+      [ngClass]="{'active-tab': activeTab === 'profile'}"
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="person-circle-outline" 
+        [ngClass]="{'text-orange-500': activeTab === 'profile', 'text-gray-400': activeTab !== 'profile'}"
+      ></ion-icon>
+      <span 
+        [ngClass]="{'text-orange-600': activeTab === 'profile', 'text-gray-500': activeTab !== 'profile'}"
+      >
+        Profil
+      </span>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

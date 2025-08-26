@@ -1,0 +1,35 @@
+<div class="news-list-container" *ngIf="news.length > 0">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="title">What's New</h1>
+    <ion-icon name="search-outline" class="search-icon"></ion-icon>
+  </div>
+
+  <!-- Main News Card -->
+  <div class="main-news-card" (click)="onNewsClick(news[0])">
+    <img [src]="news[0].imageUrl" alt="Main news image" class="main-image" />
+    <div class="overlay"></div>
+    <h2 class="main-title">{{ news[0].title }}</h2>
+  </div>
+
+  <!-- Other News List -->
+  <div class="news-list">
+    <div
+      class="news-item"
+      *ngFor="let item of news.slice(1)"
+      (click)="onNewsClick(item)"
+    >
+      <img [src]="item.imageUrl" alt="News thumbnail" class="thumbnail" />
+      <div class="info">
+        <h3 class="item-title">{{ item.title }}</h3>
+        <div class="meta">
+          <span class="time">{{ item.date | timeAgo }}</span>
+          <span class="views">
+            <ion-icon name="eye-outline"></ion-icon>
+            {{ item.views }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

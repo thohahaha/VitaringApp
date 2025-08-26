@@ -1,0 +1,228 @@
+<ion-header [translucent]="true" class="neu-header">
+  <ion-toolbar class="vita-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="vita-back-button">
+        <ion-icon name="arrow-back-outline" class="text-orange-600"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="vita-title">Tentang Pengembang</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="vita-content">
+  <div class="developer-container">
+    
+    <!-- Hero Section -->
+    <div class="hero-section vita-card-premium">
+      <div class="hero-background"></div>
+      <div class="hero-content">
+        <!-- Developer Avatar -->
+        <div class="developer-avatar-section">
+          <div class="avatar-container vita-avatar-ring">
+            <img 
+              src="assets/developer-avatar.jpg" 
+              alt="Muhammad Abdillah Thoha"
+              class="developer-avatar"
+              (error)="onAvatarError($event)"
+            >
+            <div class="avatar-fallback" *ngIf="showAvatarFallback">
+              <ion-icon name="person-outline" class="fallback-icon"></ion-icon>
+            </div>
+            <div class="status-indicator vita-pulse">
+              <div class="pulse-dot"></div>
+            </div>
+          </div>
+          <div class="verified-badge vita-badge-verified">
+            <ion-icon name="checkmark-circle" class="verified-icon"></ion-icon>
+            <span>Verified Developer</span>
+          </div>
+        </div>
+
+        <!-- Developer Info -->
+        <div class="developer-info-section">
+          <h1 class="developer-name vita-gradient-text">Muhammad Abdillah Thoha</h1>
+          <p class="developer-title vita-subtitle">VitaRing App Developer</p>
+          <p class="developer-role">Mobile App Specialist & Health Tech Innovator</p>
+          
+          <!-- Quick Stats -->
+          <div class="quick-stats vita-stats-grid">
+            <div class="stat-item vita-stat-card">
+              <div class="stat-icon">
+                <ion-icon name="code-outline" class="text-orange-500"></ion-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">5+</span>
+                <span class="stat-label">Tahun</span>
+              </div>
+            </div>
+            <div class="stat-item vita-stat-card">
+              <div class="stat-icon">
+                <ion-icon name="heart-outline" class="text-red-500"></ion-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Proyek</span>
+              </div>
+            </div>
+            <div class="stat-item vita-stat-card">
+              <div class="stat-icon">
+                <ion-icon name="people-outline" class="text-blue-500"></ion-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">30+</span>
+                <span class="stat-label">Klien</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="about-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="information-circle-outline" class="text-orange-500"></ion-icon>
+        </div>
+        <h2 class="section-title">Tentang Saya</h2>
+      </div>
+      <div class="about-content">
+        <p class="about-text">
+          Passionate developer yang berfokus pada pengembangan aplikasi kesehatan dan teknologi wearable. 
+          Dengan pengalaman lebih dari 5 tahun di industri teknologi, saya berkomitmen untuk menciptakan 
+          solusi inovatif yang membantu pengguna memantau dan meningkatkan kualitas hidup mereka melalui VitaRing.
+        </p>
+        <div class="specialization-tags">
+          <span class="tag vita-tag" *ngFor="let skill of developerSkills">
+            <ion-icon [name]="skill.icon" class="tag-icon"></ion-icon>
+            {{ skill.name }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience Section -->
+    <div class="experience-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="briefcase-outline" class="text-orange-500"></ion-icon>
+        </div>
+        <h2 class="section-title">Pengalaman Profesional</h2>
+      </div>
+      
+      <div class="timeline-container">
+        <div class="timeline-item vita-timeline-item" *ngFor="let exp of professionalExperience; let i = index">
+          <div class="timeline-dot vita-timeline-dot">
+            <div class="dot-inner"></div>
+          </div>
+          <div class="timeline-content vita-timeline-content">
+            <div class="timeline-header">
+              <h3 class="position-title">{{ exp.position }}</h3>
+              <span class="duration-badge vita-badge-duration">{{ exp.duration }}</span>
+            </div>
+            <p class="company-name">{{ exp.company }}</p>
+            <p class="job-description">{{ exp.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills & Technologies -->
+    <div class="skills-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="construct-outline" class="text-orange-500"></ion-icon>
+        </div>
+        <h2 class="section-title">Keahlian & Teknologi</h2>
+      </div>
+      
+      <div class="tech-categories">
+        <div class="tech-category" *ngFor="let category of techCategories">
+          <h3 class="category-title vita-category-title">{{ category.name }}</h3>
+          <div class="tech-grid">
+            <div class="tech-item vita-tech-item" *ngFor="let tech of category.technologies">
+              <div class="tech-header">
+                <div class="tech-name">
+                  <ion-icon [name]="tech.icon" class="tech-icon"></ion-icon>
+                  <span>{{ tech.name }}</span>
+                </div>
+                <span class="proficiency-level vita-proficiency-badge">{{ tech.level }}</span>
+              </div>
+              <div class="proficiency-bar vita-progress-bar">
+                <div class="proficiency-fill vita-progress-fill" [ngStyle]="{'width': tech.proficiency + '%'}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio & Contact -->
+    <div class="contact-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="link-outline" class="text-orange-500"></ion-icon>
+        </div>
+        <h2 class="section-title">Portfolio & Kontak</h2>
+      </div>
+      
+      <div class="social-grid">
+        <a 
+          *ngFor="let link of socialLinks" 
+          [href]="link.url" 
+          target="_blank" 
+          class="social-card vita-social-card"
+          (click)="trackSocialClick(link.platform)"
+        >
+          <div class="social-icon-wrapper" [ngClass]="link.colorClass">
+            <ion-icon [name]="link.icon" class="social-icon"></ion-icon>
+          </div>
+          <div class="social-info">
+            <h4 class="platform-name">{{ link.platform }}</h4>
+            <p class="platform-handle">{{ link.handle }}</p>
+          </div>
+          <ion-icon name="open-outline" class="external-link-icon"></ion-icon>
+        </a>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section vita-card-highlight">
+      <div class="cta-content">
+        <div class="cta-icon vita-cta-icon">
+          <ion-icon name="mail-outline" class="text-white"></ion-icon>
+        </div>
+        <h3 class="cta-title">Mari Berkolaborasi!</h3>
+        <p class="cta-description">
+          Tertarik untuk berkolaborasi atau memiliki pertanyaan tentang VitaRing? 
+          Jangan ragu untuk menghubungi saya.
+        </p>
+        <div class="cta-buttons">
+          <button class="cta-btn vita-btn-primary" (click)="sendEmail()">
+            <ion-icon name="mail" slot="start"></ion-icon>
+            Kirim Email
+          </button>
+          <button class="cta-btn vita-btn-secondary" (click)="openLinkedIn()">
+            <ion-icon name="logo-linkedin" slot="start"></ion-icon>
+            LinkedIn
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="footer-info vita-footer">
+      <div class="app-info">
+        <p class="app-version">
+          <ion-icon name="phone-portrait-outline" class="text-orange-500"></ion-icon>
+          VitaRing App v{{ appVersion }}
+        </p>
+        <p class="development-info">
+          Dikembangkan dengan ❤️ menggunakan Ionic Angular
+        </p>
+        <p class="last-updated">Last updated: {{ lastUpdated }}</p>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,195 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-title style="font-weight: 800; color: white;">What's New</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="search-outline" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="news-page-container">
+    <ng-container *ngIf="newsList$ | async as newsList; else loadingTemplate">
+      <div *ngIf="newsList.length > 0; else emptyTemplate">
+        <!-- Featured News Card (Large Card) -->
+        <div class="featured-news" *ngIf="newsList[0] as featuredNews">
+          <div class="featured-card" (click)="navigateToDetail(featuredNews.id!)">
+            <div class="featured-image-container">
+              <img 
+                [src]="featuredNews.imageUrl" 
+                [alt]="featuredNews.title"
+                class="featured-image"
+                (error)="onImageError($event)"
+              />
+              <div class="featured-overlay">
+                <h2 class="featured-title">{{ featuredNews.title }}</h2>
+                <div class="featured-meta">
+                  <span class="featured-author">{{ featuredNews.author }}</span>
+                  <span class="featured-date">{{ featuredNews.date | timeAgo }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- News List (Small Cards) -->
+        <div class="news-list-section">
+          <h3 class="section-title">Latest News</h3>
+          <div class="news-items">
+            <div 
+              class="news-item" 
+              *ngFor="let news of newsList.slice(1)"
+              (click)="navigateToDetail(news.id!)"
+            >
+              <div class="news-thumbnail">
+                <img 
+                  [src]="news.imageUrl" 
+                  [alt]="news.title"
+                  class="thumbnail-image"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <div class="news-info">
+                <h4 class="news-title">{{ news.title }}</h4>
+                <div class="news-meta">
+                  <span class="news-author">{{ news.author }}</span>
+                  <span class="news-date">{{ news.date | timeAgo }}</span>
+                </div>
+                <div class="news-stats">
+                  <span class="views">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    {{ news.views || 0 }}
+                  </span>
+                  <span class="likes">
+                    <ion-icon name="heart-outline"></ion-icon>
+                    {{ news.likes?.length || 0 }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #emptyTemplate>
+      <div class="empty-state">
+        <ion-icon name="newspaper-outline" class="empty-icon"></ion-icon>
+        <h3>Belum Ada Berita</h3>
+        <p>Berita terbaru akan muncul di sini</p>
+      </div>
+    </ng-template>
+
+    <ng-template #loadingTemplate>
+      <div class="loading-container">
+        <ion-spinner color="primary"></ion-spinner>
+        <ion-text>Memuat berita...</ion-text>
+      </div>
+    </ng-template>
+  </div>
+</ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer>
+  <ion-tab-bar 
+    slot="bottom" 
+    class="neu-footer bg-white border-t-2 border-gray-100 shadow-lg scrollable-tabs"
+    scrollable="true"
+  >
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="heart-half-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Dasbor
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="stats-chart-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Performa
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      class="tab-button-custom active-tab"
+    >
+      <ion-icon 
+        name="newspaper-outline" 
+        class="text-orange-500"
+      ></ion-icon>
+      <span 
+        class="text-orange-600"
+      >
+        Berita
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToForum()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="people" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Forum
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="wifi-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Perangkat
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="person-circle-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Profil
+      </span>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

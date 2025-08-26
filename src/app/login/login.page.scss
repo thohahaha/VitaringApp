@@ -1,0 +1,562 @@
+// Login Page - Neuromorphic Design with Dynamic Background
+.login-content {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: transparent;
+  background: transparent;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow-y: auto;
+  z-index: 1;
+  background: transparent;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 420px;
+  z-index: 2;
+  margin: auto;
+  padding: 20px 0;
+}
+
+// Header Section
+.header-section {
+  text-align: center;
+  margin-bottom: 32px;
+  
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    .logo-circle {
+      width: 70px;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      box-shadow: 
+        0 8px 32px rgba(255, 159, 28, 0.3),
+        inset 0 2px 8px rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      
+      ion-icon {
+        font-size: 32px;
+        color: white;
+      }
+    }
+    
+    .app-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .welcome-text {
+    .welcome-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      margin: 0 0 6px 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .welcome-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+  }
+}
+
+// Neuromorphic Card
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.neu-card-raised {
+  box-shadow: 
+    0 16px 32px rgba(255, 159, 28, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+// Input Section
+.input-section {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 16px;
+  
+  .input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 14px;
+    padding: 0 14px;
+    height: 50px;
+    background: #f8f9fa;
+    
+    .input-icon {
+      font-size: 18px;
+      color: #ff9f1c;
+      margin-right: 10px;
+    }
+    
+    .neu-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      color: #333;
+      
+      &::placeholder {
+        color: #999;
+        font-size: 14px;
+      }
+      
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}
+
+.neu-inset {
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8);
+}
+
+.forgot-password {
+  text-align: right;
+  margin-top: 8px;
+  
+  .forgot-link {
+    font-size: 14px;
+    color: #ff9f1c;
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Error Message
+.error-message {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 87, 87, 0.1);
+  border: 1px solid rgba(255, 87, 87, 0.3);
+  border-radius: 12px;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-bottom: 20px;
+  
+  ion-icon {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+}
+
+// Buttons
+.button-section {
+  margin-bottom: 24px;
+}
+
+.login-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #ff9f1c, #ffb74d);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 10px 20px rgba(255, 159, 28, 0.3),
+      0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .loading-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .loading-icon {
+      margin-right: 6px;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+.neu-button-raised {
+  box-shadow: 
+    0 6px 12px rgba(255, 159, 28, 0.25),
+    0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+// Social Section
+.social-section {
+  margin-bottom: 20px;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin-bottom: 16px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  .divider-text {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0 12px;
+    font-size: 13px;
+    color: #666;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    4px 4px 12px rgba(0, 0, 0, 0.1),
+    -2px -2px 8px rgba(255, 255, 255, 0.9);
+  
+  ion-icon {
+    font-size: 18px;
+  }
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      6px 6px 16px rgba(0, 0, 0, 0.15),
+      -3px -3px 10px rgba(255, 255, 255, 0.9);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 
+      2px 2px 6px rgba(0, 0, 0, 0.15),
+      -1px -1px 4px rgba(255, 255, 255, 0.8);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 
+      2px 2px 6px rgba(0, 0, 0, 0.1),
+      -1px -1px 4px rgba(255, 255, 255, 0.8);
+  }
+  
+  &.google-btn {
+    color: #db4437;
+    
+    &:hover:not(:disabled) {
+      background: rgba(219, 68, 55, 0.05);
+      color: #c23321;
+    }
+  }
+  
+  &.facebook-btn {
+    color: #4267b2;
+    
+    &:hover {
+      background: rgba(66, 103, 178, 0.05);
+    }
+  }
+}
+
+.neu-button-subtle {
+  box-shadow: 
+    2px 2px 6px rgba(0, 0, 0, 0.1),
+    -2px -2px 6px rgba(255, 255, 255, 0.8);
+    
+  &:hover {
+    box-shadow: 
+      4px 4px 8px rgba(0, 0, 0, 0.15),
+      -4px -4px 8px rgba(255, 255, 255, 0.9);
+  }
+}
+
+// Register Section
+.register-section {
+  text-align: center;
+  
+  .register-text {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    
+    .register-link {
+      color: #ff9f1c;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .login-container {
+    padding: 16px;
+    align-items: flex-start;
+  }
+  
+  .login-wrapper {
+    padding: 10px 0;
+  }
+  
+  .login-card {
+    padding: 20px 16px;
+  }
+  
+  .header-section {
+    margin-bottom: 24px;
+    
+    .logo-container {
+      margin-bottom: 16px;
+      
+      .logo-circle {
+        width: 60px;
+        height: 60px;
+        
+        ion-icon {
+          font-size: 28px;
+        }
+      }
+      
+      .app-title {
+        font-size: 24px;
+      }
+    }
+    
+    .welcome-text {
+      .welcome-title {
+        font-size: 18px;
+      }
+      
+      .welcome-subtitle {
+        font-size: 13px;
+      }
+    }
+  }
+  
+  .input-group {
+    margin-bottom: 14px;
+    
+    .input-wrapper {
+      height: 46px;
+      padding: 0 12px;
+      border-radius: 12px;
+      
+      .input-icon {
+        font-size: 16px;
+        margin-right: 8px;
+      }
+      
+      .neu-input {
+        font-size: 14px;
+        
+        &::placeholder {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+  
+  .login-btn {
+    height: 46px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+  
+  .social-buttons {
+    gap: 8px;
+    
+    .social-btn {
+      height: 40px;
+      font-size: 12px;
+      
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .register-section {
+    .register-text {
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .login-container {
+    padding: 12px;
+  }
+  
+  .login-card {
+    padding: 16px 12px;
+  }
+  
+  .header-section {
+    .logo-container {
+      .logo-circle {
+        width: 50px;
+        height: 50px;
+        
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+      
+      .app-title {
+        font-size: 20px;
+      }
+    }
+  }
+  
+  .input-group {
+    .input-wrapper {
+      height: 44px;
+    }
+  }
+  
+  .login-btn {
+    height: 44px;
+  }
+}
+
+// Landscape orientation
+@media (max-height: 600px) and (orientation: landscape) {
+  .login-container {
+    align-items: flex-start;
+    padding: 16px;
+  }
+  
+  .login-wrapper {
+    padding: 10px 0;
+  }
+  
+  .header-section {
+    margin-bottom: 20px;
+    
+    .logo-container {
+      margin-bottom: 12px;
+      
+      .logo-circle {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 8px;
+        
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+      
+      .app-title {
+        font-size: 20px;
+      }
+    }
+    
+    .welcome-text {
+      .welcome-title {
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+      
+      .welcome-subtitle {
+        font-size: 12px;
+      }
+    }
+  }
+  
+  .login-card {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,213 @@
+<ion-header [translucent]="true" class="vita-header">
+  <ion-toolbar class="vita-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="vita-back-button">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="vita-title">Tentang Aplikasi</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="about-container" style="background: #ffffff; min-height: 100vh;">
+    
+    <!-- App Hero Section -->
+    <div class="app-hero-section vita-card-premium">
+      <div class="hero-background"></div>
+      <div class="app-hero-content">
+        
+        <!-- App Logo -->
+        <div class="app-logo-section">
+          <div class="app-logo-container vita-logo-ring">
+            <div class="app-logo">
+              <ion-icon name="radio-button-on-outline" class="logo-icon"></ion-icon>
+            </div>
+            <div class="logo-glow"></div>
+          </div>
+          <div class="app-status-badge vita-badge-active">
+            <ion-icon name="pulse-outline" class="status-icon"></ion-icon>
+            <span>Active</span>
+          </div>
+        </div>
+
+        <!-- App Info -->
+        <div class="app-info-section">
+          <h1 class="app-name vita-gradient-text">VitaRing</h1>
+          <p class="app-tagline vita-subtitle">Smart Health Monitoring</p>
+          <p class="app-description">
+            Aplikasi inovatif untuk monitoring kesehatan real-time dengan teknologi wearable ring terdepan
+          </p>
+          
+          <!-- Version Badge -->
+          <div class="version-badge vita-version-badge">
+            <ion-icon name="code-download-outline" class="version-icon"></ion-icon>
+            <span class="version-text">Version {{ appVersion }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="sparkles-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Fitur Utama</h2>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-item vita-feature-card" *ngFor="let feature of appFeatures">
+          <div class="feature-icon" [ngClass]="feature.iconClass">
+            <ion-icon [name]="feature.icon"></ion-icon>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="tech-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="construct-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Teknologi</h2>
+      </div>
+      
+      <div class="tech-stack-grid">
+        <div class="tech-item vita-tech-badge" *ngFor="let tech of techStack">
+          <ion-icon [name]="tech.icon" class="tech-icon"></ion-icon>
+          <span class="tech-name">{{ tech.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Stats -->
+    <div class="stats-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="analytics-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Statistik Aplikasi</h2>
+      </div>
+      
+      <div class="app-stats-grid">
+        <div class="stat-card vita-stat-card" *ngFor="let stat of appStats">
+          <div class="stat-icon" [ngClass]="stat.colorClass">
+            <ion-icon [name]="stat.icon"></ion-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy & Security -->
+    <div class="privacy-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Privasi & Keamanan</h2>
+      </div>
+      
+      <div class="privacy-content">
+        <div class="privacy-item" *ngFor="let item of privacyFeatures">
+          <div class="privacy-icon">
+            <ion-icon [name]="item.icon" class="text-emerald-500"></ion-icon>
+          </div>
+          <div class="privacy-text">
+            <h4 class="privacy-title">{{ item.title }}</h4>
+            <p class="privacy-description">{{ item.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Developer & Credits -->
+    <div class="credits-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Tim Pengembang</h2>
+      </div>
+      
+      <div class="credits-content">
+        <div class="developer-info">
+          <div class="developer-avatar">
+            <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+          </div>
+          <div class="developer-details">
+            <h3 class="developer-name">Muhammad Abdillah Thoha</h3>
+            <p class="developer-role">Lead Developer & UI/UX Designer</p>
+            <p class="developer-bio">Passionate about health technology and user experience</p>
+          </div>
+        </div>
+        
+        <!-- Contact Developer -->
+        <div class="contact-developer">
+          <button class="contact-btn vita-btn-outline" (click)="contactDeveloper()">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            Hubungi Developer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Information -->
+    <div class="app-info-section vita-card">
+      <div class="section-header vita-section-header">
+        <div class="section-icon vita-icon-container">
+          <ion-icon name="information-outline"></ion-icon>
+        </div>
+        <h2 class="section-title">Informasi Aplikasi</h2>
+      </div>
+      
+      <div class="app-details">
+        <div class="detail-item" *ngFor="let detail of appDetails">
+          <span class="detail-label">{{ detail.label }}</span>
+          <span class="detail-value">{{ detail.value }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright & Legal -->
+    <div class="legal-section vita-footer">
+      <div class="copyright-info">
+        <div class="copyright-icon">
+          <ion-icon name="document-text-outline" class="text-orange-500"></ion-icon>
+        </div>
+        <div class="copyright-text">
+          <p class="copyright-main">
+            © 2025 VitaRing. All rights reserved.
+          </p>
+          <p class="copyright-sub">
+            Developed with ❤️ for better health monitoring
+          </p>
+          <p class="build-info">
+            Build {{ buildNumber }} • {{ releaseDate }}
+          </p>
+        </div>
+      </div>
+      
+      <!-- Legal Links -->
+      <div class="legal-links">
+        <button class="legal-link" (click)="openPrivacyPolicy()">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          Kebijakan Privasi
+        </button>
+        <button class="legal-link" (click)="openTerms()">
+          <ion-icon name="document-outline" slot="start"></ion-icon>
+          Syarat & Ketentuan
+        </button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

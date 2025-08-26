@@ -1,0 +1,822 @@
+/* VitaRing About Developer Page - Optimized Theme */
+
+/* ================================================================================================
+ * VARIABLES & COLORS
+ * ================================================================================================ */
+:root {
+  --vita-primary: #ff9f1c;
+  --vita-primary-light: #ffb84d;
+  --vita-primary-dark: #e6900f;
+  --vita-secondary: #f8f9fa;
+  --vita-accent: #6366f1;
+  --vita-success: #10b981;
+  --vita-warning: #f59e0b;
+  --vita-error: #ef4444;
+  --vita-text-primary: #1f2937;
+  --vita-text-secondary: #6b7280;
+  --vita-text-light: #9ca3af;
+  --vita-background: #ffffff;
+  --vita-surface: #f9fafb;
+  --vita-border: #e5e7eb;
+  --vita-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --vita-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --vita-radius: 16px;
+  --vita-radius-sm: 8px;
+  --vita-radius-lg: 24px;
+}
+
+/* ================================================================================================
+ * BASE STYLES
+ * ================================================================================================ */
+.vita-content {
+  --background: var(--vita-surface);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.developer-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 2rem;
+}
+
+/* ================================================================================================
+ * HEADER STYLES
+ * ================================================================================================ */
+.vita-toolbar {
+  --background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  --color: white;
+  --border-color: transparent;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.vita-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.vita-back-button {
+  --background: rgba(255, 255, 255, 0.2);
+  --color: white;
+  --border-radius: 12px;
+  margin-left: 8px;
+}
+
+/* ================================================================================================
+ * CARD STYLES
+ * ================================================================================================ */
+.vita-card {
+  background: var(--vita-background);
+  border-radius: var(--vita-radius);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--vita-shadow);
+  border: 1px solid var(--vita-border);
+  transition: all 0.3s ease;
+}
+
+.vita-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vita-shadow-lg);
+}
+
+.vita-card-premium {
+  background: linear-gradient(135deg, var(--vita-background), #fef3e2);
+  border: 2px solid var(--vita-primary);
+  box-shadow: 0 20px 25px -5px rgba(255, 159, 28, 0.1);
+}
+
+.vita-card-highlight {
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  color: white;
+  border: none;
+}
+
+/* ================================================================================================
+ * HERO SECTION
+ * ================================================================================================ */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 159, 28, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================================================
+ * AVATAR STYLES
+ * ================================================================================================ */
+.developer-avatar-section {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.avatar-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 1rem;
+}
+
+.vita-avatar-ring {
+  border-radius: 50%;
+  padding: 6px;
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  box-shadow: 
+    0 0 0 4px rgba(255, 159, 28, 0.2),
+    0 10px 30px rgba(255, 159, 28, 0.3);
+}
+
+.developer-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border: 4px solid white;
+}
+
+.fallback-icon {
+  font-size: 3rem;
+  color: var(--vita-primary);
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: var(--vita-success);
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.vita-pulse {
+  animation: vita-pulse 2s infinite;
+}
+
+@keyframes vita-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.pulse-dot {
+  width: 100%;
+  height: 100%;
+  background: var(--vita-success);
+  border-radius: 50%;
+}
+
+/* ================================================================================================
+ * BADGE STYLES
+ * ================================================================================================ */
+.vita-badge-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--vita-success), #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.verified-icon {
+  font-size: 1.25rem;
+}
+
+/* ================================================================================================
+ * TYPOGRAPHY
+ * ================================================================================================ */
+.vita-gradient-text {
+  background: linear-gradient(135deg, var(--vita-text-primary), var(--vita-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.vita-subtitle {
+  color: var(--vita-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.developer-role {
+  color: var(--vita-text-secondary);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* ================================================================================================
+ * STATS GRID
+ * ================================================================================================ */
+.vita-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.vita-stat-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 159, 28, 0.2);
+  border-radius: var(--vita-radius-sm);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.vita-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 159, 28, 0.2);
+  border-color: var(--vita-primary);
+}
+
+.stat-icon {
+  margin-bottom: 0.5rem;
+}
+
+.stat-icon ion-icon {
+  font-size: 1.5rem;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--vita-text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--vita-text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* ================================================================================================
+ * SECTION HEADERS
+ * ================================================================================================ */
+.vita-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--vita-border);
+}
+
+.vita-icon-container {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  border-radius: var(--vita-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
+}
+
+.vita-icon-container ion-icon {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vita-text-primary);
+  margin: 0;
+}
+
+/* ================================================================================================
+ * TAGS & SKILLS
+ * ================================================================================================ */
+.specialization-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.vita-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--vita-surface), white);
+  border: 1px solid var(--vita-border);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vita-text-primary);
+  transition: all 0.3s ease;
+}
+
+.vita-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.2);
+  border-color: var(--vita-primary);
+  background: linear-gradient(135deg, #fef3e2, white);
+}
+
+.tag-icon {
+  font-size: 1rem;
+  color: var(--vita-primary);
+}
+
+/* ================================================================================================
+ * TIMELINE
+ * ================================================================================================ */
+.timeline-container {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--vita-primary), var(--vita-primary-light));
+}
+
+.vita-timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.vita-timeline-dot {
+  position: absolute;
+  left: -2rem;
+  top: 0.5rem;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 3px solid var(--vita-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.dot-inner {
+  width: 12px;
+  height: 12px;
+  background: var(--vita-primary);
+  border-radius: 50%;
+}
+
+.vita-timeline-content {
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.vita-timeline-content:hover {
+  transform: translateX(8px);
+  box-shadow: var(--vita-shadow);
+  border-color: var(--vita-primary);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.position-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin: 0;
+}
+
+.vita-badge-duration {
+  background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light));
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.company-name {
+  color: var(--vita-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.job-description {
+  color: var(--vita-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ================================================================================================
+ * TECHNOLOGY GRID
+ * ================================================================================================ */
+.tech-categories {
+  display: grid;
+  gap: 2rem;
+}
+
+.vita-category-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--vita-border);
+}
+
+.tech-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.vita-tech-item {
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius-sm);
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.vita-tech-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--vita-shadow);
+  border-color: var(--vita-primary);
+}
+
+.tech-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.tech-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: var(--vita-text-primary);
+}
+
+.tech-icon {
+  font-size: 1.25rem;
+  color: var(--vita-primary);
+}
+
+.vita-proficiency-badge {
+  background: linear-gradient(135deg, var(--vita-accent), #5b5bd6);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.vita-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--vita-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.vita-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vita-primary), var(--vita-primary-light));
+  border-radius: 3px;
+  transition: width 0.8s ease;
+  box-shadow: 0 0 8px rgba(255, 159, 28, 0.5);
+}
+
+/* ================================================================================================
+ * SOCIAL LINKS
+ * ================================================================================================ */
+.social-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.vita-social-card {
+  display: flex;
+  align-items: center;
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vita-social-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--vita-primary);
+  transition: width 0.3s ease;
+}
+
+.vita-social-card:hover::before {
+  width: 8px;
+}
+
+.vita-social-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vita-shadow-lg);
+  border-color: var(--vita-primary);
+}
+
+.social-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--vita-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.social-icon {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.social-info {
+  flex: 1;
+}
+
+.platform-name {
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin: 0 0 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.platform-handle {
+  color: var(--vita-text-secondary);
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.external-link-icon {
+  font-size: 1rem;
+  color: var(--vita-text-light);
+  transition: color 0.3s ease;
+}
+
+.vita-social-card:hover .external-link-icon {
+  color: var(--vita-primary);
+}
+
+/* Social Platform Colors */
+.github-color { background: linear-gradient(135deg, #24292e, #586069); }
+.linkedin-color { background: linear-gradient(135deg, #0077b5, #00a0dc); }
+.email-color { background: linear-gradient(135deg, #ea4335, #fbbc04); }
+.portfolio-color { background: linear-gradient(135deg, var(--vita-primary), var(--vita-primary-light)); }
+.twitter-color { background: linear-gradient(135deg, #1da1f2, #1991db); }
+.instagram-color { background: linear-gradient(135deg, #e4405f, #fd1d1d); }
+
+/* ================================================================================================
+ * CTA SECTION
+ * ================================================================================================ */
+.cta-content {
+  text-align: center;
+  color: white;
+}
+
+.vita-cta-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.vita-cta-icon ion-icon {
+  font-size: 2rem;
+}
+
+.cta-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.cta-description {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.vita-btn-primary,
+.vita-btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--vita-radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.vita-btn-primary {
+  background: white;
+  color: var(--vita-primary);
+}
+
+.vita-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+}
+
+.vita-btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.vita-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ================================================================================================
+ * FOOTER
+ * ================================================================================================ */
+.vita-footer {
+  background: var(--vita-surface);
+  border: 1px solid var(--vita-border);
+  border-radius: var(--vita-radius);
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.app-version {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--vita-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.development-info {
+  color: var(--vita-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.last-updated {
+  color: var(--vita-text-light);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ================================================================================================
+ * RESPONSIVE DESIGN
+ * ================================================================================================ */
+@media (max-width: 768px) {
+  .developer-container {
+    padding: 0.75rem;
+  }
+  
+  .vita-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-section {
+    padding: 2rem 1rem;
+  }
+  
+  .vita-gradient-text {
+    font-size: 2rem;
+  }
+  
+  .vita-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .social-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .vita-btn-primary,
+  .vita-btn-secondary {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .specialization-tags {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .vita-gradient-text {
+    font-size: 1.75rem;
+  }
+  
+  .vita-subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .avatar-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .fallback-icon {
+    font-size: 2.5rem;
+  }
+}

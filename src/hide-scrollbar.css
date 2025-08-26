@@ -1,0 +1,158 @@
+/* Ultimate scrollbar hiding CSS - Maximum priority */
+/* This file should override any other scrollbar styles */
+
+/* Force hide all scrollbars with maximum specificity */
+html,
+html *,
+body,
+body *,
+ion-app,
+ion-app *,
+ion-content,
+ion-content *,
+.scroll-content,
+.scroll-content *,
+div,
+div *,
+span,
+span *,
+section,
+section *,
+article,
+article *,
+main,
+main *,
+aside,
+aside *,
+header,
+header *,
+footer,
+footer *,
+nav,
+nav * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* Webkit scrollbar hiding with ultra-high specificity */
+html::-webkit-scrollbar,
+html *::-webkit-scrollbar,
+body::-webkit-scrollbar,
+body *::-webkit-scrollbar,
+ion-app::-webkit-scrollbar,
+ion-app *::-webkit-scrollbar,
+ion-content::-webkit-scrollbar,
+ion-content *::-webkit-scrollbar,
+.scroll-content::-webkit-scrollbar,
+.scroll-content *::-webkit-scrollbar,
+div::-webkit-scrollbar,
+div *::-webkit-scrollbar,
+span::-webkit-scrollbar,
+span *::-webkit-scrollbar,
+section::-webkit-scrollbar,
+section *::-webkit-scrollbar,
+article::-webkit-scrollbar,
+article *::-webkit-scrollbar,
+main::-webkit-scrollbar,
+main *::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+header::-webkit-scrollbar,
+header *::-webkit-scrollbar,
+footer::-webkit-scrollbar,
+footer *::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+nav *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Hide all scrollbar parts */
+html::-webkit-scrollbar-track,
+html *::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+body *::-webkit-scrollbar-track,
+ion-app::-webkit-scrollbar-track,
+ion-app *::-webkit-scrollbar-track,
+ion-content::-webkit-scrollbar-track,
+ion-content *::-webkit-scrollbar-track,
+.scroll-content::-webkit-scrollbar-track,
+.scroll-content *::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track,
+div *::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-thumb,
+html *::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+body *::-webkit-scrollbar-thumb,
+ion-app::-webkit-scrollbar-thumb,
+ion-app *::-webkit-scrollbar-thumb,
+ion-content::-webkit-scrollbar-thumb,
+ion-content *::-webkit-scrollbar-thumb,
+.scroll-content::-webkit-scrollbar-thumb,
+.scroll-content *::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb,
+div *::-webkit-scrollbar-thumb {
+  display: none !important;
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-corner,
+html *::-webkit-scrollbar-corner,
+body::-webkit-scrollbar-corner,
+body *::-webkit-scrollbar-corner,
+ion-app::-webkit-scrollbar-corner,
+ion-app *::-webkit-scrollbar-corner,
+ion-content::-webkit-scrollbar-corner,
+ion-content *::-webkit-scrollbar-corner,
+.scroll-content::-webkit-scrollbar-corner,
+.scroll-content *::-webkit-scrollbar-corner {
+  display: none !important;
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-button,
+html *::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button,
+body *::-webkit-scrollbar-button,
+ion-app::-webkit-scrollbar-button,
+ion-app *::-webkit-scrollbar-button,
+ion-content::-webkit-scrollbar-button,
+ion-content *::-webkit-scrollbar-button,
+.scroll-content::-webkit-scrollbar-button,
+.scroll-content *::-webkit-scrollbar-button {
+  display: none !important;
+  background: transparent !important;
+}
+
+/* Additional Chrome fixes */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+*::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
+*::-webkit-scrollbar-corner {
+  display: none !important;
+}
+
+*::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+*::-webkit-scrollbar-track-piece {
+  display: none !important;
+}

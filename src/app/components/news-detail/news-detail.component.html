@@ -1,0 +1,44 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="onBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="onShare()">
+        <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onLike()">
+        <ion-icon
+          slot="icon-only"
+          [name]="isLiked ? 'heart' : 'heart-outline'"
+          [color]="isLiked ? 'danger' : ''"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" *ngIf="news">
+  <div class="news-detail-container">
+    <img [src]="news.imageUrl" alt="News image" class="main-image" />
+
+    <div class="content-wrapper">
+      <h1 class="title">{{ news.title }}</h1>
+
+      <div class="meta-info">
+        <div class="author">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <span>{{ news.author }}</span>
+        </div>
+        <div class="date">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ news.date | date: 'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <div class="news-content" [innerHTML]="news.content"></div>
+    </div>
+  </div>
+</ion-content>

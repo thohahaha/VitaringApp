@@ -1,0 +1,161 @@
+<app-dynamic-background></app-dynamic-background>
+
+<ion-content [fullscreen]="true" class="register-content">
+  <div class="register-container">
+    <div class="register-wrapper">
+      <!-- Header Section -->
+      <div class="header-section">
+        <div class="logo-container">
+          <div class="logo-circle">
+            <ion-icon name="fitness-outline"></ion-icon>
+          </div>
+          <h1 class="app-title">VitaRing</h1>
+        </div>
+        <div class="welcome-text">
+          <h2 class="welcome-title">Buat Akun Baru</h2>
+          <p class="welcome-subtitle">Bergabunglah untuk mengawali perjalanan kesehatan Anda</p>
+        </div>
+      </div>
+
+      <!-- Register Card -->
+      <div class="register-card neu-card-raised">
+        <form (ngSubmit)="register()" (submit)="onFormSubmit($event)" class="register-form">
+          
+          <!-- Input Fields -->
+          <div class="input-section">
+            <div class="input-group">
+              <label class="input-label">Nama Lengkap</label>
+              <div class="input-wrapper neu-inset">
+                <ion-icon name="person-outline" class="input-icon"></ion-icon>
+                <input 
+                  type="text" 
+                  [(ngModel)]="fullName" 
+                  name="fullName" 
+                  placeholder="Masukkan nama lengkap Anda"
+                  class="neu-input"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <div class="input-wrapper neu-inset">
+                <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+                <input 
+                  type="email" 
+                  [(ngModel)]="email" 
+                  name="email" 
+                  placeholder="Masukkan email Anda"
+                  class="neu-input"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Password</label>
+              <div class="input-wrapper neu-inset">
+                <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+                <input 
+                  type="password" 
+                  [(ngModel)]="password" 
+                  name="password" 
+                  placeholder="Buat password yang kuat"
+                  class="neu-input"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Konfirmasi Password</label>
+              <div class="input-wrapper neu-inset">
+                <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+                <input 
+                  type="password" 
+                  [(ngModel)]="confirmPassword" 
+                  name="confirmPassword" 
+                  placeholder="Ulangi password Anda"
+                  class="neu-input"
+                  required
+                >
+              </div>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="terms-section">
+              <label class="checkbox-container">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="agreeToTerms" 
+                  name="agreeToTerms" 
+                  class="checkbox-input"
+                  required
+                >
+                <span class="checkmark neu-inset"></span>
+                <span class="checkbox-text">
+                  Saya setuju dengan 
+                  <a href="#" class="terms-link">Syarat & Ketentuan</a> 
+                  dan 
+                  <a href="#" class="terms-link">Kebijakan Privasi</a>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="showError" class="error-message">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Register Button -->
+          <div class="button-section">
+            <button 
+              type="submit" 
+              class="register-btn neu-button-raised"
+              [disabled]="isLoading || !agreeToTerms"
+              (click)="onButtonClick()"
+            >
+              <span *ngIf="!isLoading">Daftar Sekarang</span>
+              <span *ngIf="isLoading" class="loading-text">
+                <ion-icon name="hourglass-outline" class="loading-icon"></ion-icon>
+                Memproses...
+              </span>
+            </button>
+          </div>
+
+          <!-- Social Register -->
+          <div class="social-section">
+            <div class="divider">
+              <span class="divider-text">atau daftar dengan</span>
+            </div>
+            
+            <div class="social-buttons">
+              <button type="button" class="social-btn google-btn neu-button-subtle">
+                <ion-icon name="logo-google"></ion-icon>
+                <span>Google</span>
+              </button>
+              
+              <button type="button" class="social-btn facebook-btn neu-button-subtle">
+                <ion-icon name="logo-facebook"></ion-icon>
+                <span>Facebook</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Login Link -->
+          <div class="login-section">
+            <p class="login-text">
+              Sudah punya akun? 
+              <a (click)="goToLogin()" class="login-link">Masuk sekarang</a>
+            </p>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>
+  

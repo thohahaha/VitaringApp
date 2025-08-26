@@ -1,0 +1,169 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 800; color: white;">Detail Berita</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="onShare(news)" *ngIf="news$ | async as news">
+        <ion-icon name="share-outline" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="bg-gray-50">
+  <ng-container *ngIf="news$ | async as news; else loadingTemplate">
+    <div class="news-detail-container">
+      <!-- Main Image -->
+      <div class="news-image-container">
+        <img 
+          [src]="news.imageUrl" 
+          [alt]="news.title"
+          class="news-main-image"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- News Content -->
+      <div class="news-content-wrapper">
+        <!-- Title -->
+        <h1 class="news-title">{{ news.title }}</h1>
+
+        <!-- Meta Information -->
+        <div class="news-meta">
+          <div class="author-info">
+            <ion-icon name="person-circle-outline" class="author-icon"></ion-icon>
+            <span class="author-name">{{ news.author }}</span>
+          </div>
+          <div class="date-views">
+            <span class="date">{{ news.date | timeAgo }}</span>
+            <span class="views">
+              <ion-icon name="eye-outline"></ion-icon>
+              {{ news.views || 0 }} views
+            </span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <ion-button 
+            class="like-button"
+            fill="solid"
+            [class.liked]="isNewsLikedByUser(news)"
+            (click)="onLike()"
+            [disabled]="isLiking || !isLoggedIn"
+          >
+            <ion-icon [name]="isNewsLikedByUser(news) ? 'heart' : 'heart-outline'" slot="start"></ion-icon>
+            <span>{{ news.likes?.length || 0 }}</span>
+          </ion-button>
+          
+          <ion-button 
+            class="share-button" 
+            fill="solid"
+            (click)="onShare(news)"
+          >
+            <ion-icon name="share-social-outline" slot="start"></ion-icon>
+            <span>Share</span>
+          </ion-button>
+        </div>
+
+        <!-- Content -->
+        <div class="news-content" [innerHTML]="news.content"></div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <ion-spinner color="primary"></ion-spinner>
+      <ion-text>Memuat berita...</ion-text>
+    </div>
+  </ng-template>
+</ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer>
+  <ion-tab-bar 
+    slot="bottom" 
+    class="neu-footer bg-white border-t-2 border-gray-100 shadow-lg scrollable-tabs"
+    scrollable="true"
+  >
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="heart-half-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Dasbor
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="stats-chart-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Performa
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToNews()"
+      class="tab-button-custom active-tab"
+    >
+      <ion-icon 
+        name="newspaper-outline" 
+        class="text-orange-500"
+      ></ion-icon>
+      <span 
+        class="text-orange-600"
+      >
+        Berita
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="wifi-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Perangkat
+      </span>
+    </ion-tab-button>
+    
+    <ion-tab-button 
+      (click)="navigateToHome()" 
+      class="tab-button-custom"
+    >
+      <ion-icon 
+        name="person-circle-outline" 
+        class="text-gray-400"
+      ></ion-icon>
+      <span 
+        class="text-gray-500"
+      >
+        Profil
+      </span>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

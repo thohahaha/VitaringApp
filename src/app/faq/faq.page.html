@@ -1,0 +1,109 @@
+<ion-header class="neu-header">
+  <ion-toolbar color="light" class="neu-toolbar">
+    <div class="header-content">
+      <button class="back-btn neu-button-subtle" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1 class="page-title">Pertanyaan Umum (FnQ)</h1>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="faq-content">
+  <div class="faq-container">
+    
+    <!-- Search and Filter Section -->
+    <div class="search-section neu-card-raised">
+      <div class="search-wrapper">
+        <div class="search-input-wrapper neu-inset">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm"
+            placeholder="Cari pertanyaan..."
+            class="search-input"
+          >
+          <button 
+            *ngIf="searchTerm" 
+            class="clear-btn" 
+            (click)="clearSearch()"
+          >
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+      
+      <div class="category-filter">
+        <div class="category-scroll">
+          <button 
+            *ngFor="let category of categories"
+            class="category-btn"
+            [ngClass]="{'active': selectedCategory === category.value}"
+            (click)="selectedCategory = category.value"
+          >
+            {{ category.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ List -->
+    <div class="faq-list">
+      <div 
+        *ngFor="let faq of filteredFaqItems; trackBy: trackByFaqId"
+        class="faq-item neu-card-subtle"
+        [ngClass]="{'expanded': faq.isExpanded}"
+      >
+        <button class="faq-question" (click)="toggleFaq(faq)">
+          <div class="question-content">
+            <div class="category-badge">
+              {{ getCategoryLabel(faq.category) }}
+            </div>
+            <h3 class="question-text">{{ faq.question }}</h3>
+          </div>
+          <div class="expand-icon">
+            <ion-icon 
+              [name]="faq.isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
+            ></ion-icon>
+          </div>
+        </button>
+        
+        <div class="faq-answer" [ngClass]="{'show': faq.isExpanded}">
+          <div class="answer-content">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="filteredFaqItems.length === 0" class="no-results neu-card-subtle">
+      <div class="no-results-content">
+        <ion-icon name="help-circle-outline" class="no-results-icon"></ion-icon>
+        <h3>Tidak ada hasil ditemukan</h3>
+        <p>Coba gunakan kata kunci yang berbeda atau pilih kategori lain.</p>
+        <button class="reset-btn neu-button-raised" (click)="resetSearch()">
+          Tampilkan Semua FAQ
+        </button>
+      </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="support-section neu-card-raised">
+      <div class="support-content">
+        <div class="support-icon">
+          <ion-icon name="headset-outline"></ion-icon>
+        </div>
+        <div class="support-text">
+          <h3>Tidak menemukan jawaban?</h3>
+          <p>Tim support kami siap membantu Anda 24/7</p>
+        </div>
+        <button class="contact-btn neu-button-raised">
+          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+          Hubungi Support
+        </button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
