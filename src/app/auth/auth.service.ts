@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { 
   Auth, 
@@ -12,7 +12,8 @@ import {
   UserCredential,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect
+  signInWithRedirect,
+  getRedirectResult
 } from '@angular/fire/auth';
 import { 
   Firestore, 
@@ -122,71 +123,81 @@ export class AuthService {
 		}
 	}
 
-	// Firebase onAuthStateChanged Promise wrapper
-	onAuthStateChanged(): Promise<AppUser | null> {
-		return new Promise((resolve) => {
-			if (this.initialized) {
-				resolve(this.currentUser);
-			} else {
-				// Wait for auth to initialize
-				const unsubscribe = onAuthStateChanged(this.auth, async (firebaseUser) => {
-					if (firebaseUser) {
-						const userData = await this.getUserData(firebaseUser.uid);
-						const user: AppUser = {
-							uid: firebaseUser.uid,
-							email: firebaseUser.email!,
-							role: userData?.role || 'user',
-							displayName: userData?.displayName || firebaseUser.displayName || undefined,
-							createdAt: userData?.createdAt
-						};
-						resolve(user);
-					} else {
-						resolve(null);
-					}
-					unsubscribe();
-				});
-			}
-		});
-	}
-
-	get authState$(): Observable<boolean> {
-		return this.loggedIn$.asObservable();
-	}
-
-	register(email: string, password: string, role: 'admin' | 'user' = 'user'): Observable<UserCredential> {
-		console.log('Attempting to register user:', email);
-		
-		return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
-			switchMap(async (result: UserCredential) => {
-				// Create user profile in Firestore
-				await this.createUserProfile(result.user.uid, email, role);
-				console.log('User registered successfully:', result.user.email);
-				return result;
-			}),
-			catchError((error) => {
-				console.error('Registration error:', error);
-				throw error;
-			})
-		);
-	}
-
+	/**
+	 * Login dengan email dan password
+	 */
 	login(email: string, password: string): Observable<UserCredential> {
-		console.log('Attempting to login user:', email);
+		console.log('Attempting email/password login for:', email);
 		
 		return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-			map((result: UserCredential) => {
-				console.log('User logged in successfully:', result.user.email);
+			switchMap(async (result: UserCredential) => {
+				const user = result.user;
+				console.log('Email login successful:', user.email);
+				
+				// Cek apakah user sudah ada di Firestore
+				const existingUserData = await this.getUserData(user.uid);
+				
+				if (!existingUserData) {
+					// Buat profil user baru
+					await this.createUserProfile(user.uid, user.email!, 'user');
+				}
+				
 				return result;
 			}),
 			catchError((error) => {
 				console.error('Login error:', error);
-				throw error;
+				// Handle specific error codes
+				if (error.code === 'auth/user-not-found') {
+					throw new Error('Email tidak terdaftar');
+				} else if (error.code === 'auth/wrong-password') {
+					throw new Error('Password salah');
+				} else if (error.code === 'auth/invalid-email') {
+					throw new Error('Format email tidak valid');
+				} else if (error.code === 'auth/user-disabled') {
+					throw new Error('Akun telah dinonaktifkan');
+				} else if (error.code === 'auth/too-many-requests') {
+					throw new Error('Terlalu banyak percobaan login. Silakan coba lagi nanti.');
+				} else {
+					throw new Error('Login gagal. Silakan coba lagi.');
+				}
 			})
 		);
 	}
 
 	/**
-	 * Login dengan Google menggunakan popup
+	 * Register dengan email dan password
+	 */
+	register(email: string, password: string, role: 'admin' | 'user' = 'user'): Observable<UserCredential> {
+		console.log('Attempting registration for:', email);
+		
+		return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
+			switchMap(async (result: UserCredential) => {
+				const user = result.user;
+				console.log('Registration successful:', user.email);
+				
+				// Buat profil user di Firestore
+				await this.createUserProfile(result.user.uid, email, role);
+				
+				return result;
+			}),
+			catchError((error) => {
+				console.error('Registration error:', error);
+				// Handle specific error codes
+				if (error.code === 'auth/email-already-in-use') {
+					throw new Error('Email sudah terdaftar');
+				} else if (error.code === 'auth/invalid-email') {
+					throw new Error('Format email tidak valid');
+				} else if (error.code === 'auth/weak-password') {
+					throw new Error('Password terlalu lemah');
+				} else {
+					throw new Error('Registrasi gagal. Silakan coba lagi.');
+				}
+			})
+		);
+	}
+
+	/**
+	 * Login dengan Google menggunakan popup dengan fallback ke redirect
 	 */
 	googleLogin(): Observable<UserCredential> {
 		console.log('Attempting Google login...');
@@ -227,12 +238,60 @@ export class AuthService {
 				if (error.code === 'auth/popup-closed-by-user') {
 					throw new Error('Login dibatalkan oleh pengguna');
 				} else if (error.code === 'auth/popup-blocked') {
-					throw new Error('Popup diblokir browser. Silakan izinkan popup untuk situs ini.');
+					// Jika popup diblokir, gunakan redirect method
+					console.log('Popup blocked, falling back to redirect method');
+					return this.googleLoginRedirect();
 				} else if (error.code === 'auth/network-request-failed') {
 					throw new Error('Tidak ada koneksi internet. Periksa koneksi Anda.');
 				} else {
 					throw new Error('Login Google gagal. Silakan coba lagi.');
 				}
+			})
+		);
+	}
+
+	/**
+	 * Login dengan Google menggunakan redirect (fallback untuk popup yang diblokir)
+	 */
+	googleLoginRedirect(): Observable<UserCredential> {
+		console.log('Using Google redirect login...');
+		
+		const provider = new GoogleAuthProvider();
+		provider.addScope('profile');
+		provider.addScope('email');
+		
+		// Redirect ke Google OAuth
+		from(signInWithRedirect(this.auth, provider)).subscribe();
+		
+		// Kembalikan Observable yang akan resolve setelah redirect
+		return from(getRedirectResult(this.auth)).pipe(
+			filter(result => result !== null),
+			switchMap(async (result: UserCredential) => {
+				const user = result.user;
+				console.log('Google redirect login successful:', user.email);
+				
+				// Cek apakah user sudah ada di Firestore
+				const existingUserData = await this.getUserData(user.uid);
+				
+				if (!existingUserData) {
+					// Buat profil user baru dengan data dari Google
+					await this.createUserProfile(
+						user.uid, 
+						user.email!, 
+						'user',
+						{
+							displayName: user.displayName || undefined,
+							photoURL: user.photoURL || undefined,
+							phoneNumber: user.phoneNumber || undefined
+						}
+					);
+				}
+				
+				return result;
+			}),
+			catchError((error) => {
+				console.error('Google redirect login error:', error);
+				throw new Error('Login Google dengan redirect gagal. Silakan coba lagi.');
 			})
 		);
 	}
@@ -258,6 +317,7 @@ export class AuthService {
 	}
 
 	getCurrentUser(): AppUser | null {
+		console.log('Getting current user:', this.currentUser);
 		return this.currentUser;
 	}
 
@@ -265,36 +325,20 @@ export class AuthService {
 		return this.currentUser?.role;
 	}
 
-	// Helper method to check auth state and redirect accordingly
 	async checkAuthAndRedirect(): Promise<void> {
-		const user = await this.onAuthStateChanged();
-		if (user) {
-			console.log('User is authenticated, redirecting to home');
-			this.router.navigate(['/home']);
-		} else {
-			console.log('User is not authenticated, staying on current page');
+		// Wait for auth initialization
+		while (!this.initialized) {
+			await new Promise(resolve => setTimeout(resolve, 100));
+		}
+		
+		if (!this.isLoggedIn()) {
+			console.log('User not authenticated, redirecting to login');
+			this.router.navigate(['/login']);
 		}
 	}
 
-	// Get current Firebase user
-	getCurrentFirebaseUser(): User | null {
-		return this.auth.currentUser;
-	}
-
-	// Update user profile
-	async updateUserProfile(updates: Partial<AppUser>): Promise<void> {
-		try {
-			if (!this.currentUser) throw new Error('No user logged in');
-			
-			const userDoc = doc(this.firestore, 'users', this.currentUser.uid);
-			await setDoc(userDoc, updates, { merge: true });
-			
-			// Update local user data
-			this.currentUser = { ...this.currentUser, ...updates };
-			console.log('User profile updated successfully');
-		} catch (error) {
-			console.error('Error updating user profile:', error);
-			throw error;
-		}
+	// Observable untuk subscribe ke auth state changes
+	get authState$(): Observable<boolean> {
+		return this.loggedIn$.asObservable();
 	}
 }

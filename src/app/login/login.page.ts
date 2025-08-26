@@ -5,7 +5,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput, IonLa
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { mailOutline, lockClosedOutline, fitnessOutline, alertCircleOutline, hourglassOutline, logoGoogle, logoFacebook } from 'ionicons/icons';
+import { mailOutline, lockClosedOutline, fitnessOutline, alertCircleOutline, hourglassOutline, logoGoogle, logoFacebook, openOutline } from 'ionicons/icons';
 import { DynamicBackgroundComponent } from '../shared/dynamic-background/dynamic-background.component';
 
 @Component({
@@ -46,15 +46,7 @@ export class LoginPage {
     console.log('AuthService instance:', this.authService);
     
     // Add icons
-    addIcons({
-      fitnessOutline,
-      mailOutline,
-      lockClosedOutline,
-      alertCircleOutline,
-      hourglassOutline,
-      logoGoogle,
-      logoFacebook
-    });
+    addIcons({fitnessOutline,mailOutline,lockClosedOutline,alertCircleOutline,hourglassOutline,logoGoogle,openOutline,logoFacebook});
   }
 
   goToRegister() {
@@ -124,10 +116,41 @@ export class LoginPage {
       console.error('Google login failed:', error);
       console.error('Error type:', typeof error);
       console.error('Error message:', error.message);
-      this.showErrorMessage(error.message || 'Login Google gagal. Silakan coba lagi.');
+      
+      // Jika popup diblokir, tampilkan pesan dengan saran
+      if (error.message && error.message.includes('popup')) {
+        this.showErrorMessage(
+          'Popup login diblokir browser. Silakan klik "Login dengan Redirect" di bawah, atau izinkan popup untuk situs ini di pengaturan browser.'
+        );
+      } else {
+        this.showErrorMessage(error.message || 'Login Google gagal. Silakan coba lagi.');
+      }
     } finally {
       this.isLoading = false;
       console.log('Google login process completed');
+    }
+  }
+
+  /**
+   * Login dengan Google menggunakan redirect
+   */
+  async loginWithGoogleRedirect() {
+    console.log('Google redirect login method called');
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.showError = false;
+
+    console.log('Starting Google redirect login process...');
+    
+    try {
+      console.log('Calling AuthService.googleLoginRedirect...');
+      // Karena ini redirect, user akan diredirect ke Google
+      await this.authService.googleLoginRedirect().toPromise();
+    } catch (error: any) {
+      console.error('Google redirect login failed:', error);
+      this.showErrorMessage(error.message || 'Login Google gagal. Silakan coba lagi.');
+      this.isLoading = false;
     }
   }
 

@@ -21,22 +21,17 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     console.log('AppComponent initialized - checking auth state');
     
-    // Simulate Firebase onAuthStateChanged
-    try {
-      const user = await this.authService.onAuthStateChanged();
-      
-      if (user) {
-        console.log('User is authenticated:', user.email);
+    // Subscribe to auth state changes
+    this.authService.authState$.subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        const user = this.authService.getCurrentUser();
+        console.log('User is authenticated:', user?.email);
         // User is logged in, redirect to home
         this.router.navigate(['/home']);
       } else {
         console.log('User is not authenticated, will show get-started page');
         // User is not logged in, they will see get-started page (default route)
       }
-    } catch (error) {
-      console.error('Error checking auth state:', error);
-      // On error, redirect to get-started
-      this.router.navigate(['/get-started']);
-    }
+    });
   }
 }

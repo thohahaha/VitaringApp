@@ -331,6 +331,16 @@
     }
   }
   
+  &.google-redirect-btn {
+    color: #ff6600;
+    font-size: 13px;
+    
+    &:hover:not(:disabled) {
+      background: rgba(255, 102, 0, 0.05);
+      color: #e55a00;
+    }
+  }
+  
   &.facebook-btn {
     color: #4267b2;
     
