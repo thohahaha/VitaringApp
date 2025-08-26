@@ -156,6 +156,71 @@
             <p class="text-gray-500">Belum ada berita terbaru</p>
           </div>
         </div>
+
+        <!-- Real-time Health Data Testing Section (Admin Only) -->
+        <div *ngIf="isAdmin || true" class="neu-card p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <ion-icon name="pulse-outline" class="w-5 h-5 text-indigo-500 mr-2"></ion-icon>
+            Real-time Health Data Testing
+          </h3>
+          
+          <!-- Health Status Display -->
+          <div *ngIf="healthData" class="mb-6 p-4 bg-white rounded-xl">
+            <h4 class="font-semibold text-gray-700 mb-3">Current Health Metrics:</h4>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Heart Rate:</span>
+                <span class="font-semibold text-red-500">{{healthData.heartRate}} BPM</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Steps:</span>
+                <span class="font-semibold text-blue-500">{{healthData.steps}}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Temperature:</span>
+                <span class="font-semibold text-green-500">{{healthData.temperature}}°C</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Battery:</span>
+                <span class="font-semibold text-orange-500">{{healthData.batteryLevel}}%</span>
+              </div>
+              <div class="flex justify-between col-span-2">
+                <span class="text-gray-600">Device Status:</span>
+                <span class="font-semibold" [ngClass]="healthData.isDeviceOn ? 'text-green-500' : 'text-red-500'">
+                  {{healthData.isDeviceOn ? 'Connected' : 'Disconnected'}}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Testing Controls -->
+          <div class="grid grid-cols-2 gap-3">
+            <button 
+              (click)="simulateExercise()" 
+              class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors"
+            >
+              🏃‍♂️ Simulate Exercise
+            </button>
+            <button 
+              (click)="simulateRest()" 
+              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors"
+            >
+              😴 Simulate Rest
+            </button>
+            <button 
+              (click)="simulateLowBattery()" 
+              class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-colors"
+            >
+              🔋 Low Battery
+            </button>
+            <button 
+              (click)="toggleSimulation()" 
+              class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-medium hover:bg-purple-200 transition-colors"
+            >
+              {{getSimulationStatus()}}
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Performance View -->

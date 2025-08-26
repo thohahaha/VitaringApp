@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { NewsService } from '../services/news.service';
+import { HealthService, HealthMetrics } from '../services/health.service';
+import { HealthDataSimulator } from '../services/health-data-simulator.service';
 import { Subscription, Observable } from 'rxjs';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonSelect, IonSelectOption, IonFooter, IonTabBar, IonTabButton, IonLabel, IonRouterOutlet, IonToggle, IonApp } from '@ionic/angular/standalone';
 import { CommonModule, AsyncPipe } from '@angular/common';
@@ -106,7 +108,11 @@ export class HomePage implements OnInit, OnDestroy {
   isLoggedIn: boolean = false;
   currentUserEmail: string | null = null;
   private authStateSubscription: Subscription | undefined;
+  private healthDataSubscription: Subscription | undefined;
   isAdmin: boolean = false;
+
+  // Health data from real-time service
+  healthData: HealthMetrics | null = null;
 
   // News related properties
   latestNews$!: Observable<News[]>;
@@ -141,6 +147,8 @@ export class HomePage implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private newsService: NewsService,
+    private healthService: HealthService,
+    private healthSimulator: HealthDataSimulator,
     private router: Router,
   ) {
     this.selectedDeviceId = this.devices[0].id;
@@ -156,6 +164,14 @@ export class HomePage implements OnInit, OnDestroy {
     // Load latest news
     this.loadLatestNews();
     
+    // Subscribe to real-time health data
+    this.subscribeToHealthData();
+    
+    // Start health data simulation for demo
+    setTimeout(() => {
+      this.healthSimulator.startSimulation();
+    }, 2000);
+    
     // Check auth status periodically
     setInterval(() => {
       const isLoggedIn = this.authService.isLoggedIn();
@@ -170,6 +186,46 @@ export class HomePage implements OnInit, OnDestroy {
         }
       }
     }, 1000);
+  }
+
+  /**
+   * Subscribe to real-time health data from Firebase
+   */
+  subscribeToHealthData() {
+    this.healthDataSubscription = this.healthService.healthData$.subscribe(
+      (data: HealthMetrics | null) => {
+        this.healthData = data;
+        if (data) {
+          // Update the first device with real health data
+          this.updateDeviceWithHealthData(data);
+          console.log('📊 Health data received:', data);
+        } else {
+          console.log('❌ No health data available');
+        }
+      }
+    );
+  }
+
+  /**
+   * Update device data with real health metrics
+   */
+  updateDeviceWithHealthData(healthData: HealthMetrics) {
+    if (this.devices.length > 0) {
+      this.devices[0] = {
+        ...this.devices[0],
+        heartRate: healthData.heartRate,
+        batteryLevel: healthData.batteryLevel,
+        temperature: healthData.temperature,
+        isConnected: healthData.isDeviceOn,
+        // Map steps to hydration percentage for demo purposes
+        hydration: Math.min(99, Math.max(50, Math.round(healthData.steps / 100)))
+      };
+      
+      // Update selected device if it's the first one
+      if (this.selectedDeviceId === this.devices[0].id) {
+        this.selectedDevice = this.devices[0];
+      }
+    }
   }
 
   initializeUserProfile() {
@@ -188,6 +244,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.authStateSubscription?.unsubscribe();
+    this.healthDataSubscription?.unsubscribe();
+    // Stop simulation and clean up health service listener
+    this.healthSimulator.stopSimulation();
+    this.healthService.stopListener();
   }
 
   updateDevices() {
@@ -346,6 +406,31 @@ export class HomePage implements OnInit, OnDestroy {
   // Handle image loading errors for news thumbnails
   onImageError(event: any) {
     event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yOCAyNEgzNlYzMkgyOFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHA+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMTIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';
+  }
+
+  // Health data simulation methods for testing
+  simulateExercise() {
+    this.healthSimulator.simulateExercise();
+  }
+
+  simulateRest() {
+    this.healthSimulator.simulateRest();
+  }
+
+  simulateLowBattery() {
+    this.healthSimulator.simulateLowBattery();
+  }
+
+  toggleSimulation() {
+    if (this.healthSimulator.isSimulationRunning()) {
+      this.healthSimulator.stopSimulation();
+    } else {
+      this.healthSimulator.startSimulation();
+    }
+  }
+
+  getSimulationStatus(): string {
+    return this.healthSimulator.isSimulationRunning() ? 'Stop Simulation' : 'Start Simulation';
   }
 
   
