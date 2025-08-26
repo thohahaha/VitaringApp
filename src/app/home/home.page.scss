@@ -769,25 +769,16 @@ ion-tab-bar {
   border-top: 1px solid #e0e0e0;
 }
 
-// Scrollable tabs styling
+// Scrollable tabs styling - Fixed for proper display
 .scrollable-tabs {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
   display: flex !important;
-  
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-  }
+  flex-wrap: nowrap !important;
   
   // Make tab buttons inline and flexible
   .tab-button-custom {
-    min-width: 85px;
-    max-width: 130px;
-    flex: 0 0 auto;
+    min-width: 80px;
+    max-width: 120px;
+    flex: 1 1 auto;
     white-space: normal !important;
     
     span {
@@ -801,7 +792,7 @@ ion-tab-bar {
     }
     
     ion-icon {
-      font-size: 22px !important;
+      font-size: 20px !important;
       margin-bottom: 2px !important;
     }
   }
@@ -862,12 +853,14 @@ ion-tab-button.active-tab {
 
 // ===== EXACT COPY FROM FORUM PAGE =====
 
-// Neu footer class
+// Neu footer class with proper height
 .neu-footer {
   --background: #ffffff !important;
   --border-color: #f3f4f6 !important;
   border-top: 2px solid #f3f4f6 !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  min-height: 70px !important;
+  height: auto !important;
 }
 
 // Tab button styling - consistent with forum page
@@ -975,20 +968,31 @@ ion-tab-button {
   }
 }
 
-// Force text visibility in all tab buttons
+// Force text visibility in all tab buttons with better sizing
 ion-footer ion-tab-bar ion-tab-button {
+  min-height: 70px !important;
+  padding: 8px 4px !important;
+  
   span {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     font-size: 0.75rem !important;
     color: inherit !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    margin-top: 4px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
   }
   
   ion-icon {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    font-size: 20px !important;
+    margin-bottom: 2px !important;
   }
 }
 
