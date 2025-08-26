@@ -1,0 +1,40 @@
+<!-- Navbar Component - Fixed Bottom Navigation -->
+<div class="custom-navbar">
+  <div class="nav-container">
+    <!-- Home Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('home')" (click)="navigateToPage('/home')">
+      <ion-icon name="home" class="nav-icon"></ion-icon>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <!-- News Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('news')" (click)="navigateToPage('/news')">
+      <ion-icon name="newspaper" class="nav-icon"></ion-icon>
+      <span class="nav-label">News</span>
+    </div>
+
+    <!-- Perangkat Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('perangkat')" (click)="navigateToPage('/perangkat')">
+      <ion-icon name="hardware-chip" class="nav-icon"></ion-icon>
+      <span class="nav-label">Perangkat</span>
+    </div>
+
+    <!-- Performa Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('performa')" (click)="navigateToPage('/performa')">
+      <ion-icon name="analytics" class="nav-icon"></ion-icon>
+      <span class="nav-label">Performa</span>
+    </div>
+
+    <!-- Forum Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('forum')" (click)="navigateToPage('/forum')">
+      <ion-icon name="chatbubbles" class="nav-icon"></ion-icon>
+      <span class="nav-label">Forum</span>
+    </div>
+
+    <!-- Profile Tab -->
+    <div class="nav-tab-button" [class.tab-selected]="isActive('profile')" (click)="navigateToPage('/profile')">
+      <ion-icon name="person" class="nav-icon"></ion-icon>
+      <span class="nav-label">Profile</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-title>
+      Profile
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <img *ngIf="getUserAvatar()" [src]="getUserAvatar()" alt="Profile Picture" class="avatar-image">
+        <ion-icon *ngIf="!getUserAvatar()" name="person-circle" class="avatar-icon"></ion-icon>
+      </div>
+      <h2 class="profile-name">{{ getUserDisplayName() }}</h2>
+      <p class="profile-email">{{ getUserEmail() }}</p>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-section">
+        <h3>Account Settings</h3>
+        <div class="setting-item" (click)="navigateToEditProfile()">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Edit Profile</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+        <div class="setting-item">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span>Notifications</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+        <div class="setting-item" (click)="navigateToPrivacy()">
+          <ion-icon name="shield-outline"></ion-icon>
+          <span>Privacy</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3>Support</h3>
+        <div class="setting-item" (click)="navigateToHelpCenter()">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>Help Center</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+        <div class="setting-item" (click)="navigateToAbout()">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>About</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="setting-item logout-item" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Navbar Component -->
+<app-navbar [activeTab]="'profile'"></app-navbar>

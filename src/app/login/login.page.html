@@ -95,6 +95,17 @@
                 <ion-icon name="logo-google"></ion-icon>
                 <span>Login dengan Google</span>
               </button>
+              
+              <button 
+                type="button" 
+                class="social-btn google-redirect-btn neu-button-subtle"
+                (click)="loginWithGoogleRedirect()"
+                [disabled]="isLoading"
+                style="margin-top: 8px; font-size: 14px; opacity: 0.8;"
+              >
+                <ion-icon name="open-outline"></ion-icon>
+                <span>Login Google (Redirect)</span>
+              </button>
             </div>
           </div>
 
@@ -104,6 +115,20 @@
               Belum punya akun? 
               <a (click)="goToRegister()" class="register-link">Daftar sekarang</a>
             </p>
+            
+            <!-- Debug Button (only show in development) -->
+            <div class="debug-section" style="margin-top: 20px; text-align: center;">
+              <button 
+                type="button" 
+                class="debug-btn"
+                (click)="showDebugInfo()"
+                style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
+                       padding: 8px 16px; border-radius: 20px; color: rgba(255,255,255,0.7); 
+                       font-size: 12px; cursor: pointer;"
+              >
+                🔧 Debug Google Login
+              </button>
+            </div>
           </div>
 
         </form>

@@ -31,6 +31,7 @@ import { AuthService } from '../auth/auth.service';
 import { Post, ForumStats } from '../models/forum.model';
 import { Observable } from 'rxjs';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
+import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack,
@@ -81,7 +82,8 @@ import {
     IonRefresherContent,
     IonSearchbar,
     TimeAgoPipe,
-    AsyncPipe
+    AsyncPipe,
+    NavbarComponent
   ]
 })
 export class ForumPage implements OnInit {

@@ -8,6 +8,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { News } from '../models/news.model';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
+import { NavbarComponent } from '../shared/navbar/navbar.component';
 
 interface Device {
   id: string;
@@ -34,6 +35,7 @@ interface Device {
     FormsModule,
     AsyncPipe,
     TimeAgoPipe,
+    NavbarComponent,
     IonHeader,
     IonToolbar,
     IonTitle,

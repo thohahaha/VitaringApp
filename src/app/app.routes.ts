@@ -51,6 +51,34 @@ export const routes: Routes = [
 		loadComponent: () => import('./about-app/about-app.page').then((m) => m.AboutAppPage)
 	},
 	{
+		path: 'profile',
+		loadComponent: () => import('./profile/profile.page').then((m) => m.ProfilePage)
+	},
+	{
+		path: 'perangkat',
+		loadComponent: () => import('./perangkat/perangkat.page').then((m) => m.PerangkatPage)
+	},
+	{
+		path: 'performa',
+		loadComponent: () => import('./performa/performa.page').then((m) => m.PerformaPage)
+	},
+	{
+		path: 'edit-profile',
+		loadComponent: () => import('./edit-profile/edit-profile.page').then((m) => m.EditProfilePage)
+	},
+	{
+		path: 'privacy',
+		loadComponent: () => import('./privacy/privacy.page').then((m) => m.PrivacyPage)
+	},
+	{
+		path: 'help-center',
+		loadComponent: () => import('./help-center/help-center.page').then((m) => m.HelpCenterPage)
+	},
+	{
+		path: 'about',
+		loadComponent: () => import('./about/about.page').then((m) => m.AboutPage)
+	},
+	{
 		path: '**',
 		redirectTo: 'get-started'
 	}

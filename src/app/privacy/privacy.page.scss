@@ -1,0 +1,153 @@
+.privacy-page {
+  background: linear-gradient(135deg, #ff7f00 0%, #ff9933 100%);
+  min-height: 100vh;
+  
+  .header-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    
+    ion-toolbar {
+      --background: transparent;
+      --color: white;
+      
+      ion-title {
+        color: white;
+        font-weight: 600;
+      }
+      
+      ion-button {
+        --color: white;
+      }
+    }
+  }
+  
+  .content-container {
+    padding: 20px;
+  }
+  
+  .privacy-content {
+    .section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 
+        5px 5px 15px rgba(0, 0, 0, 0.2),
+        -5px -5px 15px rgba(255, 255, 255, 0.1);
+      
+      .section-title {
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .setting-info {
+          flex: 1;
+          margin-right: 15px;
+          
+          .setting-label {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+          }
+          
+          .setting-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.4;
+          }
+        }
+        
+        ion-toggle {
+          --background: rgba(255, 255, 255, 0.2);
+          --background-checked: #4CAF50;
+          --handle-background: white;
+          --handle-background-checked: white;
+        }
+      }
+    }
+    
+    .action-section {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      
+      .action-btn {
+        height: 48px;
+        border-radius: 24px;
+        font-weight: 600;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        
+        &.export-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.2),
+            -3px -3px 6px rgba(255, 255, 255, 0.1);
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 
+              5px 5px 10px rgba(0, 0, 0, 0.3),
+              -5px -5px 10px rgba(255, 255, 255, 0.1);
+          }
+        }
+        
+        &.delete-btn {
+          background: #f44336;
+          color: white;
+          box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.2),
+            -3px -3px 6px rgba(255, 255, 255, 0.1);
+          
+          &:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 
+              5px 5px 10px rgba(0, 0, 0, 0.3),
+              -5px -5px 10px rgba(255, 255, 255, 0.1);
+          }
+        }
+        
+        &:active {
+          transform: translateY(0);
+          box-shadow: 
+            1px 1px 3px rgba(0, 0, 0, 0.2),
+            -1px -1px 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}

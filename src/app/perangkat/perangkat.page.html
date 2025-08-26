@@ -1,0 +1,50 @@
+<ion-content class="page-container">
+  <div class="content-area">
+    <div class="space-y-8">
+      <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Perangkat Vita Ring</h1>
+        <p class="text-gray-600">Detail perangkat: <span class="font-semibold text-orange-600">{{ selectedDevice.name }}</span></p>
+      </div>
+
+      <div class="neu-card p-8 bg-white">
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Status Perangkat</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600 font-medium">Model Perangkat</span>
+            <span class="font-semibold text-gray-800">{{ selectedDevice.model }}</span>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600 font-medium">Nomor Seri</span>
+            <span class="font-semibold text-gray-800">{{ selectedDevice.serial }}</span>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600 font-medium">Versi Firmware</span>
+            <span class="font-semibold text-gray-800">{{ selectedDevice.firmware }}</span>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600 font-medium">Baterai</span>
+            <div class="flex items-center space-x-3">
+              <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': selectedDevice.batteryLevel > 20, 'text-red-500': selectedDevice.batteryLevel <= 20}"></ion-icon>
+              <span class="font-semibold" [ngClass]="{'text-orange-600': selectedDevice.batteryLevel > 20, 'text-red-600': selectedDevice.batteryLevel <= 20}">
+                {{ selectedDevice.batteryLevel.toFixed(0) }}% 
+                <span class="text-sm">({{ selectedDevice.batteryLevel > 20 ? '5 hari tersisa' : 'Segera isi daya!' }})</span>
+              </span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600 font-medium">Koneksi</span>
+            <div class="flex items-center space-x-3">
+              <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': selectedDevice.isConnected, 'text-red-500': !selectedDevice.isConnected}"></ion-icon>
+              <span class="font-semibold" [ngClass]="{'text-emerald-600': selectedDevice.isConnected, 'text-red-600': !selectedDevice.isConnected}">
+                {{ selectedDevice.isConnected ? 'Terhubung' : 'Terputus' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Navbar Component -->
+<app-navbar [activeTab]="'perangkat'"></app-navbar>

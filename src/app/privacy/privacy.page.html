@@ -1,0 +1,74 @@
+<div class="privacy-page">
+  <ion-header class="header-container">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="goBack()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>Privacy Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="content-container">
+    <div class="privacy-content">
+      <div class="section">
+        <div class="section-title">Data Collection</div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Health Data Collection</div>
+            <div class="setting-description">Allow VitaRing to collect your health metrics</div>
+          </div>
+          <ion-toggle [(ngModel)]="privacySettings.healthDataCollection"></ion-toggle>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Activity Tracking</div>
+            <div class="setting-description">Track your daily activities and exercise</div>
+          </div>
+          <ion-toggle [(ngModel)]="privacySettings.activityTracking"></ion-toggle>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Location Services</div>
+            <div class="setting-description">Use location for workout tracking</div>
+          </div>
+          <ion-toggle [(ngModel)]="privacySettings.locationServices"></ion-toggle>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Data Sharing</div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Analytics</div>
+            <div class="setting-description">Share anonymous usage data to improve the app</div>
+          </div>
+          <ion-toggle [(ngModel)]="privacySettings.analytics"></ion-toggle>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Third-party Integration</div>
+            <div class="setting-description">Allow integration with other health apps</div>
+          </div>
+          <ion-toggle [(ngModel)]="privacySettings.thirdPartyIntegration"></ion-toggle>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <button class="action-btn export-btn" (click)="exportData()">
+          <ion-icon name="download"></ion-icon>
+          Export My Data
+        </button>
+        
+        <button class="action-btn delete-btn" (click)="deleteAccount()">
+          <ion-icon name="trash"></ion-icon>
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </ion-content>
+</div>

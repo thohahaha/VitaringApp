@@ -1,0 +1,146 @@
+// Profile Page - Neuromorphic Design
+.profile-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  padding: 20px;
+  padding-bottom: 80px; // Space for navbar
+}
+
+.profile-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+  
+  .profile-avatar {
+    margin-bottom: 20px;
+    
+    .avatar-icon {
+      font-size: 80px;
+      color: rgba(255, 255, 255, 0.9);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+    
+    .avatar-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  .profile-name {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .profile-email {
+    font-size: 14px;
+    opacity: 0.8;
+    margin: 0;
+  }
+}
+
+.profile-content {
+  .profile-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
+    
+    .setting-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &:hover {
+        background: rgba(249, 115, 22, 0.05);
+        border-radius: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      
+      ion-icon:first-child {
+        font-size: 20px;
+        color: #f97316;
+        margin-right: 12px;
+        width: 24px;
+      }
+      
+      span {
+        flex: 1;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+      
+      ion-icon:last-child {
+        font-size: 16px;
+        color: #999;
+      }
+      
+      &.logout-item {
+        border-bottom: none;
+        margin-top: 8px;
+        
+        ion-icon:first-child {
+          color: #ef4444;
+        }
+        
+        span {
+          color: #ef4444;
+        }
+        
+        &:hover {
+          background: rgba(239, 68, 68, 0.05);
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 16px;
+    padding-bottom: 70px;
+  }
+  
+  .profile-header {
+    margin-bottom: 24px;
+    
+    .profile-avatar .avatar-icon {
+      font-size: 60px;
+    }
+    
+    .profile-name {
+      font-size: 20px;
+    }
+  }
+  
+  .profile-content .profile-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+}

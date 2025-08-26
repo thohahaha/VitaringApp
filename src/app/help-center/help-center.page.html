@@ -1,0 +1,91 @@
+<div class="help-center-page">
+  <ion-header class="header-container">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="goBack()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>Help Center</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="content-container">
+    <div class="help-content">
+      <ion-card class="search-card">
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-icon name="search" slot="start"></ion-icon>
+            <ion-input placeholder="Search for help..." [(ngModel)]="searchQuery" (ionInput)="filterFAQs()"></ion-input>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="quick-actions-card">
+        <ion-card-header>
+          <ion-card-title>Quick Actions</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-button expand="block" fill="outline" (click)="contactSupport()">
+                  <ion-icon name="headset" slot="start"></ion-icon>Contact Support
+                </ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" fill="outline" (click)="reportIssue()">
+                  <ion-icon name="bug" slot="start"></ion-icon>Report Issue
+                </ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" fill="outline" (click)="deviceSetup()">
+                  <ion-icon name="hardware-chip" slot="start"></ion-icon>Device Setup
+                </ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" fill="outline" (click)="troubleshooting()">
+                  <ion-icon name="build" slot="start"></ion-icon>Troubleshooting
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="faq-card">
+        <ion-card-header>
+          <ion-card-title>Frequently Asked Questions</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let faq of filteredFAQs" (click)="toggleFAQ(faq)">
+              <ion-label>{{ faq.question }}</ion-label>
+              <ion-icon [name]="faq.expanded ? 'chevron-up' : 'chevron-down'" slot="end"></ion-icon>
+            </ion-item>
+            <ion-item *ngFor="let faq of filteredFAQs" [hidden]="!faq.expanded">
+              <ion-text color="medium">{{ faq.answer }}</ion-text>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="contact-card">
+        <ion-card-header>
+          <ion-card-title>Still Need Help?</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item (click)="sendEmail()">
+              <ion-icon name="mail" slot="start"></ion-icon>
+              <ion-label>Email Support</ion-label>
+              <ion-text color="medium">support&#64;vitaring.com</ion-text>
+            </ion-item>
+            <ion-item (click)="openChat()">
+              <ion-icon name="chatbubble" slot="start"></ion-icon>
+              <ion-label>Live Chat</ion-label>
+              <ion-text color="medium">Available 24/7</ion-text>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </ion-content>
+</div>

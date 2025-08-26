@@ -1,0 +1,117 @@
+// Edit Profile Page - Modern Neuromorphic Design
+
+.edit-profile-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  padding: 20px;
+  
+  .profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+    
+    .avatar-container {
+      margin-bottom: 16px;
+      
+      .avatar-icon {
+        font-size: 80px;
+        color: rgba(255, 255, 255, 0.9);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      }
+      
+      .avatar-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+    
+    .change-photo-btn {
+      --color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      
+      ion-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .form-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin-bottom: 20px;
+    
+    ion-list {
+      background: transparent;
+      
+      ion-item {
+        --background: transparent;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --color: #333;
+        margin-bottom: 16px;
+        
+        ion-label {
+          color: #666;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        
+        ion-input, ion-select, ion-textarea {
+          --color: #333;
+          --placeholder-color: #999;
+          font-size: 16px;
+        }
+      }
+    }
+    
+    .action-buttons {
+      padding: 20px 0 0 0;
+      
+      ion-button {
+        height: 48px;
+        border-radius: 24px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        
+        &.save-btn {
+          --background: #10b981;
+          --color: white;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        &.cancel-btn {
+          --border-color: #f97316;
+          --color: #f97316;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 480px) {
+  .edit-profile-container {
+    padding: 16px;
+    
+    .profile-header {
+      margin-bottom: 24px;
+      
+      .avatar-container .avatar-icon,
+      .avatar-container .avatar-image {
+        width: 60px;
+        height: 60px;
+        font-size: 60px;
+      }
+    }
+    
+    .form-card {
+      margin-bottom: 16px;
+    }
+  }
+}

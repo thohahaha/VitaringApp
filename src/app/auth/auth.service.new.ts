@@ -48,91 +48,31 @@ export class AuthService {
 	) {
 		console.log('AuthService initialized with Firebase');
 		this.initializeAuth();
-		this.checkForRedirectResult();
-	}
-
-	/**
-	 * Check for Google Sign-In redirect result
-	 */
-	private async checkForRedirectResult() {
-		try {
-			console.log('Checking for Google Sign-In redirect result...');
-			const result = await getRedirectResult(this.auth);
-			
-			if (result) {
-				console.log('Found redirect result:', result.user.email);
-				
-				// User successfully signed in via redirect
-				const user = result.user;
-				
-				// Check if user profile exists in Firestore
-				const existingUserData = await this.getUserData(user.uid);
-				
-				if (!existingUserData) {
-					// Create new user profile with Google data
-					await this.createUserProfile(
-						user.uid, 
-						user.email!, 
-						'user',
-						{
-							displayName: user.displayName || undefined,
-							photoURL: user.photoURL || undefined,
-							phoneNumber: user.phoneNumber || undefined
-						}
-					);
-				}
-				
-				// Navigate to home page
-				console.log('Redirect login successful, navigating to home...');
-				this.router.navigate(['/home']);
-			} else {
-				console.log('No redirect result found');
-			}
-		} catch (error) {
-			console.error('Error checking redirect result:', error);
-		}
 	}
 
 	private initializeAuth() {
-		try {
-			// Firebase onAuthStateChanged listener with error handling
-			onAuthStateChanged(this.auth, async (firebaseUser: User | null) => {
-				try {
-					if (firebaseUser) {
-						// User is signed in
-						const userData = await this.getUserData(firebaseUser.uid);
-						this.currentUser = {
-							uid: firebaseUser.uid,
-							email: firebaseUser.email!,
-							role: userData?.role || 'user',
-							displayName: userData?.displayName || firebaseUser.displayName || undefined,
-							createdAt: userData?.createdAt
-						};
-						this.loggedIn$.next(true);
-						console.log('User authenticated:', this.currentUser.email);
-					} else {
-						// User is signed out
-						this.currentUser = null;
-						this.loggedIn$.next(false);
-						console.log('User signed out');
-					}
-				} catch (error) {
-					console.error('Error in auth state change handler:', error);
-					this.currentUser = null;
-					this.loggedIn$.next(false);
-				}
-				this.initialized = true;
-			}, (error) => {
-				console.error('Auth state change listener error:', error);
+		// Firebase onAuthStateChanged listener
+		onAuthStateChanged(this.auth, async (firebaseUser: User | null) => {
+			if (firebaseUser) {
+				// User is signed in
+				const userData = await this.getUserData(firebaseUser.uid);
+				this.currentUser = {
+					uid: firebaseUser.uid,
+					email: firebaseUser.email!,
+					role: userData?.role || 'user',
+					displayName: userData?.displayName || firebaseUser.displayName || undefined,
+					createdAt: userData?.createdAt
+				};
+				this.loggedIn$.next(true);
+				console.log('User authenticated:', this.currentUser.email);
+			} else {
+				// User is signed out
 				this.currentUser = null;
 				this.loggedIn$.next(false);
-				this.initialized = true;
-			});
-		} catch (error) {
-			console.error('Error initializing auth:', error);
-			this.loggedIn$.next(false);
+				console.log('User signed out');
+			}
 			this.initialized = true;
-		}
+		});
 	}
 
 	// Get user data from Firestore
@@ -257,42 +197,20 @@ export class AuthService {
 	}
 
 	/**
-	 * Login dengan Google - Try popup first, fallback to redirect
+	 * Login dengan Google menggunakan popup dengan fallback ke redirect
 	 */
 	googleLogin(): Observable<UserCredential> {
 		console.log('Attempting Google login...');
 		
-		try {
-			const provider = new GoogleAuthProvider();
-			// Tambahkan scope untuk mengakses profil pengguna
-			provider.addScope('profile');
-			provider.addScope('email');
-			
-			// Set custom parameters untuk lebih reliable
-			provider.setCustomParameters({
-				'prompt': 'select_account'
-			});
-			
-			// Coba popup dulu, jika gagal fallback ke redirect
-			console.log('Trying popup method first...');
-			return this.googleLoginPopup(provider);
-			
-		} catch (error) {
-			console.error('Error setting up Google login:', error);
-			return from(Promise.reject(new Error('Gagal mengatur login Google. Silakan refresh halaman.')));
-		}
-	}
-
-	/**
-	 * Google login dengan popup method
-	 */
-	private googleLoginPopup(provider: GoogleAuthProvider): Observable<UserCredential> {
-		console.log('Using Google login with popup...');
+		const provider = new GoogleAuthProvider();
+		// Tambahkan scope untuk mengakses profil pengguna
+		provider.addScope('profile');
+		provider.addScope('email');
 		
 		return from(signInWithPopup(this.auth, provider)).pipe(
 			switchMap(async (result: UserCredential) => {
 				const user = result.user;
-				console.log('Google popup login successful:', user.email);
+				console.log('Google login successful:', user.email);
 				
 				// Cek apakah user sudah ada di Firestore
 				const existingUserData = await this.getUserData(user.uid);
@@ -311,75 +229,44 @@ export class AuthService {
 					);
 				}
 				
+				// Return result untuk melanjutkan Observable chain
 				return result;
 			}),
 			catchError((error) => {
-				console.error('Google popup login error:', error);
-				
-				// Jika popup gagal karena diblokir atau domain issue, coba redirect
-				if (error.code === 'auth/popup-blocked' || 
-					error.code === 'auth/cancelled-popup-request' || 
-					error.code === 'auth/popup-closed-by-user' ||
-					error.code === 'auth/unauthorized-domain') {
-					
-					console.log('Popup failed, trying redirect method...');
-					return this.googleLoginRedirect();
-				}
-				
-				// Handle specific errors
-				if (error.code === 'auth/unauthorized-domain') {
-					throw new Error('Domain tidak diotorisasi untuk Google Sign-In. Silakan hubungi administrator.');
-				} else if (error.code === 'auth/operation-not-allowed') {
-					throw new Error('Google Sign-In tidak diaktifkan. Silakan hubungi administrator.');
+				console.error('Google login error:', error);
+				// Handle specific error codes
+				if (error.code === 'auth/popup-closed-by-user') {
+					throw new Error('Login dibatalkan oleh pengguna');
 				} else if (error.code === 'auth/popup-blocked') {
-					throw new Error('Popup diblokir browser. Silakan izinkan popup atau coba metode lain.');
+					// Jika popup diblokir, gunakan redirect method
+					console.log('Popup blocked, falling back to redirect method');
+					return this.googleLoginRedirect();
+				} else if (error.code === 'auth/network-request-failed') {
+					throw new Error('Tidak ada koneksi internet. Periksa koneksi Anda.');
 				} else {
-					throw new Error(`Login Google gagal: ${error.message || 'Unknown error'}`);
+					throw new Error('Login Google gagal. Silakan coba lagi.');
 				}
 			})
 		);
 	}
 
 	/**
-	 * Clear auth state to resolve potential conflicts
-	 */
-	private clearAuthState() {
-		try {
-			this.currentUser = null;
-			this.loggedIn$.next(false);
-			// Clear any localStorage auth data if exists
-			if (typeof window !== 'undefined' && window.localStorage) {
-				const authKeys = Object.keys(localStorage).filter(key => 
-					key.includes('firebase') || key.includes('auth')
-				);
-				authKeys.forEach(key => localStorage.removeItem(key));
-			}
-		} catch (error) {
-			console.warn('Error clearing auth state:', error);
-		}
-	}
-
-	/**
-	 * Google login dengan redirect method (fallback untuk CORS issues)
+	 * Login dengan Google menggunakan redirect (fallback untuk popup yang diblokir)
 	 */
 	googleLoginRedirect(): Observable<UserCredential> {
-		console.log('Using Google login with redirect...');
+		console.log('Using Google redirect login...');
 		
 		const provider = new GoogleAuthProvider();
 		provider.addScope('profile');
 		provider.addScope('email');
 		
-		// Untuk redirect, gunakan signInWithRedirect
-		return from(signInWithRedirect(this.auth, provider).then(() => {
-			// signInWithRedirect tidak return result langsung
-			// Kita perlu tunggu redirect selesai dan ambil result
-			return getRedirectResult(this.auth);
-		})).pipe(
-			switchMap(async (result: UserCredential | null) => {
-				if (!result) {
-					throw new Error('Redirect login dibatalkan atau gagal');
-				}
-				
+		// Redirect ke Google OAuth
+		from(signInWithRedirect(this.auth, provider)).subscribe();
+		
+		// Kembalikan Observable yang akan resolve setelah redirect
+		return from(getRedirectResult(this.auth)).pipe(
+			filter(result => result !== null),
+			switchMap(async (result: UserCredential) => {
 				const user = result.user;
 				console.log('Google redirect login successful:', user.email);
 				
@@ -391,7 +278,7 @@ export class AuthService {
 					await this.createUserProfile(
 						user.uid, 
 						user.email!, 
-						'user', // default role
+						'user',
 						{
 							displayName: user.displayName || undefined,
 							photoURL: user.photoURL || undefined,

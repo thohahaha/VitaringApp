@@ -9,6 +9,7 @@ import { News } from '../models/news.model';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
+import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack, 
@@ -43,7 +44,8 @@ import {
     CommonModule, 
     FormsModule,
     TimeAgoPipe,
-    AsyncPipe
+    AsyncPipe,
+    NavbarComponent
   ]
 })
 export class NewsPage implements OnInit {

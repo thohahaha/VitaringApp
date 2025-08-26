@@ -1,0 +1,231 @@
+.help-center-page {
+  background: linear-gradient(135deg, #ff7f00 0%, #ff9933 100%);
+  min-height: 100vh;
+  
+  .header-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    
+    ion-toolbar {
+      --background: transparent;
+      --color: white;
+      
+      ion-title {
+        color: white;
+        font-weight: 600;
+      }
+      
+      ion-button {
+        --color: white;
+      }
+    }
+  }
+  
+  .content-container {
+    padding: 20px;
+  }
+  
+  .help-content {
+    .section-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .search-section {
+      margin-bottom: 25px;
+      
+      .search-bar {
+        position: relative;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 
+          inset 2px 2px 5px rgba(0, 0, 0, 0.1),
+          inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+        
+        ion-icon {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 20px;
+        }
+        
+        input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          color: white;
+          font-size: 16px;
+          
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+    }
+    
+    .quick-actions {
+      margin-bottom: 25px;
+      
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 15px;
+        
+        .action-item {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 15px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.2),
+            -3px -3px 6px rgba(255, 255, 255, 0.1);
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+              5px 5px 10px rgba(0, 0, 0, 0.3),
+              -5px -5px 10px rgba(255, 255, 255, 0.1);
+          }
+          
+          &:active {
+            transform: translateY(0);
+            box-shadow: 
+              1px 1px 3px rgba(0, 0, 0, 0.2),
+              -1px -1px 3px rgba(255, 255, 255, 0.1);
+          }
+          
+          ion-icon {
+            font-size: 32px;
+            color: white;
+          }
+          
+          span {
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+    
+    .faq-section {
+      margin-bottom: 25px;
+      
+      .faq-list {
+        margin-top: 15px;
+        
+        .faq-item {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          margin-bottom: 10px;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.2),
+            -3px -3px 6px rgba(255, 255, 255, 0.1);
+          
+          .faq-question {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            
+            ion-icon {
+              font-size: 20px;
+              transition: transform 0.3s ease;
+            }
+          }
+          
+          .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            
+            &.expanded {
+              padding: 0 20px 15px 20px;
+              max-height: 200px;
+            }
+          }
+        }
+      }
+    }
+    
+    .contact-section {
+      .contact-options {
+        margin-top: 15px;
+        
+        .contact-item {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          padding: 15px 20px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          cursor: pointer;
+          margin-bottom: 10px;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.2),
+            -3px -3px 6px rgba(255, 255, 255, 0.1);
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 
+              5px 5px 10px rgba(0, 0, 0, 0.3),
+              -5px -5px 10px rgba(255, 255, 255, 0.1);
+          }
+          
+          &:active {
+            transform: translateY(0);
+            box-shadow: 
+              1px 1px 3px rgba(0, 0, 0, 0.2),
+              -1px -1px 3px rgba(255, 255, 255, 0.1);
+          }
+          
+          ion-icon {
+            font-size: 24px;
+            color: white;
+          }
+          
+          .contact-info {
+            .contact-label {
+              color: white;
+              font-weight: 600;
+              font-size: 16px;
+            }
+            
+            .contact-description {
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

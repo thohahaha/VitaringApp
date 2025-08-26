@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Edit Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="edit-profile-container">
+    <div class="profile-header">
+      <div class="avatar-container">
+        <img *ngIf="getUserAvatar()" [src]="getUserAvatar()" alt="Profile Picture" class="avatar-image">
+        <ion-icon *ngIf="!getUserAvatar()" name="person-circle" class="avatar-icon"></ion-icon>
+      </div>
+      <ion-button fill="clear" class="change-photo-btn">
+        <ion-icon name="camera"></ion-icon>
+        Change Photo
+      </ion-button>
+    </div>
+    <ion-card class="form-card">
+      <ion-card-content>
+        <form>
+          <ion-list lines="none">
+            <ion-item>
+              <ion-label position="stacked">Full Name</ion-label>
+              <ion-input [(ngModel)]="userProfile.fullName" name="fullName" placeholder="Enter your full name"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Email</ion-label>
+              <ion-input [(ngModel)]="userProfile.email" name="email" type="email" placeholder="Enter your email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Phone Number</ion-label>
+              <ion-input [(ngModel)]="userProfile.phone" name="phone" type="tel" placeholder="Enter your phone number"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Date of Birth</ion-label>
+              <ion-input [(ngModel)]="userProfile.dateOfBirth" name="dateOfBirth" type="date" placeholder="Select date of birth"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Gender</ion-label>
+              <ion-select [(ngModel)]="userProfile.gender" name="gender" placeholder="Select gender">
+                <ion-select-option value="male">Male</ion-select-option>
+                <ion-select-option value="female">Female</ion-select-option>
+                <ion-select-option value="other">Other</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Bio</ion-label>
+              <ion-textarea [(ngModel)]="userProfile.bio" name="bio" placeholder="Tell us about yourself" rows="4"></ion-textarea>
+            </ion-item>
+          </ion-list>
+          <div class="action-buttons">
+            <ion-button expand="block" class="save-btn" (click)="saveProfile()">
+              <ion-icon name="checkmark" slot="start"></ion-icon>
+              Save Changes
+            </ion-button>
+            <ion-button expand="block" fill="outline" class="cancel-btn" (click)="goBack()">
+              <ion-icon name="close" slot="start"></ion-icon>
+              Cancel
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
