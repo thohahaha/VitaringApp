@@ -68,3 +68,39 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Firebase Config (comment these out if you want to include Firebase config)
+# src/environments/environment.ts
+# src/environments/environment.prod.ts
+
+# Android
+android/app/google-services.json
+android/app/build/
+android/build/
+android/gradle/
+android/.gradle/
+android/captures/
+android/keystore.properties
+*.apk
+*.ap_
+*.aab
+
+# iOS
+ios/App/App/GoogleService-Info.plist
+ios/App/build/
+ios/App/Pods/
+ios/App/*.xcworkspace
+ios/App/*.xcuserdata
+
+# Capacitor
+capacitor.config.json
+
+# Production builds
+/www
+/build
