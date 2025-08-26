@@ -3,12 +3,12 @@
 export const environment = {
   production: true, // Pastikan nilai ini adalah 'true'
   firebase: {
-    apiKey: "AIzaSyDqKNLyNoJgjXHjMcOGXqOnzaunBVOmXVA",
-    authDomain: "vitaring-6cd86.firebaseapp.com",
-    projectId: "vitaring-6cd86",
-    storageBucket: "vitaring-6cd86.firebasestorage.app",
-    messagingSenderId: "389129449639",
-    appId: "1:389129449639:web:9389523591da770ccd6b82",
-    measurementId: "G-CCGNTP56XJ"
+    apiKey: "AIzaSyAtKiS7NYzXguZc0RqrtiuhLhQzoMyd4v8",
+    authDomain: "vitaring-49c16.firebaseapp.com",
+    projectId: "vitaring-49c16",
+    storageBucket: "vitaring-49c16.firebasestorage.app",
+    messagingSenderId: "988321571107",
+    appId: "1:988321571107:web:e7f4780f1bfbd03e196c96",
+    measurementId: "G-XBWV63P7CJ"
   }
 };
