@@ -509,10 +509,10 @@ export class ForumService {
   getForumStats(): Observable<any> {
     // Return mock forum statistics
     const stats = {
-      totalPosts: 1248,
+      totalPosts: 17,
       totalComments: 3456,
-      totalMembers: 892,
-      activeToday: 67
+      totalMembers: 24,
+      activeToday: 22
     };
 
     return new Observable(observer => {

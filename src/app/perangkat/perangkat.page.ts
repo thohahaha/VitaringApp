@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -8,6 +8,8 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
+import { HealthService, HealthMetrics } from '../services/health.service';
+import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { 
   hardwareChip,
@@ -66,10 +68,12 @@ interface Device {
     NavbarComponent
   ]
 })
-export class PerangkatPage implements OnInit {
+export class PerangkatPage implements OnInit, OnDestroy {
 
   deviceConnected: boolean = true;
   batteryLevel: number = 78;
+  healthData: HealthMetrics | null = null;
+  private healthSubscription: Subscription = new Subscription();
   
   selectedDevice: Device = {
     name: 'VitaRing Pro',
@@ -87,19 +91,67 @@ export class PerangkatPage implements OnInit {
     sleep: false
   };
 
-  constructor() {
+  constructor(private healthService: HealthService) {
     // Add icons
     addIcons({batteryHalfOutline,wifiOutline,batteryHalf,wifi,notifications,heart,thermometer,walk,moon,chevronForward,sunny,fitness,refresh,sync,hardwareChip,checkmarkCircle,alertCircle,informationCircle,barcode,construct,bluetooth,settings,locate,download});
   }
 
   ngOnInit() {
     this.loadDeviceStatus();
+    this.subscribeToHealthData();
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from health data to prevent memory leaks
+    if (this.healthSubscription) {
+      this.healthSubscription.unsubscribe();
+    }
+  }
+
+  subscribeToHealthData() {
+    this.healthSubscription = this.healthService.healthData$.subscribe(
+      (data) => {
+        this.healthData = data;
+        if (data) {
+          // Update device status with real data from Firestore
+          this.selectedDevice.batteryLevel = data.batteryLevel || this.selectedDevice.batteryLevel;
+          this.selectedDevice.isConnected = data.isDeviceOn;
+          this.deviceConnected = data.isDeviceOn;
+          this.batteryLevel = data.batteryLevel || this.batteryLevel;
+          
+          console.log('📱 Perangkat page - Health data received:', {
+            batteryLevel: data.batteryLevel,
+            isDeviceOn: data.isDeviceOn,
+            isConnected: this.selectedDevice.isConnected,
+            timestamp: new Date().toLocaleTimeString()
+          });
+        } else {
+          console.log('❌ Perangkat page - No health data available');
+        }
+      }
+    );
   }
 
   loadDeviceStatus() {
     // Simulate loading device status
     // In a real app, this would connect to the actual device
     console.log('Loading device status...');
+  }
+
+  // Reactive getters for real-time data
+  get currentBatteryLevel(): number {
+    return this.healthData?.batteryLevel || this.selectedDevice.batteryLevel;
+  }
+
+  get currentConnectionStatus(): boolean {
+    return this.healthData?.isDeviceOn ?? this.selectedDevice.isConnected;
+  }
+
+  get batteryStatusText(): string {
+    const battery = this.currentBatteryLevel;
+    if (battery > 50) return `${Math.ceil((battery - 50) / 10)} hari tersisa`;
+    if (battery > 20) return `${Math.ceil((battery - 20) / 5)} hari tersisa`;
+    return 'Segera isi daya!';
   }
 
   syncDevice() {

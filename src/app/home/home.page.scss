@@ -1114,3 +1114,85 @@ ion-icon {
   font-size: 0.75rem;
   line-height: 1rem;
 }
+
+// Device status visual effects
+.device-inactive {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
+
+.device-status-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  
+  ion-icon {
+    font-size: 24px;
+    color: #9ca3af;
+  }
+  
+  .status-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: center;
+  }
+}
+
+// Pulsing animation for active device icons
+.device-active {
+  .pulse-icon {
+    animation: device-pulse 2s infinite;
+  }
+}
+
+@keyframes device-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+// Status indicator colors
+.status-active {
+  color: #10b981;
+}
+
+.status-inactive {
+  color: #6b7280;
+}
+
+.status-warning {
+  color: #f59e0b;
+}
+
+.status-error {
+  color: #ef4444;
+}

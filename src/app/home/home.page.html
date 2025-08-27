@@ -12,86 +12,164 @@
           </div>
           <div class="flex items-center space-x-3 bg-orange-50 px-4 py-3 rounded-xl">
             <ion-icon name="battery-half-outline" class="w-5 h-5 text-orange-500"></ion-icon>
-            <span class="text-sm font-medium text-orange-700">{{ selectedDevice.batteryLevel.toFixed(0) }}%</span>
+            <span class="text-sm font-medium text-orange-700">{{ (healthData?.batteryLevel || selectedDevice?.batteryLevel || 0).toFixed(0) }}%</span>
+            <span class="text-xs font-medium" 
+                  [ngClass]="getDeviceConnectionStatus() ? 'text-green-600' : 'text-red-600'">
+              {{ deviceStatus }}
+            </span>
           </div>
         </div>
 
         <!-- Heart Rate Card -->
-        <div class="neu-card-highlighted neu-shadow p-8 bg-gradient-to-r from-orange-50 to-orange-100">
+        <div class="neu-card-highlighted neu-shadow p-8 bg-gradient-to-r from-orange-50 to-orange-100" 
+             [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
           <div class="flex items-center justify-between">
             <div class="space-y-3">
               <h3 class="text-xl font-bold text-gray-800">Detak Jantung</h3>
-              <div class="text-4xl font-bold text-orange-600">{{ selectedDevice.heartRate.toFixed(0) }} <span class="text-xl">BPM</span></div>
-              <p class="text-gray-600 font-medium">Zona: Aerobik</p>
+              <div class="text-4xl font-bold text-orange-600">
+                {{ isDeviceActive() ? (healthData?.heartRate || selectedDevice?.heartRate || 0).toFixed(0) : '--' }} 
+                <span class="text-xl">BPM</span>
+              </div>
+              <p class="text-gray-600 font-medium">
+                Zona: {{ isDeviceActive() ? getHeartRateZone(healthData?.heartRate || selectedDevice.heartRate) : 'Tidak aktif' }}
+              </p>
             </div>
             <div class="w-20 h-20 relative">
               <div class="w-full h-full rounded-full neu-pulse-border flex items-center justify-center bg-white shadow-lg">
-                <ion-icon name="heart" class="w-10 h-10 text-red-500 animate-pulse"></ion-icon>
+                <ion-icon name="heart" class="w-10 h-10 text-red-500" 
+                         [ngClass]="{'animate-pulse': isDeviceActive(), 'opacity-30': !isDeviceActive()}"></ion-icon>
               </div>
+            </div>
+          </div>
+          <!-- Device Status Overlay -->
+          <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-20 rounded-2xl">
+            <div class="text-center">
+              <ion-icon name="power-outline" class="w-8 h-8 text-gray-500 mb-2"></ion-icon>
+              <p class="text-sm font-medium text-gray-600">Perangkat Mati</p>
             </div>
           </div>
         </div>
 
         <!-- Vital Signs Grid -->
         <div class="grid grid-cols-2 gap-6">
-          <div class="neu-card p-6 bg-white">
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
             <div class="flex items-center justify-between mb-4">
-              <ion-icon name="thermometer-outline" class="w-6 h-6 text-emerald-500"></ion-icon>
-              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Normal</span>
+              <ion-icon name="thermometer-outline" class="w-6 h-6 text-emerald-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? getTemperatureStatus(healthData?.temperature || selectedDevice.temperature) : 'Mati' }}
+              </span>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">{{ selectedDevice.temperature.toFixed(1) }}°C</div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? (healthData?.temperature || selectedDevice.temperature).toFixed(1) : '--' }}°C
+            </div>
             <div class="text-sm text-gray-600">Suhu Tubuh</div>
-          </div>
-          <div class="neu-card p-6 bg-white">
-            <div class="flex items-center justify-between mb-4">
-              <ion-icon name="water-outline" class="w-6 h-6 text-blue-500"></ion-icon>
-              <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Baik</span>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">{{ selectedDevice.hydration.toFixed(0) }}%</div>
+          </div>
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="water-outline" class="w-6 h-6 text-blue-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-blue-600 bg-blue-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? 'Baik' : 'Mati' }}
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? selectedDevice.hydration.toFixed(0) : '--' }}%
+            </div>
             <div class="text-sm text-gray-600">Hidrasi</div>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
+            </div>
           </div>
         </div>
 
         <!-- Activity Metrics Grid -->
         <div class="grid grid-cols-2 gap-6">
-          <div class="neu-card p-6 bg-white">
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
             <div class="flex items-center justify-between mb-4">
-              <ion-icon name="walk-outline" class="w-6 h-6 text-orange-500"></ion-icon>
-              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+12%</span>
+              <ion-icon name="walk-outline" class="w-6 h-6 text-orange-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? getStepsChange(healthData?.steps || 0) : 'Mati' }}
+              </span>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">12,847</div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? formatNumber(healthData?.steps || 0) : '--' }}
+            </div>
             <div class="text-sm text-gray-600">Langkah</div>
-          </div>
-          <div class="neu-card p-6 bg-white">
-            <div class="flex items-center justify-between mb-4">
-              <ion-icon name="flame-outline" class="w-6 h-6 text-red-500"></ion-icon>
-              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+8%</span>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">2,340</div>
+          </div>
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="flame-outline" class="w-6 h-6 text-red-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? '+8%' : 'Mati' }}
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? '2,340' : '--' }}
+            </div>
             <div class="text-sm text-gray-600">Kalori</div>
-          </div>
-          <div class="neu-card p-6 bg-white">
-            <div class="flex items-center justify-between mb-4">
-              <ion-icon name="moon-outline" class="w-6 h-6 text-indigo-500"></ion-icon>
-              <span class="text-xs text-red-600 bg-red-50 px-2 py-1 rounded-full">-5%</span>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">7j 23m</div>
+          </div>
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="moon-outline" class="w-6 h-6 text-indigo-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-red-600 bg-red-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? '-5%' : 'Mati' }}
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? '7j 23m' : '--' }}
+            </div>
             <div class="text-sm text-gray-600">Tidur</div>
-          </div>
-          <div class="neu-card p-6 bg-white">
-            <div class="flex items-center justify-between mb-4">
-              <ion-icon name="target-outline" class="w-6 h-6 text-emerald-500"></ion-icon>
-              <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+15%</span>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
             </div>
-            <div class="text-3xl font-bold text-gray-800 mb-2">82%</div>
+          </div>
+          <div class="neu-card p-6 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
+            <div class="flex items-center justify-between mb-4">
+              <ion-icon name="target-outline" class="w-6 h-6 text-emerald-500" 
+                       [ngClass]="{'opacity-30': !isDeviceActive()}"></ion-icon>
+              <span class="text-xs px-2 py-1 rounded-full" 
+                    [ngClass]="isDeviceActive() ? 'text-emerald-600 bg-emerald-50' : 'text-gray-500 bg-gray-50'">
+                {{ isDeviceActive() ? '+15%' : 'Mati' }}
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-800 mb-2">
+              {{ isDeviceActive() ? '82%' : '--' }}
+            </div>
             <div class="text-sm text-gray-600">Pemulihan</div>
+            <!-- Device Status Overlay -->
+            <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-xl">
+              <ion-icon name="power-outline" class="w-6 h-6 text-gray-400"></ion-icon>
+            </div>
           </div>
         </div>
 
         <!-- Training Zones -->
-        <div class="neu-card p-8 bg-white">
+        <div class="neu-card p-8 bg-white relative" [ngClass]="{'opacity-50 grayscale': !isDeviceActive()}">
           <h3 class="text-xl font-bold text-gray-800 mb-6">Zona Pelatihan Hari Ini</h3>
-          <div class="space-y-4">
+          <div class="space-y-4" *ngIf="isDeviceActive(); else trainingZonesDisabled">
             <div *ngFor="let zone of trainingZones" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
               <div class="flex items-center space-x-4">
                 <div class="w-4 h-4 rounded-full" [ngClass]="zone.colorClass"></div>
@@ -103,6 +181,20 @@
                 </div>
                 <span class="text-gray-600 text-sm font-medium w-16 text-right">{{ zone.time }}</span>
               </div>
+            </div>
+          </div>
+          <ng-template #trainingZonesDisabled>
+            <div class="text-center py-8">
+              <ion-icon name="power-outline" class="w-12 h-12 text-gray-300 mb-4"></ion-icon>
+              <p class="text-gray-500 font-medium">Perangkat tidak aktif</p>
+              <p class="text-gray-400 text-sm">Zona pelatihan tidak tersedia</p>
+            </div>
+          </ng-template>
+          <!-- Device Status Overlay -->
+          <div *ngIf="!isDeviceActive()" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 rounded-2xl">
+            <div class="text-center">
+              <ion-icon name="power-outline" class="w-8 h-8 text-gray-400 mb-2"></ion-icon>
+              <p class="text-sm font-medium text-gray-500">Perangkat Mati</p>
             </div>
           </div>
         </div>
@@ -154,71 +246,6 @@
           <div *ngIf="latestNews.length === 0" class="text-center py-8">
             <ion-icon name="newspaper-outline" class="text-4xl text-gray-300 mb-3"></ion-icon>
             <p class="text-gray-500">Belum ada berita terbaru</p>
-          </div>
-        </div>
-
-        <!-- Real-time Health Data Testing Section (Admin Only) -->
-        <div *ngIf="isAdmin || true" class="neu-card p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <ion-icon name="pulse-outline" class="w-5 h-5 text-indigo-500 mr-2"></ion-icon>
-            Real-time Health Data Testing
-          </h3>
-          
-          <!-- Health Status Display -->
-          <div *ngIf="healthData" class="mb-6 p-4 bg-white rounded-xl">
-            <h4 class="font-semibold text-gray-700 mb-3">Current Health Metrics:</h4>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-600">Heart Rate:</span>
-                <span class="font-semibold text-red-500">{{healthData.heartRate}} BPM</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Steps:</span>
-                <span class="font-semibold text-blue-500">{{healthData.steps}}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Temperature:</span>
-                <span class="font-semibold text-green-500">{{healthData.temperature}}°C</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Battery:</span>
-                <span class="font-semibold text-orange-500">{{healthData.batteryLevel}}%</span>
-              </div>
-              <div class="flex justify-between col-span-2">
-                <span class="text-gray-600">Device Status:</span>
-                <span class="font-semibold" [ngClass]="healthData.isDeviceOn ? 'text-green-500' : 'text-red-500'">
-                  {{healthData.isDeviceOn ? 'Connected' : 'Disconnected'}}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Testing Controls -->
-          <div class="grid grid-cols-2 gap-3">
-            <button 
-              (click)="simulateExercise()" 
-              class="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors"
-            >
-              🏃‍♂️ Simulate Exercise
-            </button>
-            <button 
-              (click)="simulateRest()" 
-              class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors"
-            >
-              😴 Simulate Rest
-            </button>
-            <button 
-              (click)="simulateLowBattery()" 
-              class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-colors"
-            >
-              🔋 Low Battery
-            </button>
-            <button 
-              (click)="toggleSimulation()" 
-              class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-medium hover:bg-purple-200 transition-colors"
-            >
-              {{getSimulationStatus()}}
-            </button>
           </div>
         </div>
       </div>
@@ -311,6 +338,25 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm">
           <h1 class="text-3xl font-bold text-gray-800 mb-2">Perangkat Vita Ring</h1>
           <p class="text-gray-600">Detail perangkat: <span class="font-semibold text-orange-600">{{ selectedDevice.name }}</span></p>
+          
+          <!-- Firestore Connection Status -->
+          <div class="mt-4 p-3 rounded-lg" [ngClass]="isFirestoreConnected ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <ion-icon name="cloud-outline" class="w-4 h-4" [ngClass]="isFirestoreConnected ? 'text-green-600' : 'text-red-600'"></ion-icon>
+                <span class="text-sm font-medium" [ngClass]="isFirestoreConnected ? 'text-green-700' : 'text-red-700'">
+                  {{ isFirestoreConnected ? 'Database Terhubung' : 'Database Terputus' }}
+                </span>
+              </div>
+              <button 
+                (click)="toggleOfflineMode()"
+                class="px-3 py-1 text-xs rounded-full font-medium"
+                [ngClass]="isFirestoreConnected ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'"
+              >
+                {{ getOfflineModeText() }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="neu-card p-8 bg-white">
@@ -331,20 +377,127 @@
             <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
               <span class="text-gray-600 font-medium">Baterai</span>
               <div class="flex items-center space-x-3">
-                <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': selectedDevice.batteryLevel > 20, 'text-red-500': selectedDevice.batteryLevel <= 20}"></ion-icon>
-                <span class="font-semibold" [ngClass]="{'text-orange-600': selectedDevice.batteryLevel > 20, 'text-red-600': selectedDevice.batteryLevel <= 20}">
-                  {{ selectedDevice.batteryLevel.toFixed(0) }}% 
-                  <span class="text-sm">({{ selectedDevice.batteryLevel > 20 ? '5 hari tersisa' : 'Segera isi daya!' }})</span>
+                <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': getBatteryLevel() > 20, 'text-red-500': getBatteryLevel() <= 20}"></ion-icon>
+                <span class="font-semibold" [ngClass]="{'text-orange-600': getBatteryLevel() > 20, 'text-red-600': getBatteryLevel() <= 20}">
+                  {{ getBatteryLevel().toFixed(0) }}% 
+                  <span class="text-sm">({{ getBatteryLevel() > 20 ? '5 hari tersisa' : 'Segera isi daya!' }})</span>
                 </span>
               </div>
             </div>
             <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
               <span class="text-gray-600 font-medium">Koneksi</span>
               <div class="flex items-center space-x-3">
-                <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': selectedDevice.isConnected, 'text-red-500': !selectedDevice.isConnected}"></ion-icon>
-                <span class="font-semibold" [ngClass]="{'text-emerald-600': selectedDevice.isConnected, 'text-red-600': !selectedDevice.isConnected}">
-                  {{ selectedDevice.isConnected ? 'Terhubung' : 'Terputus' }}
+                <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': getDeviceConnectionStatus(), 'text-red-500': !getDeviceConnectionStatus()}"></ion-icon>
+                <span class="font-semibold" [ngClass]="{'text-emerald-600': getDeviceConnectionStatus(), 'text-red-600': !getDeviceConnectionStatus()}">
+                  {{ getDeviceConnectionStatus() ? 'Terhubung' : 'Terputus' }}
                 </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Health Metrics from Firestore -->
+        <div class="neu-card p-8 bg-white" *ngIf="healthData">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Data Kesehatan Real-time</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex justify-between items-center p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl">
+              <div class="flex items-center space-x-3">
+                <ion-icon name="heart" class="w-5 h-5 text-red-500"></ion-icon>
+                <span class="text-gray-600 font-medium">Detak Jantung</span>
+              </div>
+              <span class="font-semibold text-red-600">{{ healthData.heartRate.toFixed(0) }} BPM</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
+              <div class="flex items-center space-x-3">
+                <ion-icon name="walk-outline" class="w-5 h-5 text-blue-500"></ion-icon>
+                <span class="text-gray-600 font-medium">Langkah</span>
+              </div>
+              <span class="font-semibold text-blue-600">{{ formatNumber(healthData.steps) }}</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+              <div class="flex items-center space-x-3">
+                <ion-icon name="thermometer-outline" class="w-5 h-5 text-green-500"></ion-icon>
+                <span class="text-gray-600 font-medium">Suhu Tubuh</span>
+              </div>
+              <span class="font-semibold text-green-600">{{ healthData.temperature.toFixed(1) }}°C</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl">
+              <div class="flex items-center space-x-3">
+                <ion-icon name="time-outline" class="w-5 h-5 text-orange-500"></ion-icon>
+                <span class="text-gray-600 font-medium">Terakhir Update</span>
+              </div>
+              <span class="font-semibold text-orange-600 text-sm">{{ healthData.timestamp | date:'HH:mm:ss' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Controls for Testing Firestore Updates -->
+        <div class="neu-card p-8 bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-6">Demo Controls (Testing Device Status)</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              (click)="demoSetOnline()"
+              class="neu-button neu-raised p-4 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-green-100 hover:border-green-300"
+            >
+              <div class="flex flex-col items-center space-y-2">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="power-outline" class="w-6 h-6 text-green-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Device ON</span>
+                <span class="text-xs text-gray-500">Semua menu aktif</span>
+              </div>
+            </button>
+            
+            <button
+              (click)="demoSetOffline()"
+              class="neu-button neu-raised p-4 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-red-100 hover:border-red-300"
+            >
+              <div class="flex flex-col items-center space-y-2">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="power-outline" class="w-6 h-6 text-red-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Device OFF</span>
+                <span class="text-xs text-gray-500">Semua menu mati</span>
+              </div>
+            </button>
+
+            <button
+              (click)="demoUpdateBattery(25)"
+              class="neu-button neu-raised p-4 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-orange-100 hover:border-orange-300"
+            >
+              <div class="flex flex-col items-center space-y-2">
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="battery-dead-outline" class="w-6 h-6 text-orange-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Low Battery (25%)</span>
+              </div>
+            </button>
+
+            <button
+              (click)="demoUpdateHeartRate(120)"
+              class="neu-button neu-raised p-4 text-center hover:shadow-lg transition-all duration-200 rounded-2xl border-2 border-purple-100 hover:border-purple-300"
+            >
+              <div class="flex flex-col items-center space-y-2">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <ion-icon name="heart-outline" class="w-6 h-6 text-purple-500"></ion-icon>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">High HR (120)</span>
+              </div>
+            </button>
+          </div>
+          
+          <!-- Current Device Status Display -->
+          <div class="mt-6 p-4 rounded-xl" [ngClass]="isDeviceActive() ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <ion-icon name="information-circle-outline" class="w-5 h-5" 
+                         [ngClass]="isDeviceActive() ? 'text-green-600' : 'text-red-600'"></ion-icon>
+                <span class="font-medium" [ngClass]="isDeviceActive() ? 'text-green-700' : 'text-red-700'">
+                  Status Perangkat: {{ isDeviceActive() ? 'AKTIF' : 'MATI' }}
+                </span>
+              </div>
+              <div class="text-sm" [ngClass]="isDeviceActive() ? 'text-green-600' : 'text-red-600'">
+                Menu cards: {{ isDeviceActive() ? 'Hidup' : 'Mati' }}
               </div>
             </div>
           </div>

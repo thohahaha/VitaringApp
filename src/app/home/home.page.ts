@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { NewsService } from '../services/news.service';
@@ -109,10 +109,12 @@ export class HomePage implements OnInit, OnDestroy {
   currentUserEmail: string | null = null;
   private authStateSubscription: Subscription | undefined;
   private healthDataSubscription: Subscription | undefined;
+  private connectionStatusSubscription: Subscription | undefined;
   isAdmin: boolean = false;
 
   // Health data from real-time service
   healthData: HealthMetrics | null = null;
+  isFirestoreConnected: boolean = true;
 
   // News related properties
   latestNews$!: Observable<News[]>;
@@ -150,6 +152,7 @@ export class HomePage implements OnInit, OnDestroy {
     private healthService: HealthService,
     private healthSimulator: HealthDataSimulator,
     private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.selectedDeviceId = this.devices[0].id;
     this.selectedDevice = this.devices[0];
@@ -167,10 +170,10 @@ export class HomePage implements OnInit, OnDestroy {
     // Subscribe to real-time health data
     this.subscribeToHealthData();
     
-    // Start health data simulation for demo
-    setTimeout(() => {
-      this.healthSimulator.startSimulation();
-    }, 2000);
+    // DON'T start health data simulation automatically - causes conflicts
+    // setTimeout(() => {
+    //   this.healthSimulator.startSimulation();
+    // }, 2000);
     
     // Check auth status periodically
     setInterval(() => {
@@ -192,18 +195,45 @@ export class HomePage implements OnInit, OnDestroy {
    * Subscribe to real-time health data from Firebase
    */
   subscribeToHealthData() {
+    // Subscribe to health data
     this.healthDataSubscription = this.healthService.healthData$.subscribe(
       (data: HealthMetrics | null) => {
         this.healthData = data;
         if (data) {
           // Update the first device with real health data
           this.updateDeviceWithHealthData(data);
-          console.log('📊 Health data received:', data);
+          console.log('📊 Health data received in component:', {
+            originalData: data,
+            isDeviceOn: data.isDeviceOn,
+            isDeviceOnType: typeof data.isDeviceOn,
+            isDeviceOnString: String(data.isDeviceOn),
+            isDeviceOnBoolean: Boolean(data.isDeviceOn),
+            heartRate: data.heartRate,
+            batteryLevel: data.batteryLevel,
+            timestamp: new Date().toLocaleTimeString(),
+            healthDataAssigned: !!this.healthData,
+            healthDataIsDeviceOn: this.healthData?.isDeviceOn
+          });
+          
+          // Force change detection to update UI
+          this.cdr.detectChanges();
         } else {
           console.log('❌ No health data available');
         }
       }
     );
+
+    // Subscribe to connection status
+    // this.connectionStatusSubscription = this.healthService.connectionStatus$.subscribe(
+    //   (isConnected: boolean) => {
+    //     this.isFirestoreConnected = isConnected;
+    //     console.log('🔗 Firestore connection status:', isConnected ? 'Connected' : 'Disconnected');
+    //     if (!isConnected) {
+    //       // Clear health data when disconnected
+    //       this.healthData = null;
+    //     }
+    //   }
+    // );
   }
 
   /**
@@ -245,6 +275,7 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.authStateSubscription?.unsubscribe();
     this.healthDataSubscription?.unsubscribe();
+    this.connectionStatusSubscription?.unsubscribe();
     // Stop simulation and clean up health service listener
     this.healthSimulator.stopSimulation();
     this.healthService.stopListener();
@@ -433,7 +464,152 @@ export class HomePage implements OnInit, OnDestroy {
     return this.healthSimulator.isSimulationRunning() ? 'Stop Simulation' : 'Start Simulation';
   }
 
-  
-  
-  
+  // Helper methods for device page
+  getBatteryLevel(): number {
+    return this.healthData?.batteryLevel || this.selectedDevice.batteryLevel;
+  }
+
+  // Reactive getter for device status that ensures UI updates
+  get deviceStatus(): string {
+    const isOnline = this.getDeviceConnectionStatus();
+    console.log('🎯 deviceStatus getter called:', isOnline ? 'Online' : 'Offline');
+    return isOnline ? 'Online' : 'Offline';
+  }
+
+  getDeviceConnectionStatus(): boolean {
+    const result = this.healthData?.isDeviceOn !== undefined 
+      ? this.healthData.isDeviceOn 
+      : this.selectedDevice?.isConnected || false;
+    
+    console.log('🔗 getDeviceConnectionStatus:', {
+      healthDataDeviceOn: this.healthData?.isDeviceOn,
+      selectedDeviceConnected: this.selectedDevice?.isConnected,
+      result: result,
+      source: this.healthData?.isDeviceOn !== undefined ? 'FIRESTORE' : 'LOCAL_DEVICE',
+      healthDataExists: !!this.healthData
+    });
+    
+    return result;
+  }
+
+  // Check if device is active based on Firestore data
+  isDeviceActive(): boolean {
+    const result = this.healthData?.isDeviceOn !== undefined 
+      ? this.healthData.isDeviceOn 
+      : this.selectedDevice?.isConnected || false;
+      
+    console.log('✅ isDeviceActive:', {
+      healthDataDeviceOn: this.healthData?.isDeviceOn,
+      selectedDeviceConnected: this.selectedDevice?.isConnected,
+      result: result,
+      timestamp: new Date().toLocaleTimeString()
+    });
+    
+    return result;
+  }
+
+  // Manual offline testing
+  toggleOfflineMode(): void {
+    this.isFirestoreConnected = !this.isFirestoreConnected;
+    this.healthService.setOfflineMode(!this.isFirestoreConnected);
+  }
+
+  getOfflineModeText(): string {
+    return this.isFirestoreConnected ? 'Simulasi Offline' : 'Kembali Online';
+  }
+
+  // Helper methods for better data display
+  getHeartRateZone(heartRate: number): string {
+    if (heartRate < 60) return 'Istirahat';
+    if (heartRate < 100) return 'Normal';
+    if (heartRate < 150) return 'Aerobik';
+    if (heartRate < 180) return 'Anaerobik';
+    return 'Maksimal';
+  }
+
+  getTemperatureStatus(temperature: number): string {
+    if (temperature < 36.0) return 'Rendah';
+    if (temperature <= 37.5) return 'Normal';
+    if (temperature <= 38.0) return 'Sedikit Tinggi';
+    return 'Tinggi';
+  }
+
+  getStepsChange(steps: number): string {
+    const target = 10000; // Daily target
+    const percentage = Math.round((steps / target) * 100);
+    if (percentage >= 100) return '+' + (percentage - 100) + '%';
+    return percentage + '%';
+  }
+
+  formatNumber(num: number): string {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  }
+
+  // Device status testing methods (simplified)
+  async demoSetOnline() {
+    try {
+      // Simulate device going online by updating local health data
+      this.healthService.updateHealthData({
+        isDeviceOn: true,
+        heartRate: 75,
+        batteryLevel: this.healthData?.batteryLevel || 85,
+        temperature: 36.8,
+        steps: this.healthData?.steps || 5000
+      });
+      console.log('✅ Device set to ONLINE via local simulation');
+    } catch (error) {
+      console.error('❌ Error setting device online:', error);
+    }
+  }
+
+  async demoSetOffline() {
+    try {
+      // Simulate device going offline by updating local health data
+      this.healthService.updateHealthData({
+        isDeviceOn: false,
+        heartRate: this.healthData?.heartRate || 70,
+        batteryLevel: this.healthData?.batteryLevel || 85,
+        temperature: this.healthData?.temperature || 36.8,
+        steps: this.healthData?.steps || 5000
+      });
+      console.log('✅ Device set to OFFLINE via local simulation');
+    } catch (error) {
+      console.error('❌ Error setting device offline:', error);
+    }
+  }
+
+  async demoUpdateBattery(level: number) {
+    try {
+      // Update battery level while maintaining other data
+      this.healthService.updateHealthData({
+        isDeviceOn: this.healthData?.isDeviceOn ?? true,
+        heartRate: this.healthData?.heartRate || 70,
+        batteryLevel: level,
+        temperature: this.healthData?.temperature || 36.8,
+        steps: this.healthData?.steps || 5000
+      });
+      console.log(`✅ Battery updated to ${level}% via local simulation`);
+    } catch (error) {
+      console.error('❌ Error updating battery:', error);
+    }
+  }
+
+  async demoUpdateHeartRate(heartRate: number) {
+    try {
+      // Update heart rate while maintaining other data
+      this.healthService.updateHealthData({
+        isDeviceOn: this.healthData?.isDeviceOn ?? true,
+        heartRate: heartRate,
+        batteryLevel: this.healthData?.batteryLevel || 85,
+        temperature: this.healthData?.temperature || 36.8,
+        steps: this.healthData?.steps || 5000
+      });
+      console.log(`✅ Heart rate updated to ${heartRate} BPM via local simulation`);
+    } catch (error) {
+      console.error('❌ Error updating heart rate:', error);
+    }
+  }
 }

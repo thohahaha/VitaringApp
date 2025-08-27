@@ -24,19 +24,19 @@
           <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
             <span class="text-gray-600 font-medium">Baterai</span>
             <div class="flex items-center space-x-3">
-              <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': selectedDevice.batteryLevel > 20, 'text-red-500': selectedDevice.batteryLevel <= 20}"></ion-icon>
-              <span class="font-semibold" [ngClass]="{'text-orange-600': selectedDevice.batteryLevel > 20, 'text-red-600': selectedDevice.batteryLevel <= 20}">
-                {{ selectedDevice.batteryLevel.toFixed(0) }}% 
-                <span class="text-sm">({{ selectedDevice.batteryLevel > 20 ? '5 hari tersisa' : 'Segera isi daya!' }})</span>
+              <ion-icon name="battery-half-outline" class="w-5 h-5" [ngClass]="{'text-orange-500': currentBatteryLevel > 20, 'text-red-500': currentBatteryLevel <= 20}"></ion-icon>
+              <span class="font-semibold" [ngClass]="{'text-orange-600': currentBatteryLevel > 20, 'text-red-600': currentBatteryLevel <= 20}">
+                {{ currentBatteryLevel.toFixed(0) }}% 
+                <span class="text-sm">({{ batteryStatusText }})</span>
               </span>
             </div>
           </div>
           <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
             <span class="text-gray-600 font-medium">Koneksi</span>
             <div class="flex items-center space-x-3">
-              <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': selectedDevice.isConnected, 'text-red-500': !selectedDevice.isConnected}"></ion-icon>
-              <span class="font-semibold" [ngClass]="{'text-emerald-600': selectedDevice.isConnected, 'text-red-600': !selectedDevice.isConnected}">
-                {{ selectedDevice.isConnected ? 'Terhubung' : 'Terputus' }}
+              <ion-icon name="wifi-outline" class="w-5 h-5" [ngClass]="{'text-emerald-500': currentConnectionStatus, 'text-red-500': !currentConnectionStatus}"></ion-icon>
+              <span class="font-semibold" [ngClass]="{'text-emerald-600': currentConnectionStatus, 'text-red-600': !currentConnectionStatus}">
+                {{ currentConnectionStatus ? 'Terhubung' : 'Terputus' }}
               </span>
             </div>
           </div>
