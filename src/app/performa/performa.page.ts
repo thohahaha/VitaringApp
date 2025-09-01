@@ -31,10 +31,6 @@ interface HistoricalDay {
   height: number;
 }
 
-interface Device {
-  sleepGoalAchieved: boolean;
-}
-
 @Component({
   selector: 'app-performa',
   templateUrl: './performa.page.html',
@@ -51,10 +47,6 @@ interface Device {
   ]
 })
 export class PerformaPage implements OnInit {
-
-  selectedDevice: Device = {
-    sleepGoalAchieved: true
-  };
 
   historicalDays: HistoricalDay[] = [
     { name: 'Sen', height: 65 },

@@ -41,7 +41,6 @@ interface DeviceSensors {
   heartRate: boolean;
   temperature: boolean;
   motion: boolean;
-  sleep: boolean;
 }
 
 interface Device {
@@ -78,7 +77,7 @@ export class PerangkatPage implements OnInit, OnDestroy {
   selectedDevice: Device = {
     name: 'VitaRing Pro',
     model: 'VitaRing Pro Gen 3',
-    serial: 'VR-2024-001234',
+    serial: 'ESP32C3-A83B29E9EF0', // Default, will be updated from HealthMetrics
     firmware: 'v2.1.3',
     batteryLevel: 78,
     isConnected: true
@@ -87,8 +86,7 @@ export class PerangkatPage implements OnInit, OnDestroy {
   sensors: DeviceSensors = {
     heartRate: true,
     temperature: true,
-    motion: true,
-    sleep: false
+    motion: true
   };
 
   constructor(private healthService: HealthService) {
@@ -113,20 +111,30 @@ export class PerangkatPage implements OnInit, OnDestroy {
       (data) => {
         this.healthData = data;
         if (data) {
-          // Update device status with real data from Firestore
-          this.selectedDevice.batteryLevel = data.batteryLevel || this.selectedDevice.batteryLevel;
+          // Update device status with real sensor data from Firestore
           this.selectedDevice.isConnected = data.isDeviceOn;
           this.deviceConnected = data.isDeviceOn;
-          this.batteryLevel = data.batteryLevel || this.batteryLevel;
+          this.batteryLevel = 85; // Keep static since sensor doesn't provide battery
           
-          console.log('📱 Perangkat page - Health data received:', {
-            batteryLevel: data.batteryLevel,
+          // Update serial number from deviceID
+          if (data.deviceID) {
+            this.selectedDevice.serial = data.deviceID;
+          }
+          
+          console.log('📱 Perangkat page - Sensor data received:', {
+            bmpTemp: data.bmpTemp,
+            objTemp: data.objTemp,
+            altitude: data.altitude,
+            pressure: data.pressure,
+            ambTemp: data.ambTemp,
+            deviceID: data.deviceID,
             isDeviceOn: data.isDeviceOn,
             isConnected: this.selectedDevice.isConnected,
+            serial: this.selectedDevice.serial,
             timestamp: new Date().toLocaleTimeString()
           });
         } else {
-          console.log('❌ Perangkat page - No health data available');
+          console.log('❌ Perangkat page - No sensor data available');
         }
       }
     );
@@ -140,7 +148,8 @@ export class PerangkatPage implements OnInit, OnDestroy {
 
   // Reactive getters for real-time data
   get currentBatteryLevel(): number {
-    return this.healthData?.batteryLevel || this.selectedDevice.batteryLevel;
+    // Since sensor data doesn't include battery, use device default
+    return this.selectedDevice.batteryLevel;
   }
 
   get currentConnectionStatus(): boolean {

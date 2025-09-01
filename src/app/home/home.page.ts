@@ -19,7 +19,6 @@ interface Device {
   batteryLevel: number;
   temperature: number;
   hydration: number;
-  sleepGoalAchieved: boolean;
   model: string;
   serial: string;
   firmware: string;
@@ -65,7 +64,6 @@ export class HomePage implements OnInit, OnDestroy {
       batteryLevel: 85,
       temperature: 36.8,
       hydration: 75,
-      sleepGoalAchieved: true,
       model: 'Vita Ring Pro',
       serial: 'VR-2024-A1B2C3',
       firmware: 'v2.1.4',
@@ -79,7 +77,6 @@ export class HomePage implements OnInit, OnDestroy {
       batteryLevel: 92,
       temperature: 37.0,
       hydration: 80,
-      sleepGoalAchieved: false,
       model: 'Vita Ring Lite',
       serial: 'VR-2024-D4E5F6',
       firmware: 'v1.5.0',
@@ -93,7 +90,6 @@ export class HomePage implements OnInit, OnDestroy {
       batteryLevel: 60,
       temperature: 36.5,
       hydration: 70,
-      sleepGoalAchieved: true,
       model: 'Vita Ring Pro',
       serial: 'VR-2024-G7H8I9',
       firmware: 'v2.1.4',
@@ -146,16 +142,20 @@ export class HomePage implements OnInit, OnDestroy {
     { name: 'Min', height: Math.random() * 80 + 20 },
   ];
 
+  private healthSimulator: HealthDataSimulator; // Created manually to avoid circular dependency
+
   constructor(
     private authService: AuthService,
     private newsService: NewsService,
     private healthService: HealthService,
-    private healthSimulator: HealthDataSimulator,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
     this.selectedDeviceId = this.devices[0].id;
     this.selectedDevice = this.devices[0];
+    
+    // Create simulator manually to avoid circular dependency
+    this.healthSimulator = new HealthDataSimulator(this.healthService);
   }
 
   ngOnInit() {
@@ -202,14 +202,17 @@ export class HomePage implements OnInit, OnDestroy {
         if (data) {
           // Update the first device with real health data
           this.updateDeviceWithHealthData(data);
-          console.log('📊 Health data received in component:', {
+          console.log('📊 Sensor data received in component:', {
             originalData: data,
             isDeviceOn: data.isDeviceOn,
             isDeviceOnType: typeof data.isDeviceOn,
             isDeviceOnString: String(data.isDeviceOn),
             isDeviceOnBoolean: Boolean(data.isDeviceOn),
-            heartRate: data.heartRate,
-            batteryLevel: data.batteryLevel,
+            bmpTemp: data.bmpTemp,
+            objTemp: data.objTemp,
+            altitude: data.altitude,
+            pressure: data.pressure,
+            ambTemp: data.ambTemp,
             timestamp: new Date().toLocaleTimeString(),
             healthDataAssigned: !!this.healthData,
             healthDataIsDeviceOn: this.healthData?.isDeviceOn
@@ -243,12 +246,11 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.devices.length > 0) {
       this.devices[0] = {
         ...this.devices[0],
-        heartRate: healthData.heartRate,
-        batteryLevel: healthData.batteryLevel,
-        temperature: healthData.temperature,
+        temperature: healthData.bmpTemp, // Use bmpTemp as main temperature
+        batteryLevel: 85, // Keep static for now since we don't have battery in sensor data
         isConnected: healthData.isDeviceOn,
-        // Map steps to hydration percentage for demo purposes
-        hydration: Math.min(99, Math.max(50, Math.round(healthData.steps / 100)))
+        // Map altitude to hydration percentage for demo purposes
+        hydration: Math.min(99, Math.max(50, Math.round(healthData.altitude / 2)))
       };
       
       // Update selected device if it's the first one
@@ -448,8 +450,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.healthSimulator.simulateRest();
   }
 
-  simulateLowBattery() {
-    this.healthSimulator.simulateLowBattery();
+  simulateOutdoor() {
+    this.healthSimulator.simulateOutdoor();
   }
 
   toggleSimulation() {
@@ -466,7 +468,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   // Helper methods for device page
   getBatteryLevel(): number {
-    return this.healthData?.batteryLevel || this.selectedDevice.batteryLevel;
+    // Use static battery level since HealthMetrics no longer includes battery data
+    return this.selectedDevice.batteryLevel;
   }
 
   // Reactive getter for device status that ensures UI updates
@@ -528,10 +531,24 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   getTemperatureStatus(temperature: number): string {
-    if (temperature < 36.0) return 'Rendah';
-    if (temperature <= 37.5) return 'Normal';
-    if (temperature <= 38.0) return 'Sedikit Tinggi';
+    if (temperature < 20.0) return 'Dingin';
+    if (temperature <= 25.0) return 'Sejuk';
+    if (temperature <= 30.0) return 'Normal';
+    if (temperature <= 35.0) return 'Hangat';
+    return 'Panas';
+  }
+
+  getPressureStatus(pressure: number): string {
+    if (pressure < 980) return 'Rendah';
+    if (pressure <= 1020) return 'Normal';
     return 'Tinggi';
+  }
+
+  getAltitudeStatus(altitude: number): string {
+    if (altitude < 50) return 'Pantai';
+    if (altitude <= 200) return 'Dataran';
+    if (altitude <= 500) return 'Perbukitan';
+    return 'Pegunungan';
   }
 
   getStepsChange(steps: number): string {
@@ -551,13 +568,20 @@ export class HomePage implements OnInit, OnDestroy {
   // Device status testing methods (simplified)
   async demoSetOnline() {
     try {
-      // Simulate device going online by updating local health data
+      // Simulate device going online by updating local sensor data
       this.healthService.updateHealthData({
+        altitude: 111.41,
+        ambTemp: 31.91,
+        bmpTemp: 31.3,
+        bpx: 75,
+        irValue: 1250,
+        objTemp: 33.41,
+        pressure: 999.94,
+        deviceID: "ESP32C3-A83B29E9EF0",
         isDeviceOn: true,
-        heartRate: 75,
-        batteryLevel: this.healthData?.batteryLevel || 85,
-        temperature: 36.8,
-        steps: this.healthData?.steps || 5000
+        isOnline: true,
+        timestamp: new Date().toISOString(),
+        type: 'demo_data'
       });
       console.log('✅ Device set to ONLINE via local simulation');
     } catch (error) {
@@ -567,13 +591,20 @@ export class HomePage implements OnInit, OnDestroy {
 
   async demoSetOffline() {
     try {
-      // Simulate device going offline by updating local health data
+      // Simulate device going offline by updating local sensor data
       this.healthService.updateHealthData({
+        altitude: this.healthData?.altitude || 111.41,
+        ambTemp: this.healthData?.ambTemp || 31.91,
+        bmpTemp: this.healthData?.bmpTemp || 31.3,
+        bpx: this.healthData?.bpx || 75,
+        irValue: this.healthData?.irValue || 1250,
+        objTemp: this.healthData?.objTemp || 33.41,
+        pressure: this.healthData?.pressure || 999.94,
+        deviceID: this.healthData?.deviceID || "ESP32C3-A83B29E9EF0",
         isDeviceOn: false,
-        heartRate: this.healthData?.heartRate || 70,
-        batteryLevel: this.healthData?.batteryLevel || 85,
-        temperature: this.healthData?.temperature || 36.8,
-        steps: this.healthData?.steps || 5000
+        isOnline: false,
+        timestamp: new Date().toISOString(),
+        type: 'demo_data'
       });
       console.log('✅ Device set to OFFLINE via local simulation');
     } catch (error) {
@@ -581,35 +612,62 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  async demoUpdateBattery(level: number) {
+  async demoUpdateSensorData(sensorType: string, value: number) {
     try {
-      // Update battery level while maintaining other data
-      this.healthService.updateHealthData({
+      // Update specific sensor data while maintaining other data
+      const updatedData: any = {
+        altitude: this.healthData?.altitude || 111.41,
+        ambTemp: this.healthData?.ambTemp || 31.91,
+        bmpTemp: this.healthData?.bmpTemp || 31.3,
+        bpx: this.healthData?.bpx || 75,
+        irValue: this.healthData?.irValue || 1250,
+        objTemp: this.healthData?.objTemp || 33.41,
+        pressure: this.healthData?.pressure || 999.94,
+        deviceID: this.healthData?.deviceID || "ESP32C3-A83B29E9EF0",
         isDeviceOn: this.healthData?.isDeviceOn ?? true,
-        heartRate: this.healthData?.heartRate || 70,
-        batteryLevel: level,
-        temperature: this.healthData?.temperature || 36.8,
-        steps: this.healthData?.steps || 5000
-      });
-      console.log(`✅ Battery updated to ${level}% via local simulation`);
+        isOnline: this.healthData?.isOnline ?? true,
+        timestamp: new Date().toISOString(),
+        type: this.healthData?.type || 'sensor_data'
+      };
+      
+      // Update specific sensor
+      if (sensorType === 'altitude') updatedData.altitude = value;
+      else if (sensorType === 'ambTemp') updatedData.ambTemp = value;
+      else if (sensorType === 'bmpTemp') updatedData.bmpTemp = value;
+      else if (sensorType === 'bpx') updatedData.bpx = value;
+      else if (sensorType === 'irValue') updatedData.irValue = value;
+      else if (sensorType === 'objTemp') updatedData.objTemp = value;
+      else if (sensorType === 'pressure') updatedData.pressure = value;
+      
+      this.healthService.updateHealthData(updatedData);
+      console.log(`✅ ${sensorType} updated to ${value} via local simulation`);
     } catch (error) {
-      console.error('❌ Error updating battery:', error);
+      console.error(`❌ Error updating ${sensorType}:`, error);
     }
   }
 
-  async demoUpdateHeartRate(heartRate: number) {
+  async demoUpdateTemperature(temp: number) {
     try {
-      // Update heart rate while maintaining other data
-      this.healthService.updateHealthData({
-        isDeviceOn: this.healthData?.isDeviceOn ?? true,
-        heartRate: heartRate,
-        batteryLevel: this.healthData?.batteryLevel || 85,
-        temperature: this.healthData?.temperature || 36.8,
-        steps: this.healthData?.steps || 5000
-      });
-      console.log(`✅ Heart rate updated to ${heartRate} BPM via local simulation`);
+      await this.demoUpdateSensorData('bmpTemp', temp);
+    } catch (error) {
+      console.error('❌ Error updating temperature:', error);
+    }
+  }
+
+  async demoUpdateHeartRate(hr: number) {
+    try {
+      await this.demoUpdateSensorData('bpx', hr);
     } catch (error) {
       console.error('❌ Error updating heart rate:', error);
     }
   }
+
+  // Battery update removed - not part of new HealthMetrics interface
+  // async demoUpdateBattery(level: number) {
+  //   try {
+  //     await this.demoUpdateSensorData('batteryLevel', level);
+  //   } catch (error) {
+  //     console.error('❌ Error updating battery:', error);
+  //   }
+  // }
 }

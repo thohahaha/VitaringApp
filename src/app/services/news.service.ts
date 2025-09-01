@@ -52,8 +52,8 @@ export class NewsService {
     },
     {
       id: '3',
-      title: 'Tips Optimal Menggunakan VitaRing untuk Monitoring Tidur',
-      content: 'Pelajari cara memaksimalkan fitur sleep tracking pada VitaRing Anda. Dengan pengaturan yang tepat, Anda dapat meningkatkan kualitas tidur hingga 40% dalam 30 hari.',
+      title: 'Tips Optimal Menggunakan VitaRing untuk Monitoring Kesehatan',
+      content: 'Pelajari cara memaksimalkan semua fitur monitoring kesehatan pada VitaRing Anda. Dengan pengaturan yang tepat, Anda dapat meningkatkan awareness kesehatan hingga 40% dalam 30 hari.',
       imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=250&fit=crop',
       author: 'Dr. Lisa Wang',
       date: new Date(2025, 7, 18), // 18 Agustus 2025

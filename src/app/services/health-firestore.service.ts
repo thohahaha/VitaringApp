@@ -8,18 +8,16 @@ import {
 } from '@angular/fire/firestore';
 
 export interface HealthMetrics {
-  altitude: number;      // Ketinggian
-  ambTemp: number;       // Suhu ambient
   bmpTemp: number;       // Suhu udara dari sensor BMP
-  bpx: number;           // Detak jantung/pulse dari sensor
-  irValue: number;       // Nilai IR dari sensor
   objTemp: number;       // Suhu objek
+  altitude: number;      // Ketinggian
   pressure: number;      // Tekanan udara
-  deviceID: string;      // ID perangkat unik
+  amgTemp: number;       // Suhu ambient
+  batteryLevel: number;  // Level baterai (0-100)
+  heartRate: number;     // Detak jantung (untuk kompatibilitas UI)
   isDeviceOn: boolean;   // Status perangkat aktif
-  isOnline: boolean;     // Status online perangkat
-  timestamp: string;     // Waktu data (string format)
-  type: string;          // Tipe data
+  isOnline?: boolean;    // Status online untuk kompatibilitas
+  timestamp?: Date | any; // Timestamp data
 }
 
 @Injectable({
@@ -50,8 +48,6 @@ export class HealthService {
    * Start sensor data simulation - updates every 10 seconds
    */
   private startSensorDataSimulation(): void {
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
-    
     this.sensorDataInterval = setInterval(() => {
       const currentData = this.healthDataSubject.value;
       
@@ -63,8 +59,8 @@ export class HealthService {
         const newAltitude = 100 + Math.random() * 50; // 100-150m
         const newPressure = 995 + Math.random() * 15; // 995-1010 hPa
         const newAmgTemp = newBmpTemp + (Math.random() - 0.5) * 2; // Close to bmpTemp
-        const newBpx = 70 + Math.random() * 20; // 70-90 bpm
-        const newIrValue = 1000 + Math.random() * 500; // IR sensor value
+        const newHeartRate = 70 + Math.random() * 20; // 70-90 bpm
+        const newBatteryLevel = Math.max(0, (currentData.batteryLevel || 85) - Math.random() * 0.1); // Slow drain
         
         const updatedData: HealthMetrics = {
           ...currentData,
@@ -72,14 +68,13 @@ export class HealthService {
           objTemp: Number(newObjTemp.toFixed(2)),
           altitude: Number(newAltitude.toFixed(2)),
           pressure: Number(newPressure.toFixed(2)),
-          ambTemp: Number(newAmgTemp.toFixed(2)),
-          bpx: Number(newBpx.toFixed(0)),
-          irValue: Number(newIrValue.toFixed(0)),
-          deviceID: DEVICE_ID,
-          timestamp: new Date().toISOString()
+          amgTemp: Number(newAmgTemp.toFixed(2)),
+          heartRate: Number(newHeartRate.toFixed(0)),
+          batteryLevel: Number(newBatteryLevel.toFixed(1)),
+          timestamp: new Date()
         };
         
-        console.log(`🌡️ Sensor data: BMP:${updatedData.bmpTemp}°C, OBJ:${updatedData.objTemp}°C, BPX:${updatedData.bpx}bpm, Device:${updatedData.deviceID}`);
+        console.log(`🌡️ Sensor data: BMP:${updatedData.bmpTemp}°C, OBJ:${updatedData.objTemp}°C, HR:${updatedData.heartRate}bpm, BAT:${updatedData.batteryLevel}%`);
         this.healthDataSubject.next(updatedData);
       }
     }, 10000); // Every 10 seconds
@@ -103,8 +98,7 @@ export class HealthService {
    */
   private listenForSensorData(): void {
     try {
-      const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
-      const deviceDocRef = doc(this.firestore, 'sensors', DEVICE_ID);
+      const deviceDocRef = doc(this.firestore, 'device_data', 'cincin-1');
       
       const unsubscribeFunction = onSnapshot(deviceDocRef, (docSnapshot: DocumentSnapshot) => {
         if (docSnapshot.exists()) {
@@ -116,18 +110,16 @@ export class HealthService {
           try {
             // Parse sensor data from Firestore
             const data: HealthMetrics = {
-              altitude: Number(rawData?.['altitude']) || 111.41,
-              ambTemp: Number(rawData?.['ambTemp']) || 31.91,
               bmpTemp: Number(rawData?.['bmpTemp']) || 31.3,
-              bpx: Number(rawData?.['bpx']) || 75,
-              irValue: Number(rawData?.['irValue']) || 1250,
               objTemp: Number(rawData?.['objTemp']) || 33.41,
+              altitude: Number(rawData?.['altitude']) || 111.41,
               pressure: Number(rawData?.['pressure']) || 999.94,
-              deviceID: rawData?.['deviceID'] || DEVICE_ID,
-              isDeviceOn: Boolean(rawData?.['isDeviceOn']) ?? true,
-              isOnline: Boolean(rawData?.['isOnline']) ?? true,
-              timestamp: rawData?.['timestamp'] || new Date().toISOString(),
-              type: rawData?.['type'] || 'sensor_data'
+              amgTemp: Number(rawData?.['amgTemp']) || 31.91,
+              batteryLevel: Number(rawData?.['batteryLevel']) || 85,
+              heartRate: Number(rawData?.['heartRate']) || 75,
+              isDeviceOn: Boolean(rawData?.['isOnline'] ?? rawData?.['isDeviceOn'] ?? true),
+              isOnline: Boolean(rawData?.['isOnline'] ?? rawData?.['isDeviceOn'] ?? true),
+              timestamp: rawData?.['timestamp'] || new Date()
             };
             
             console.log(`📊 [${timestamp}] Parsed sensor data:`, {
@@ -135,13 +127,10 @@ export class HealthService {
               objTemp: data.objTemp,
               altitude: data.altitude,
               pressure: data.pressure,
-              ambTemp: data.ambTemp,
-              bpx: data.bpx,
-              irValue: data.irValue,
-              deviceID: data.deviceID,
+              amgTemp: data.amgTemp,
+              batteryLevel: data.batteryLevel,
+              heartRate: data.heartRate,
               isDeviceOn: data.isDeviceOn,
-              isOnline: data.isOnline,
-              type: data.type,
               source: 'FIRESTORE_LISTENER'
             });
             
@@ -194,24 +183,21 @@ export class HealthService {
   updateHealthData(data: HealthMetrics): void {
     console.log('🔄 Updating sensor data locally:', {
       isDeviceOn: data.isDeviceOn,
-      isOnline: data.isOnline,
       bmpTemp: data.bmpTemp,
       objTemp: data.objTemp,
       altitude: data.altitude,
       pressure: data.pressure,
-      ambTemp: data.ambTemp,
-      bpx: data.bpx,
-      irValue: data.irValue,
-      deviceID: data.deviceID,
-      type: data.type,
+      amgTemp: data.amgTemp,
+      heartRate: data.heartRate,
+      batteryLevel: data.batteryLevel,
       source: 'Manual Update',
-      timestamp: data.timestamp
+      timestamp: new Date().toLocaleTimeString()
     });
     
     // Make sure isOnline field matches isDeviceOn for compatibility
     const dataWithCompatibility = {
       ...data,
-      isOnline: data.isOnline || data.isDeviceOn  // Ensure both fields are synchronized
+      isOnline: data.isDeviceOn  // Sync with Firestore field name
     };
     
     // Control sensor simulation based on device status

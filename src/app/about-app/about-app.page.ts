@@ -65,10 +65,10 @@ export class AboutAppPage {
       description: 'Pelacakan aktivitas harian seperti langkah kaki, kalori terbakar, dan jarak tempuh.'
     },
     {
-      icon: 'moon',
-      iconColor: 'sleep-color',
-      title: 'Sleep Analysis',
-      description: 'Analisis kualitas tidur dengan monitoring fase tidur dan rekomendasi perbaikan.'
+      icon: 'analytics',
+      iconColor: 'analytics-color',
+      title: 'Health Analytics',
+      description: 'Analisis mendalam data kesehatan dengan tren dan wawasan untuk gaya hidup sehat.'
     },
     {
       icon: 'battery-charging',

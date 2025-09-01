@@ -59,7 +59,7 @@ export class FaqPage {
     {
       id: 4,
       question: 'Apa saja data kesehatan yang bisa dipantau VitaRing?',
-      answer: 'VitaRing dapat memantau berbagai data kesehatan: detak jantung dan variabilitas detak jantung (HRV), suhu tubuh, tingkat hidrasi, kualitas dan durasi tidur, aktivitas fisik dan langkah harian, kalori yang terbakar, dan skor pemulihan. Semua data ini memberikan wawasan komprehensif tentang kesehatan dan kebugaran Anda.',
+      answer: 'VitaRing dapat memantau berbagai data kesehatan: detak jantung dan variabilitas detak jantung (HRV), suhu tubuh, tingkat hidrasi, aktivitas fisik dan langkah harian, kalori yang terbakar, dan skor pemulihan. Semua data ini memberikan wawasan komprehensif tentang kesehatan dan kebugaran Anda.',
       category: 'health',
       isExpanded: false
     },
@@ -87,7 +87,7 @@ export class FaqPage {
     {
       id: 8,
       question: 'Bagaimana cara mengubah target kesehatan dan kebugaran?',
-      answer: 'Untuk mengubah target: 1) Buka aplikasi VitaRing, 2) Masuk ke tab Profil, 3) Pilih "Pengaturan Target", 4) Sesuaikan target langkah harian, durasi tidur, zona detak jantung, dan target kalori, 5) Simpan perubahan. Target akan otomatis diterapkan untuk tracking selanjutnya.',
+      answer: 'Untuk mengubah target: 1) Buka aplikasi VitaRing, 2) Masuk ke tab Profil, 3) Pilih "Pengaturan Target", 4) Sesuaikan target langkah harian, zona detak jantung, dan target kalori, 5) Simpan perubahan. Target akan otomatis diterapkan untuk tracking selanjutnya.',
       category: 'app',
       isExpanded: false
     },
@@ -108,7 +108,7 @@ export class FaqPage {
     {
       id: 11,
       question: 'Apakah VitaRing memiliki notifikasi?',
-      answer: 'Ya, VitaRing dapat memberikan notifikasi melalui getaran halus untuk: pengingat bergerak setelah duduk lama, target harian tercapai, zona detak jantung optimal untuk olahraga, waktu tidur yang disarankan, dan alert kesehatan penting. Semua notifikasi dapat diatur dalam aplikasi sesuai preferensi Anda.',
+      answer: 'Ya, VitaRing dapat memberikan notifikasi melalui getaran halus untuk: pengingat bergerak setelah duduk lama, target harian tercapai, zona detak jantung optimal untuk olahraga, dan alert kesehatan penting. Semua notifikasi dapat diatur dalam aplikasi sesuai preferensi Anda.',
       category: 'app',
       isExpanded: false
     },

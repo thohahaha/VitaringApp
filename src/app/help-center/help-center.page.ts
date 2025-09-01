@@ -86,7 +86,7 @@ export class HelpCenterPage implements OnInit {
     {
       id: 2,
       question: 'How accurate are the health measurements?',
-      answer: 'VitaRing uses advanced sensors to provide highly accurate health measurements. Heart rate accuracy is ±1 bpm, and sleep tracking has 95% accuracy compared to polysomnography.',
+      answer: 'VitaRing uses advanced sensors to provide highly accurate health measurements. Heart rate accuracy is ±1 bpm, and temperature measurements have 95% accuracy for continuous monitoring.',
       expanded: false
     },
     {

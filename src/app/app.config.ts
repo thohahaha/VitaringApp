@@ -7,6 +7,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 // Import untuk Firebase
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideAuth, getAuth } from '@angular/fire/auth'; // Ensure this is present
 import { provideAnalytics, getAnalytics } from '@angular/fire/analytics'; // Ensure this is present
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
 		// Provider Firebase: Pastikan ini menggunakan environment.firebase dan menyertakan semua layanan yang dibutuhkan
 		provideFirebaseApp(() => initializeApp(environment.firebase)),
 		provideFirestore(() => getFirestore()),
+		provideDatabase(() => getDatabase()),
 		provideStorage(() => getStorage()),
 		provideAuth(() => getAuth()), // Copilot: Verify this provider is correctly included
 		provideAnalytics(() => getAnalytics()), // Copilot: Verify this provider is correctly included
