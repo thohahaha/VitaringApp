@@ -1,15 +1,15 @@
 <ion-header [translucent]="true">
-  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+  <ion-toolbar style="--background: #ffffff; --color: #1f2937; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" fill="clear">
-        <ion-icon name="arrow-back" color="light"></ion-icon>
+        <ion-icon name="arrow-back" color="dark"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Edit Profile</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" style="--background: #ffffff;">
   <div class="edit-profile-container">
     <div class="profile-header">
       <div class="avatar-container">
@@ -31,11 +31,8 @@
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Email</ion-label>
-              <ion-input [(ngModel)]="userProfile.email" name="email" type="email" placeholder="Enter your email"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Phone Number</ion-label>
-              <ion-input [(ngModel)]="userProfile.phone" name="phone" type="tel" placeholder="Enter your phone number"></ion-input>
+              <ion-input [(ngModel)]="userProfile.email" name="email" type="email" placeholder="Enter your email" [disabled]="true" style="opacity: 0.6;"></ion-input>
+              <p style="font-size: 12px; margin-top: 4px; color: #6b7280; margin-bottom: 0;">Email cannot be changed</p>
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Date of Birth</ion-label>

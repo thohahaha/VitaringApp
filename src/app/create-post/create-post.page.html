@@ -1,0 +1,173 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="onCancelPost()" fill="clear">
+        <ion-icon name="arrow-back" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 800; color: white;">Buat Post Baru</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        (click)="onSubmit()" 
+        fill="clear"
+        [disabled]="isSubmitting">
+        <ion-icon name="send" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" style="--background: #f9fafb;">
+  <div class="create-post-container" style="padding: 1rem; max-width: 800px; margin: 0 auto;">
+    
+    <!-- Form Card -->
+    <div class="form-card" style="background: white; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 1.5rem; margin-bottom: 1rem;">
+      
+      <!-- Title Input -->
+      <div class="form-section" style="margin-bottom: 1.5rem;">
+        <ion-item lines="none" style="--padding-start: 0; --inner-padding-end: 0;">
+          <ion-label position="stacked" style="color: #374151; font-weight: 600; margin-bottom: 0.5rem;">
+            Judul Post *
+          </ion-label>
+          <ion-input
+            [(ngModel)]="postTitle"
+            placeholder="Masukkan judul yang menarik..."
+            maxlength="100"
+            style="--color: #1f2937; --placeholder-color: #9ca3af; border: 1px solid #d1d5db; border-radius: 0.5rem; --padding-start: 12px; --padding-end: 12px; margin-top: 0.25rem;">
+          </ion-input>
+        </ion-item>
+        <div class="char-count" style="text-align: right; font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+          {{ postTitle.length }}/100
+        </div>
+      </div>
+
+      <!-- Category Selection -->
+      <div class="form-section" style="margin-bottom: 1.5rem;">
+        <ion-item lines="none" style="--padding-start: 0; --inner-padding-end: 0;">
+          <ion-label position="stacked" style="color: #374151; font-weight: 600; margin-bottom: 0.5rem;">
+            Kategori *
+          </ion-label>
+          <ion-select
+            [(ngModel)]="selectedCategory"
+            placeholder="Pilih kategori"
+            interface="popover"
+            style="--color: #1f2937; --placeholder-color: #9ca3af; border: 1px solid #d1d5db; border-radius: 0.5rem; --padding-start: 12px; --padding-end: 12px; margin-top: 0.25rem;">
+            <ion-select-option 
+              *ngFor="let category of categories" 
+              [value]="category.value">
+              {{ category.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <!-- Content TextArea -->
+      <div class="form-section" style="margin-bottom: 1.5rem;">
+        <ion-item lines="none" style="--padding-start: 0; --inner-padding-end: 0;">
+          <ion-label position="stacked" style="color: #374151; font-weight: 600; margin-bottom: 0.5rem;">
+            Konten Post *
+          </ion-label>
+          <ion-textarea
+            [(ngModel)]="postContent"
+            placeholder="Tulis konten post Anda di sini... 
+
+Tips untuk post yang baik:
+• Gunakan bahasa yang jelas dan mudah dipahami
+• Sertakan informasi yang bermanfaat
+• Hormati pendapat orang lain
+• Gunakan tag yang relevan"
+            [rows]="8"
+            [autoGrow]="true"
+            maxlength="2000"
+            style="--color: #1f2937; --placeholder-color: #9ca3af; border: 1px solid #d1d5db; border-radius: 0.5rem; --padding-start: 12px; --padding-end: 12px; --padding-top: 12px; --padding-bottom: 12px; margin-top: 0.25rem;">
+          </ion-textarea>
+        </ion-item>
+        <div class="char-count" style="text-align: right; font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+          {{ postContent.length }}/2000
+        </div>
+      </div>
+
+      <!-- Tags Section -->
+      <div class="form-section" style="margin-bottom: 1.5rem;">
+        <ion-label style="color: #374151; font-weight: 600; display: block; margin-bottom: 0.5rem;">
+          <ion-icon name="pricetag" style="margin-right: 0.25rem;"></ion-icon>
+          Tags (Opsional)
+        </ion-label>
+        
+        <!-- Existing Tags -->
+        <div class="tags-container" style="margin-bottom: 0.75rem;" *ngIf="tags.length > 0">
+          <ion-chip 
+            *ngFor="let tag of tags" 
+            style="--background: #fef3c7; --color: #92400e; margin-right: 0.5rem; margin-bottom: 0.5rem;">
+            <ion-label>#{{ tag }}</ion-label>
+            <ion-icon name="remove-circle" (click)="removeTag(tag)" style="cursor: pointer;"></ion-icon>
+          </ion-chip>
+        </div>
+
+        <!-- Add New Tag -->
+        <div class="add-tag-container" style="display: flex; gap: 0.5rem; align-items: center;">
+          <ion-item lines="none" style="--padding-start: 0; --inner-padding-end: 0; flex: 1;">
+            <ion-input
+              [(ngModel)]="newTag"
+              (ionInput)="onTagInput($event)"
+              placeholder="Tambah tag (enter atau koma untuk menambah)"
+              maxlength="20"
+              style="--color: #1f2937; --placeholder-color: #9ca3af; border: 1px solid #d1d5db; border-radius: 0.5rem; --padding-start: 12px; --padding-end: 12px;">
+            </ion-input>
+          </ion-item>
+          <ion-button 
+            (click)="addTag()" 
+            fill="outline" 
+            size="small"
+            color="warning"
+            [disabled]="!newTag.trim() || tags.length >= 5">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        
+        <div class="tag-info" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+          {{ tags.length }}/5 tags • Gunakan tag untuk membantu orang menemukan post Anda
+        </div>
+      </div>
+    </div>
+
+    <!-- Guidelines Card -->
+    <div class="guidelines-card" style="background: #fef3c7; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+      <h4 style="color: #92400e; margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 600;">
+        📝 Panduan Posting
+      </h4>
+      <ul style="color: #92400e; font-size: 0.8rem; margin: 0; padding-left: 1rem;">
+        <li>Gunakan judul yang jelas dan deskriptif</li>
+        <li>Pastikan konten bermanfaat dan relevan</li>
+        <li>Hormati komunitas dan hindari konten yang menyinggung</li>
+        <li>Gunakan kategori dan tag yang sesuai</li>
+      </ul>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+      <ion-button 
+        (click)="onCancelPost()" 
+        fill="outline" 
+        color="medium"
+        expand="block"
+        style="flex: 1;">
+        Batalkan
+      </ion-button>
+      
+      <ion-button 
+        (click)="onSubmit()" 
+        fill="solid" 
+        color="warning"
+        expand="block"
+        [disabled]="isSubmitting || !postTitle.trim() || !postContent.trim() || !selectedCategory"
+        style="flex: 2;">
+        <ion-icon name="send" slot="start"></ion-icon>
+        {{ isSubmitting ? 'Memposting...' : 'Posting Sekarang' }}
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Navbar -->
+<app-navbar [activeTab]="'forum'"></app-navbar>

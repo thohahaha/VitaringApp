@@ -8,8 +8,8 @@
 
 <ion-content [fullscreen]="true">
   <div class="profile-container">
-    <div class="profile-header">
-      <div class="profile-avatar">
+    <div class="profile-header" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1rem;">
+      <div class="profile-avatar" style="margin: 0 auto 1rem auto;">
         <img *ngIf="getUserAvatar()" [src]="getUserAvatar()" alt="Profile Picture" class="avatar-image">
         <ion-icon *ngIf="!getUserAvatar()" name="person-circle" class="avatar-icon"></ion-icon>
       </div>

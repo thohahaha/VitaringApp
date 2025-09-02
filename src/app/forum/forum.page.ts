@@ -28,13 +28,14 @@ import {
 } from '@ionic/angular/standalone';
 import { ForumService } from '../services/forum.service';
 import { AuthService } from '../auth/auth.service';
-import { Post, ForumStats } from '../models/forum.model';
+import { ForumPost, Post, ForumStats } from '../models/forum.model';
 import { Observable } from 'rxjs';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack,
+  add,
   searchOutline,
   menuOutline,
   addOutline,
@@ -88,6 +89,7 @@ import {
 })
 export class ForumPage implements OnInit {
   posts$!: Observable<Post[]>;
+  forumPosts$!: Observable<ForumPost[]>;
   forumStats$!: Observable<ForumStats>;
   selectedFilter: 'newest' | 'featured' | 'popular' = 'newest';
   searchTerm: string = '';
@@ -101,25 +103,7 @@ export class ForumPage implements OnInit {
     private location: Location
   ) {
     // Register icons
-    addIcons({
-      arrowBack,
-      searchOutline,
-      menuOutline,
-      trendingUp,
-      heart,
-      people,
-      chatbubbleOutline,
-      pin,
-      eyeOutline,
-      addOutline,
-      heartOutline,
-      heartHalfOutline,
-      statsChartOutline,
-      newspaperOutline,
-      wifiOutline,
-      personCircleOutline,
-      filterOutline
-    });
+    addIcons({arrowBack,add,searchOutline,menuOutline,trendingUp,heart,people,chatbubbleOutline,pin,eyeOutline,addOutline,heartOutline,heartHalfOutline,statsChartOutline,newspaperOutline,wifiOutline,personCircleOutline,filterOutline});
   }
 
   ngOnInit() {
@@ -138,6 +122,7 @@ export class ForumPage implements OnInit {
 
   loadPosts() {
     this.posts$ = this.forumService.getPosts(this.selectedFilter);
+    this.forumPosts$ = this.forumService.getForumPosts();
   }
 
   loadForumStats() {
@@ -157,6 +142,7 @@ export class ForumPage implements OnInit {
       this.loadPosts();
     } else {
       this.posts$ = this.forumService.searchPosts(query);
+      this.forumPosts$ = this.forumService.searchForumPosts(query);
     }
   }
 
@@ -164,6 +150,10 @@ export class ForumPage implements OnInit {
     if (postId) {
       this.router.navigate(['/forum', postId]);
     }
+  }
+
+  navigateToCreatePost() {
+    this.router.navigate(['/create-post']);
   }
 
   async onLike(post: Post, event: Event) {
@@ -176,9 +166,25 @@ export class ForumPage implements OnInit {
     }
 
     try {
-      await this.forumService.togglePostLike(post.id!, this.currentUserId);
+      // For legacy Post interface, we increment like count
+      await this.forumService.updatePostLikeCount(post.id!, 1);
     } catch (error) {
       console.error('Error liking post:', error);
+    }
+  }
+
+  async onLikeForumPost(post: ForumPost, event: Event) {
+    event.stopPropagation();
+    
+    if (!this.isLoggedIn || !this.currentUserId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      await this.forumService.updatePostLikeCount(post.id, 1);
+    } catch (error) {
+      console.error('Error liking forum post:', error);
     }
   }
 
@@ -193,8 +199,7 @@ export class ForumPage implements OnInit {
       return;
     }
     
-    // TODO: Navigate to create post page or open modal
-    console.log('Create new post');
+    this.router.navigate(['/create-post']);
   }
 
   doRefresh(event: any) {
@@ -225,7 +230,7 @@ export class ForumPage implements OnInit {
   }
 
   // Track by function for ngFor performance
-  trackByPostId(index: number, post: Post): string {
+  trackByPostId(index: number, post: Post | ForumPost): string {
     return post.id || index.toString();
   }
 }

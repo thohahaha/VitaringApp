@@ -1,253 +1,380 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, combineLatest, of, catchError } from 'rxjs';
+import { Observable, map, of, catchError, combineLatest } from 'rxjs';
 import { 
   Firestore, 
   collection, 
+  collectionData, 
   doc, 
+  docData, 
   addDoc, 
   updateDoc, 
-  deleteDoc,
-  getDoc,
-  getDocs,
-  query, 
-  orderBy, 
-  limit,
-  where,
-  collectionData,
-  docData,
-  serverTimestamp,
   increment,
   arrayUnion,
   arrayRemove,
-  onSnapshot,
-  writeBatch
+  serverTimestamp,
+  orderBy,
+  query,
+  where,
+  Timestamp,
+  writeBatch,
+  getDoc
 } from '@angular/fire/firestore';
-import { Post, Comment, ForumCategory } from '../models/forum.model';
+import { 
+  Storage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from '@angular/fire/storage';
+import { ForumPost, ForumComment, Post, Comment, ForumStats, ForumCategory } from '../models/forum.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ForumService {
-  private postsCollection = collection(this.firestore, 'posts');
-
-  constructor(private firestore: Firestore) {}
-
-  // ===== POST METHODS =====
-
-  /**
-   * Get all posts with real-time updates
-   */
-  getPosts(sortBy: 'newest' | 'featured' | 'popular' = 'newest'): Observable<Post[]> {
-    let q;
-    
-    switch (sortBy) {
-      case 'featured':
-        q = query(
-          this.postsCollection, 
-          where('isSticky', '==', true),
-          orderBy('createdAt', 'desc'),
-          limit(50)
-        );
-        break;
-      case 'popular':
-        q = query(
-          this.postsCollection, 
-          orderBy('views', 'desc'),
-          limit(50)
-        );
-        break;
-      default: // newest
-        q = query(
-          this.postsCollection, 
-          orderBy('createdAt', 'desc'),
-          limit(50)
-        );
-    }
-
-    return collectionData(q, { idField: 'id' }).pipe(
-      map((posts: any[]) => {
-        // Jika tidak ada data di Firestore, return dummy data
-        if (posts.length === 0) {
-          console.log('No posts found in Firestore, returning dummy data');
-          // Get dummy data synchronously
-          const dummyData = this.getDummyPostsArray();
-          return dummyData;
+  
+  // Dummy data for development testing - now matching new interface
+  private dummyPosts: ForumPost[] = [
+    {
+      id: '1',
+      title: 'Tips Memaksimalkan Battery Life VitaRing',
+      content: 'Halo semua! Saya ingin berbagi beberapa tips untuk memaksimalkan battery life VitaRing kalian. Setelah menggunakan selama 6 bulan, saya menemukan beberapa cara yang efektif:\n\n1. Matikan fitur yang tidak perlu seperti continuous heart rate monitoring saat tidur\n2. Kurangi frekuensi sinkronisasi data\n3. Gunakan mode hemat daya saat traveling\n\nAda yang punya tips lain?',
+      authorId: 'user-123',
+      authorName: 'Ahmad Rizki',
+      createdAt: new Date(2025, 8, 1), // 1 September 2025
+      updatedAt: new Date(2025, 8, 1),
+      isDeleted: false,
+      category: 'Tips & Tricks',
+      comments: [
+        {
+          content: 'Terima kasih tipsnya! Saya juga biasanya mematikan GPS tracking saat di dalam ruangan.',
+          authorId: 'user-456',
+          authorName: 'Sarah Chen',
+          createdAt: new Date(2025, 8, 1, 10, 30),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Battery saya bisa tahan sampai 5 hari dengan tips ini. Recommended!',
+          authorId: 'user-789',
+          authorName: 'Budi Santoso',
+          createdAt: new Date(2025, 8, 1, 14, 45),
+          isDeleted: false,
+          likeCount: 0
         }
-        
-        return posts.map(post => ({
-          ...post,
-          createdAt: post.createdAt?.toDate() || new Date(),
-          updatedAt: post.updatedAt?.toDate() || new Date()
-        }));
-      }),
-      catchError(error => {
-        console.error('Error fetching posts from Firebase:', error);
-        console.log('Falling back to dummy data');
-        return this.getDummyPosts();
-      })
-    ) as Observable<Post[]>;
-  }
+      ],
+      likeCount: 24,
+      commentCount: 2,
+      tags: ['battery', 'tips', 'vitaring', 'optimization']
+    },
+    {
+      id: '2',
+      title: 'VitaRing Deteksi Aritmia Jantung Saya',
+      content: 'Saya ingin berbagi pengalaman yang sangat berharga. Minggu lalu VitaRing saya memberikan notifikasi tentang irregular heartbeat yang persisten. Awalnya saya pikir ini false alarm, tapi setelah konsultasi dengan dokter ternyata saya memang mengalami atrial fibrillation.\n\nTerima kasih VitaRing! Deteksi dini ini sangat membantu untuk pengobatan.',
+      authorId: 'user-101',
+      authorName: 'Dr. Lisa Wang',
+      createdAt: new Date(2025, 8, 1, 8, 0),
+      updatedAt: new Date(2025, 8, 1, 8, 0),
+      isDeleted: false,
+      category: 'Health Stories',
+      comments: [
+        {
+          content: 'Wow, syukurlah terdeteksi lebih awal! Semoga lekas sembuh dok.',
+          authorId: 'user-202',
+          authorName: 'Maria Santos',
+          createdAt: new Date(2025, 8, 1, 9, 15),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Ini membuktikan kalau VitaRing bukan cuma gadget biasa. Life saver!',
+          authorId: 'user-303',
+          authorName: 'John Mitchell',
+          createdAt: new Date(2025, 8, 1, 11, 20),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Apakah ada setting khusus untuk deteksi aritmia yang perlu diaktifkan?',
+          authorId: 'user-404',
+          authorName: 'Alice Johnson',
+          createdAt: new Date(2025, 8, 1, 13, 30),
+          isDeleted: false,
+          likeCount: 0
+        }
+      ],
+      likeCount: 45,
+      commentCount: 3,
+      tags: ['health', 'arrhythmia', 'detection', 'medical', 'heart']
+    },
+    {
+      id: '3',
+      title: 'Integrasi VitaRing dengan Home Assistant',
+      content: 'Berhasil mengintegrasikan VitaRing dengan Home Assistant! Sekarang data kesehatan saya bisa ditampilkan di dashboard smart home dan bahkan bisa trigger automasi berdasarkan heart rate atau sleep quality.\n\nContoh: Jika sleep score < 70, smart light akan otomatis dimmer untuk membantu tidur yang lebih baik.\n\nMau share tutorialnya kalau ada yang tertarik!',
+      authorId: 'user-505',
+      authorName: 'Tech Enthusiast',
+      createdAt: new Date(2025, 8, 31, 20, 30),
+      updatedAt: new Date(2025, 8, 31, 20, 30),
+      isDeleted: false,
+      category: 'Tech Integration',
+      comments: [
+        {
+          content: 'Keren banget! Boleh share tutorialnya dong. Saya juga pakai Home Assistant.',
+          authorId: 'user-606',
+          authorName: 'Smart Home Guy',
+          createdAt: new Date(2025, 8, 31, 21, 0),
+          isDeleted: false,
+          likeCount: 0
+        }
+      ],
+      likeCount: 18,
+      commentCount: 1,
+      tags: ['home-assistant', 'smart-home', 'integration', 'automation', 'iot']
+    },
+    {
+      id: '4',
+      title: 'Perbandingan VitaRing Gen 2 vs Gen 3',
+      content: 'Setelah upgrade dari Gen 2 ke Gen 3, berikut perbandingan yang saya rasakan:\n\n**Gen 3 Advantages:**\n- Battery life 40% lebih lama\n- Sensor suhu lebih akurat\n- AI insights lebih personal\n- Design lebih premium\n\n**Yang Masih Sama:**\n- Akurasi heart rate\n- Water resistance\n- Charging time\n\nOverall, upgrade worth it kalau budget memungkinkan!',
+      authorId: 'user-707',
+      authorName: 'Early Adopter',
+      createdAt: new Date(2025, 8, 30, 15, 45),
+      updatedAt: new Date(2025, 8, 30, 15, 45),
+      isDeleted: false,
+      category: 'Product Review',
+      comments: [
+        {
+          content: 'Makasih reviewnya! Jadi makin yakin untuk upgrade.',
+          authorId: 'user-808',
+          authorName: 'Potential Buyer',
+          createdAt: new Date(2025, 8, 30, 16, 30),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Harga Gen 2 sekarang gimana? Masih worth it buat pemula?',
+          authorId: 'user-909',
+          authorName: 'Budget Conscious',
+          createdAt: new Date(2025, 8, 30, 18, 15),
+          isDeleted: false,
+          likeCount: 0
+        }
+      ],
+      likeCount: 32,
+      commentCount: 2,
+      tags: ['comparison', 'gen2', 'gen3', 'review', 'upgrade']
+    },
+    {
+      id: '5',
+      title: 'VitaRing Community Meetup Jakarta',
+      content: 'Hai VitaRing users di Jakarta! Kami planning untuk mengadakan meetup pertama di Jakarta. Agenda:\n\n📅 Sabtu, 15 September 2025\n📍 Coffee Shop di area Senayan\n⏰ 14:00 - 17:00 WIB\n\n**Agenda:**\n- Sharing tips & tricks\n- Demo fitur terbaru\n- Network dengan fellow users\n- Q&A dengan representative VitaRing\n\nYang minat comment di bawah ya!',
+      authorId: 'community-manager',
+      authorName: 'VitaRing Community',
+      createdAt: new Date(2025, 8, 30, 10, 0),
+      updatedAt: new Date(2025, 8, 30, 10, 0),
+      isDeleted: false,
+      category: 'Community Events',
+      comments: [
+        {
+          content: 'Interested! Boleh tau lokasi pastinya?',
+          authorId: 'user-jakarta-1',
+          authorName: 'Jakarta User 1',
+          createdAt: new Date(2025, 8, 30, 10, 30),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Count me in! Finally bisa ketemu sesama VitaRing enthusiast.',
+          authorId: 'user-jakarta-2',
+          authorName: 'Jakarta User 2',
+          createdAt: new Date(2025, 8, 30, 11, 45),
+          isDeleted: false,
+          likeCount: 0
+        },
+        {
+          content: 'Apakah ada planning untuk meetup di kota lain juga?',
+          authorId: 'user-bandung',
+          authorName: 'Bandung User',
+          createdAt: new Date(2025, 8, 30, 13, 20),
+          isDeleted: false,
+          likeCount: 0
+        }
+      ],
+      likeCount: 67,
+      commentCount: 3,
+      tags: ['meetup', 'jakarta', 'community', 'event', 'networking']
+    }
+  ];
+
+  constructor(
+    private firestore: Firestore,
+    private storage: Storage
+  ) {}
 
   /**
-   * Get latest posts for dashboard
+   * Mengambil daftar forum posts dari koleksi 'forum_posts' di Firestore secara real-time
+   * Hanya menampilkan posts yang tidak dihapus (isDeleted: false)
    */
-  getLatestPosts(limitCount: number = 5): Observable<Post[]> {
-    const q = query(
-      this.postsCollection,
-      orderBy('createdAt', 'desc'),
-      limit(limitCount)
+  getForumPosts(): Observable<ForumPost[]> {
+    const postsCollection = collection(this.firestore, 'forum_posts');
+    const postsQuery = query(
+      postsCollection, 
+      where('isDeleted', '==', false),
+      orderBy('createdAt', 'desc')
     );
     
-    return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
+    return collectionData(postsQuery, { idField: 'id' }).pipe(
+      map((postsList: any[]) => {
+        // Jika tidak ada data di Firestore, return dummy data
+        if (postsList.length === 0) {
+          console.log('No forum posts found in Firestore, returning dummy data');
+          return this.dummyPosts
+            .filter(post => !post.isDeleted)
+            .map(post => this.normalizeForumPostData(post))
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        }
+        
+        return postsList.map(post => this.normalizeForumPostData(post));
+      }),
+      catchError(error => {
+        console.error('Error fetching forum posts from Firebase:', error);
+        console.log('Falling back to dummy data');
+        return of(this.dummyPosts
+          .filter(post => !post.isDeleted)
+          .map(post => this.normalizeForumPostData(post))
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
+      })
+    );
   }
 
   /**
-   * Get post detail with comments
+   * Mengambil detail satu forum post berdasarkan ID-nya
    */
-  getPostDetail(postId: string): Observable<Post | undefined> {
-    const postDoc = doc(this.firestore, 'posts', postId);
-    
-    // Update view count when post is viewed
-    this.updatePostViews(postId);
-    
-    return docData(postDoc, { idField: 'id' }) as Observable<Post>;
+  getForumPostDetail(postId: string): Observable<ForumPost | undefined> {
+    const postDoc = doc(this.firestore, `forum_posts/${postId}`);
+    return docData(postDoc, { idField: 'id' }).pipe(
+      map((post: any) => {
+        if (!post) {
+          // Jika tidak ada di Firestore, cari di dummy data
+          const foundPost = this.dummyPosts.find(p => p.id === postId);
+          return foundPost ? this.normalizeForumPostData(foundPost) : undefined;
+        }
+        
+        return this.normalizeForumPostData(post);
+      }),
+      catchError(error => {
+        console.error('Error fetching forum post detail from Firebase:', error);
+        console.log('Falling back to dummy data');
+        const foundPost = this.dummyPosts.find(post => post.id === postId);
+        return of(foundPost ? this.normalizeForumPostData(foundPost) : undefined);
+      })
+    );
   }
 
   /**
-   * Add new post
+   * Normalize forum post data from Firestore to ensure all required fields are present
+   * and handle timestamp conversion
    */
-  async addPost(post: Omit<Post, 'id' | 'createdAt' | 'likes' | 'commentsCount' | 'views'>): Promise<string> {
+  private normalizeForumPostData(post: any): ForumPost {
+    return {
+      id: post.id,
+      title: post.title || '',
+      content: post.content || '',
+      authorId: post.authorId || '',
+      authorName: post.authorName || '',
+      createdAt: this.convertTimestamp(post.createdAt),
+      updatedAt: this.convertTimestamp(post.updatedAt),
+      isDeleted: post.isDeleted ?? false,
+      category: post.category || 'General',
+      comments: (post.comments || []).map((comment: any) => ({
+        content: comment.content || '',
+        authorId: comment.authorId || '',
+        authorName: comment.authorName || '',
+        createdAt: this.convertTimestamp(comment.createdAt),
+        isDeleted: comment.isDeleted ?? false,
+        likeCount: comment.likeCount || 0
+      })),
+      likeCount: post.likeCount || 0,
+      commentCount: post.commentCount || (post.comments?.length || 0),
+      tags: post.tags || []
+    };
+  }
+
+  /**
+   * Convert Firestore timestamp to Date object
+   */
+  private convertTimestamp(timestamp: any): Date {
+    if (!timestamp) return new Date();
+    if (timestamp instanceof Date) return timestamp;
+    if (timestamp?.toDate) return timestamp.toDate();
+    if (typeof timestamp === 'string') return new Date(timestamp);
+    return new Date();
+  }
+
+  /**
+   * Menambahkan forum post baru ke koleksi 'forum_posts'
+   */
+  async addForumPost(post: Omit<ForumPost, 'id' | 'createdAt' | 'updatedAt' | 'likeCount' | 'commentCount'>): Promise<string> {
     try {
-      const newPost = {
-        ...post,
+      const postData = {
+        title: post.title,
+        content: post.content,
+        authorId: post.authorId,
+        authorName: post.authorName,
         createdAt: serverTimestamp(),
-        likes: [],
-        commentsCount: 0,
-        views: 0,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        isDeleted: false,
+        category: post.category,
+        comments: post.comments || [],
+        likeCount: 0,
+        commentCount: post.comments?.length || 0,
+        tags: post.tags || []
       };
 
-      const docRef = await addDoc(this.postsCollection, newPost);
-      console.log('Post added successfully with ID:', docRef.id);
+      const postsCollection = collection(this.firestore, 'forum_posts');
+      const docRef = await addDoc(postsCollection, postData);
       return docRef.id;
     } catch (error) {
-      console.error('Error adding post:', error);
+      console.error('Error adding forum post:', error);
       throw error;
     }
   }
 
   /**
-   * Update post
+   * Alias method untuk createPost - untuk compatibility dengan create-post page
    */
-  async updatePost(postId: string, updates: Partial<Post>): Promise<void> {
-    try {
-      const postDoc = doc(this.firestore, 'posts', postId);
-      await updateDoc(postDoc, {
-        ...updates,
-        updatedAt: serverTimestamp()
-      });
-      console.log('Post updated successfully');
-    } catch (error) {
-      console.error('Error updating post:', error);
-      throw error;
-    }
+  async createPost(post: Partial<ForumPost>): Promise<string> {
+    const postData: Omit<ForumPost, 'id' | 'createdAt' | 'updatedAt' | 'likeCount' | 'commentCount'> = {
+      title: post.title || '',
+      content: post.content || '',
+      authorId: post.authorId || '',
+      authorName: post.authorName || '',
+      isDeleted: false,
+      category: post.category || 'general',
+      comments: post.comments || [],
+      tags: post.tags || []
+    };
+
+    return this.addForumPost(postData);
   }
 
   /**
-   * Delete post
+   * Menambahkan komentar ke forum post
    */
-  async deletePost(postId: string): Promise<void> {
+  async addCommentToPost(postId: string, comment: Omit<ForumComment, 'createdAt'>): Promise<void> {
     try {
-      const postDoc = doc(this.firestore, 'posts', postId);
-      await deleteDoc(postDoc);
-      console.log('Post deleted successfully');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update post views
-   */
-  async updatePostViews(postId: string): Promise<void> {
-    try {
-      const postDoc = doc(this.firestore, 'posts', postId);
-      await updateDoc(postDoc, {
-        views: increment(1)
-      });
-    } catch (error) {
-      console.error('Error updating post views:', error);
-    }
-  }
-
-  /**
-   * Toggle like on post
-   */
-  async togglePostLike(postId: string, userId: string): Promise<void> {
-    try {
-      const postDoc = doc(this.firestore, 'posts', postId);
-      const postSnapshot = await getDoc(postDoc);
-      
-      if (postSnapshot.exists()) {
-        const postData = postSnapshot.data() as Post;
-        const isLiked = postData.likes?.includes(userId);
-
-        if (isLiked) {
-          // Remove like
-          await updateDoc(postDoc, {
-            likes: arrayRemove(userId)
-          });
-        } else {
-          // Add like
-          await updateDoc(postDoc, {
-            likes: arrayUnion(userId)
-          });
-        }
-        console.log('Post like toggled successfully');
-      }
-    } catch (error) {
-      console.error('Error toggling post like:', error);
-      throw error;
-    }
-  }
-
-  // ===== COMMENT METHODS =====
-
-  /**
-   * Get comments for a specific post
-   */
-  getComments(postId: string): Observable<Comment[]> {
-    const commentsCollection = collection(this.firestore, 'posts', postId, 'comments');
-    const q = query(commentsCollection, orderBy('createdAt', 'asc'));
-    
-    return collectionData(q, { idField: 'id' }) as Observable<Comment[]>;
-  }
-
-  /**
-   * Add comment to post
-   */
-  async addComment(postId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'likes'>): Promise<string> {
-    try {
-      const commentsCollection = collection(this.firestore, 'posts', postId, 'comments');
+      const postDoc = doc(this.firestore, `forum_posts/${postId}`);
       
       const newComment = {
         ...comment,
-        postId,
         createdAt: serverTimestamp(),
-        likes: []
+        isDeleted: false,
+        likeCount: 0
       };
 
-      const docRef = await addDoc(commentsCollection, newComment);
-      
-      // Update post comment count
-      const postDoc = doc(this.firestore, 'posts', postId);
       await updateDoc(postDoc, {
-        commentsCount: increment(1)
+        comments: arrayUnion(newComment),
+        commentCount: increment(1),
+        updatedAt: serverTimestamp()
       });
-
-      console.log('Comment added successfully with ID:', docRef.id);
-      return docRef.id;
     } catch (error) {
       console.error('Error adding comment:', error);
       throw error;
@@ -255,306 +382,211 @@ export class ForumService {
   }
 
   /**
-   * Update comment
+   * Mengupdate like count pada forum post
    */
-  async updateComment(postId: string, commentId: string, updates: Partial<Comment>): Promise<void> {
+  async updatePostLikeCount(postId: string, increment_value: number = 1): Promise<void> {
     try {
-      const commentDoc = doc(this.firestore, 'posts', postId, 'comments', commentId);
-      await updateDoc(commentDoc, {
-        ...updates,
+      const postDoc = doc(this.firestore, `forum_posts/${postId}`);
+      await updateDoc(postDoc, {
+        likeCount: increment(increment_value),
         updatedAt: serverTimestamp()
       });
-      console.log('Comment updated successfully');
     } catch (error) {
-      console.error('Error updating comment:', error);
+      console.error('Error updating post like count:', error);
       throw error;
     }
   }
 
   /**
-   * Delete comment
+   * Mengupdate forum post yang sudah ada
    */
-  async deleteComment(postId: string, commentId: string): Promise<void> {
+  async updateForumPost(postId: string, updates: Partial<ForumPost>): Promise<void> {
     try {
-      const commentDoc = doc(this.firestore, 'posts', postId, 'comments', commentId);
-      await deleteDoc(commentDoc);
-      
-      // Update post comment count
-      const postDoc = doc(this.firestore, 'posts', postId);
+      const postDoc = doc(this.firestore, `forum_posts/${postId}`);
+      const updateData: any = {
+        ...updates,
+        updatedAt: serverTimestamp()
+      };
+
+      // Remove computed fields and ID
+      delete updateData.id;
+      delete updateData.createdAt;
+
+      await updateDoc(postDoc, updateData);
+    } catch (error) {
+      console.error('Error updating forum post:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Soft delete forum post (set isDeleted to true)
+   */
+  async deleteForumPost(postId: string): Promise<void> {
+    try {
+      const postDoc = doc(this.firestore, `forum_posts/${postId}`);
       await updateDoc(postDoc, {
-        commentsCount: increment(-1)
+        isDeleted: true,
+        updatedAt: serverTimestamp()
       });
-
-      console.log('Comment deleted successfully');
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      console.error('Error deleting forum post:', error);
       throw error;
     }
   }
 
   /**
-   * Toggle like on comment
+   * Mengambil posts berdasarkan kategori
    */
-  async toggleCommentLike(postId: string, commentId: string, userId: string): Promise<void> {
-    try {
-      const commentDoc = doc(this.firestore, 'posts', postId, 'comments', commentId);
-      const commentSnapshot = await getDoc(commentDoc);
-      
-      if (commentSnapshot.exists()) {
-        const commentData = commentSnapshot.data() as Comment;
-        const isLiked = commentData.likes?.includes(userId);
-
-        if (isLiked) {
-          // Remove like
-          await updateDoc(commentDoc, {
-            likes: arrayRemove(userId)
-          });
-        } else {
-          // Add like
-          await updateDoc(commentDoc, {
-            likes: arrayUnion(userId)
-          });
-        }
-        console.log('Comment like toggled successfully');
-      }
-    } catch (error) {
-      console.error('Error toggling comment like:', error);
-      throw error;
-    }
-  }
-
-  // ===== DUMMY DATA METHODS (for development) =====
-
-  /**
-   * Get dummy posts for development
-   */
-  getDummyPosts(): Observable<Post[]> {
-    const dummyPosts: Post[] = [
-      {
-        id: '1',
-        title: 'Tips Menjaga Kesehatan Jantung dengan VitaRing',
-        content: 'Berikut adalah beberapa tips efektif untuk menjaga kesehatan jantung menggunakan data dari VitaRing. Pantau detak jantung istirahat Anda setiap hari dan pastikan berada dalam rentang normal...',
-        authorId: 'user1',
-        authorName: 'Dr. Ahmad Wijaya',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Ahmad+Wijaya&background=f97316&color=fff',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        likes: ['user2', 'user3', 'user5'],
-        commentsCount: 8,
-        views: 124,
-        tags: ['kesehatan', 'jantung', 'vitaring'],
-        isSticky: true,
-        category: 'Health Tips'
-      },
-      {
-        id: '2',
-        title: 'Pengalaman Menggunakan VitaRing Selama 6 Bulan',
-        content: 'Saya ingin berbagi pengalaman menggunakan VitaRing selama 6 bulan terakhir. Perangkat ini benar-benar mengubah cara saya memantau kesehatan...',
-        authorId: 'user2',
-        authorName: 'Sarah Putri',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Sarah+Putri&background=ea580c&color=fff',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-        likes: ['user1', 'user4'],
-        commentsCount: 12,
-        views: 89,
-        tags: ['review', 'pengalaman', 'vitaring'],
-        category: 'User Experience'
-      },
-      {
-        id: '3',
-        title: 'Cara Interpretasi Data Heart Rate Variability',
-        content: 'Heart Rate Variability (HRV) adalah salah satu metrik penting yang diukur oleh VitaRing. Artikel ini akan menjelaskan cara membaca dan menginterpretasi data HRV...',
-        authorId: 'user3',
-        authorName: 'Dr. Siti Nurhaliza',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Siti+Nurhaliza&background=dc2626&color=fff',
-        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-        likes: ['user1', 'user2', 'user4', 'user5'],
-        commentsCount: 15,
-        views: 156,
-        tags: ['hrv', 'analisis', 'kesehatan'],
-        category: 'Education'
-      },
-      {
-        id: '4',
-        title: 'Diskusi: Fitur Apa yang Kalian Inginkan di Update Selanjutnya?',
-        content: 'Halo komunitas VitaRing! Saya ingin mendengar pendapat kalian mengenai fitur-fitur apa saja yang kalian harapkan di update aplikasi selanjutnya...',
-        authorId: 'user4',
-        authorName: 'Admin VitaRing',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Admin+VitaRing&background=f97316&color=fff',
-        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
-        likes: ['user1', 'user2', 'user3', 'user5', 'user6'],
-        commentsCount: 24,
-        views: 201,
-        tags: ['diskusi', 'feedback', 'update'],
-        isSticky: true,
-        category: 'Discussion'
-      },
-      {
-        id: '5',
-        title: 'Troubleshooting: VitaRing Tidak Terhubung ke Aplikasi',
-        content: 'Beberapa pengguna melaporkan masalah koneksi antara VitaRing dan aplikasi. Berikut adalah langkah-langkah troubleshooting yang bisa dicoba...',
-        authorId: 'user5',
-        authorName: 'Tech Support',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Tech+Support&background=6b7280&color=fff',
-        createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-        likes: ['user3', 'user4'],
-        commentsCount: 7,
-        views: 67,
-        tags: ['troubleshooting', 'koneksi', 'bantuan'],
-        category: 'Technical Support'
-      }
-    ];
-
-    return new Observable(observer => {
-      observer.next(dummyPosts);
-      observer.complete();
-    });
-  }
-
-  /**
-   * Get dummy comments for development
-   */
-  getDummyComments(postId: string): Observable<Comment[]> {
-    const dummyComments: Comment[] = [
-      {
-        id: '1',
-        postId,
-        authorId: 'user2',
-        authorName: 'Sarah Putri',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Sarah+Putri&background=ea580c&color=fff',
-        content: 'Terima kasih atas informasinya! Sangat membantu untuk pemula seperti saya.',
-        createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-        likes: ['user1', 'user3']
-      },
-      {
-        id: '2',
-        postId,
-        authorId: 'user3',
-        authorName: 'Dr. Siti Nurhaliza',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Siti+Nurhaliza&background=dc2626&color=fff',
-        content: 'Artikel yang sangat informatif. Saya setuju dengan poin-poin yang disebutkan.',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        likes: ['user1']
-      },
-      {
-        id: '3',
-        postId,
-        authorId: 'user4',
-        authorName: 'Budi Santoso',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Budi+Santoso&background=3b82f6&color=fff',
-        content: 'Apakah ada tips khusus untuk orang yang baru mulai menggunakan VitaRing?',
-        createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
-        likes: []
-      }
-    ];
-
-    return new Observable(observer => {
-      observer.next(dummyComments);
-      observer.complete();
-    });
-  }
-
-  /**
-   * Search posts by title, content, or tags
-   */
-  searchPosts(searchTerm: string): Observable<Post[]> {
-    // For development, implement simple client-side search
-    // In production, this should use Firebase's full-text search or Algolia
-    
-    // Get dummy data for now
-    const dummyPosts: Post[] = [
-      {
-        id: '1',
-        title: 'Tips Optimasi VitaRing untuk Monitoring Jantung',
-        content: 'Panduan lengkap untuk mengoptimalkan penggunaan VitaRing dalam monitoring kesehatan jantung sehari-hari...',
-        authorId: 'user1',
-        authorName: 'Dr. Andika Pratama',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Andika+Pratama&background=f97316&color=fff',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        likes: ['user2', 'user3', 'user4'],
-        commentsCount: 12,
-        views: 234,
-        tags: ['kesehatan', 'jantung', 'monitoring'],
-        isSticky: true
-      },
-      {
-        id: '2',
-        title: 'Pengalaman 6 Bulan Menggunakan VitaRing',
-        content: 'Review mendalam tentang pengalaman menggunakan VitaRing selama 6 bulan untuk tracking fitness dan kesehatan...',
-        authorId: 'user2',
-        authorName: 'Sarah Putri',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Sarah+Putri&background=ea580c&color=fff',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
-        likes: ['user1', 'user3'],
-        commentsCount: 8,
-        views: 156,
-        tags: ['review', 'pengalaman', 'fitness']
-      }
-    ];
-
-    const filteredPosts = dummyPosts.filter(post => 
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  getPostsByCategory(category: string): Observable<ForumPost[]> {
+    const postsCollection = collection(this.firestore, 'forum_posts');
+    const postsQuery = query(
+      postsCollection,
+      where('category', '==', category),
+      where('isDeleted', '==', false),
+      orderBy('createdAt', 'desc')
     );
 
-    return new Observable(observer => {
-      observer.next(filteredPosts);
-      observer.complete();
-    });
+    return collectionData(postsQuery, { idField: 'id' }).pipe(
+      map((postsList: any[]) => {
+        if (postsList.length === 0) {
+          // Fallback to dummy data
+          return this.dummyPosts
+            .filter(post => post.category === category && !post.isDeleted)
+            .map(post => this.normalizeForumPostData(post));
+        }
+        return postsList.map(post => this.normalizeForumPostData(post));
+      }),
+      catchError(error => {
+        console.error('Error fetching posts by category:', error);
+        return of(this.dummyPosts
+          .filter(post => post.category === category && !post.isDeleted)
+          .map(post => this.normalizeForumPostData(post)));
+      })
+    );
   }
 
   /**
-   * Get forum statistics
+   * Mengambil posts berdasarkan author ID
    */
-  getForumStats(): Observable<any> {
-    // Return mock forum statistics
-    const stats = {
-      totalPosts: 17,
-      totalComments: 3456,
-      totalMembers: 24,
-      activeToday: 22
+  getPostsByAuthor(authorId: string): Observable<ForumPost[]> {
+    const postsCollection = collection(this.firestore, 'forum_posts');
+    const postsQuery = query(
+      postsCollection,
+      where('authorId', '==', authorId),
+      where('isDeleted', '==', false),
+      orderBy('createdAt', 'desc')
+    );
+
+    return collectionData(postsQuery, { idField: 'id' }).pipe(
+      map((postsList: any[]) => {
+        if (postsList.length === 0) {
+          // Fallback to dummy data
+          return this.dummyPosts
+            .filter(post => post.authorId === authorId && !post.isDeleted)
+            .map(post => this.normalizeForumPostData(post));
+        }
+        return postsList.map(post => this.normalizeForumPostData(post));
+      }),
+      catchError(error => {
+        console.error('Error fetching posts by author:', error);
+        return of(this.dummyPosts
+          .filter(post => post.authorId === authorId && !post.isDeleted)
+          .map(post => this.normalizeForumPostData(post)));
+      })
+    );
+  }
+
+  /**
+   * Search forum posts berdasarkan title atau content
+   */
+  searchForumPosts(searchTerm: string): Observable<ForumPost[]> {
+    // For Firestore, we'll get all non-deleted posts and filter client-side
+    // In production, consider using Algolia or other search service for better performance
+    return this.getForumPosts().pipe(
+      map(postsList => 
+        postsList.filter(post => 
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.authorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          post.category.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    );
+  }
+
+  /**
+   * Mengambil semua kategori forum yang tersedia
+   */
+  getForumCategories(): Observable<string[]> {
+    return this.getForumPosts().pipe(
+      map(postsList => {
+        const categories = [...new Set(postsList.map(post => post.category))];
+        return categories.filter(category => category); // Remove empty categories
+      })
+    );
+  }
+
+  /**
+   * Mengambil statistik forum
+   */
+  getForumStats(): Observable<ForumStats> {
+    return this.getForumPosts().pipe(
+      map(posts => {
+        const totalPosts = posts.length;
+        const totalComments = posts.reduce((sum, post) => sum + post.commentCount, 0);
+        const uniqueAuthors = new Set(posts.map(post => post.authorId));
+        const totalUsers = uniqueAuthors.size;
+        
+        // For active users, consider users who posted in the last 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const recentPosts = posts.filter(post => post.createdAt > thirtyDaysAgo);
+        const activeUsers = new Set(recentPosts.map(post => post.authorId)).size;
+
+        return {
+          totalPosts,
+          totalComments,
+          totalUsers,
+          activeUsers
+        };
+      })
+    );
+  }
+
+  /**
+   * Legacy methods for backward compatibility
+   */
+  getPosts(filter: 'newest' | 'featured' | 'popular' = 'newest'): Observable<Post[]> {
+    return this.getForumPosts().pipe(
+      map(forumPosts => forumPosts.map(post => this.convertToLegacyPost(post)))
+    );
+  }
+
+  searchPosts(searchTerm: string): Observable<Post[]> {
+    return this.searchForumPosts(searchTerm).pipe(
+      map(forumPosts => forumPosts.map(post => this.convertToLegacyPost(post)))
+    );
+  }
+
+  /**
+   * Convert ForumPost to legacy Post interface for backward compatibility
+   */
+  private convertToLegacyPost(forumPost: ForumPost): Post {
+    return {
+      id: forumPost.id,
+      title: forumPost.title,
+      content: forumPost.content,
+      authorId: forumPost.authorId,
+      authorName: forumPost.authorName,
+      createdAt: forumPost.createdAt,
+      updatedAt: forumPost.updatedAt,
+      likes: [], // Legacy field, would need separate likes tracking
+      commentsCount: forumPost.commentCount,
+      views: 0, // Not tracked in new interface
+      tags: forumPost.tags,
+      category: forumPost.category
     };
-
-    return new Observable(observer => {
-      observer.next(stats);
-      observer.complete();
-    });
-  }
-
-  /**
-   * Helper method to get dummy posts as array (synchronous)
-   */
-  private getDummyPostsArray(): Post[] {
-    return [
-      {
-        id: '1',
-        title: 'Tips Menjaga Kesehatan Jantung dengan VitaRing',
-        content: 'Berikut adalah beberapa tips efektif untuk menjaga kesehatan jantung menggunakan data dari VitaRing...',
-        authorId: 'user1',
-        authorName: 'Dr. Ahmad Wijaya',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Ahmad+Wijaya&background=f97316&color=fff',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        likes: ['user2', 'user3', 'user5'],
-        commentsCount: 8,
-        views: 124,
-        tags: ['kesehatan', 'jantung', 'vitaring'],
-        isSticky: true,
-        category: 'Health Tips'
-      },
-      {
-        id: '2',
-        title: 'Pengalaman Menggunakan VitaRing Selama 6 Bulan',
-        content: 'Saya ingin berbagi pengalaman menggunakan VitaRing selama 6 bulan terakhir...',
-        authorId: 'user2',
-        authorName: 'Sarah Putri',
-        authorAvatar: 'https://ui-avatars.com/api/?name=Sarah+Putri&background=ea580c&color=fff',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
-        likes: ['user1', 'user4'],
-        commentsCount: 12,
-        views: 89,
-        tags: ['review', 'pengalaman', 'vitaring'],
-        category: 'User Experience'
-      }
-    ];
   }
 }

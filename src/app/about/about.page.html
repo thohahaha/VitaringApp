@@ -1,46 +1,48 @@
 <div class="about-page">
   <ion-header class="header-container">
-    <ion-toolbar>
+    <ion-toolbar style="--background: #ffffff; --color: #1f2937; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
       <ion-buttons slot="start">
-        <ion-button (click)="goBack()">
-          <ion-icon name="arrow-back"></ion-icon>
+        <ion-button (click)="goBack()" fill="clear" color="dark">
+          <ion-icon name="arrow-back" color="dark"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>About VitaRing</ion-title>
+      <ion-title style="color: #1f2937; font-weight: 600;">About VitaRing</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="about-content">
-    <ion-card class="about-header-card ion-text-center ion-padding">
-      <img src="assets/icon/logo.png" alt="VitaRing Logo" class="about-logo" style="width: 80px; margin-bottom: 12px;">
-      <ion-card-title>VitaRing</ion-card-title>
-      <ion-text color="medium">Version 1.0.0</ion-text>
-    </ion-card>
-    <ion-card class="about-section-card">
-      <ion-card-header>
-        <ion-card-title>About VitaRing</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        VitaRing is a smart ring application designed to help you monitor your health and wellness. Track your activity, vital signs, and more with ease.
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="about-section-card">
-      <ion-card-header>
-        <ion-card-title>Developer</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div>Developed by VitaRing Team</div>
-        <div>Contact: <a href="mailto:support&#64;vitaring.com">support&#64;vitaring.com</a></div>
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="about-section-card">
-      <ion-card-header>
-        <ion-card-title>Legal</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div>&copy; 2024 VitaRing. All rights reserved.</div>
-        <div><a href="/privacy">Privacy Policy</a></div>
-      </ion-card-content>
-    </ion-card>
+  <ion-content class="about-content" style="--background: #f9fafb; --padding-bottom: 2rem;">
+    <div style="padding: 1rem; padding-bottom: 2rem;">
+      <ion-card class="about-header-card ion-text-center ion-padding" style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem;">
+        <img src="assets/icon/logo.png" alt="VitaRing Logo" class="about-logo" style="width: 100px; height: 100px; object-fit: contain; margin: 0 auto 1rem auto; display: block;">
+        <ion-card-title style="color: #111827; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">VitaRing</ion-card-title>
+        <ion-text color="medium" style="color: #6b7280; font-size: 1rem;">Version 1.0.0</ion-text>
+      </ion-card>
+      <ion-card class="about-section-card" style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 1rem;">
+        <ion-card-header style="padding: 1rem 1rem 0.5rem 1rem;">
+          <ion-card-title style="color: #111827; font-size: 1.125rem; font-weight: 600;">About VitaRing</ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="padding: 0.5rem 1rem 1rem 1rem; color: #374151; line-height: 1.6;">
+          VitaRing is a smart ring application designed to help you monitor your health and wellness. Track your activity, vital signs, and more with ease.
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="about-section-card" style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 1rem;">
+        <ion-card-header style="padding: 1rem 1rem 0.5rem 1rem;">
+          <ion-card-title style="color: #111827; font-size: 1.125rem; font-weight: 600;">Developer</ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="padding: 0.5rem 1rem 1rem 1rem; color: #374151; line-height: 1.6;">
+          <div style="margin-bottom: 0.5rem;">Developed by VitaRing Team</div>
+          <div>Contact: <a href="mailto:support&#64;vitaring.com" style="color: #3b82f6; text-decoration: none;">support&#64;vitaring.com</a></div>
+        </ion-card-content>
+      </ion-card>
+      <ion-card class="about-section-card" style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+        <ion-card-header style="padding: 1rem 1rem 0.5rem 1rem;">
+          <ion-card-title style="color: #111827; font-size: 1.125rem; font-weight: 600;">Legal</ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="padding: 0.5rem 1rem 1rem 1rem; color: #374151; line-height: 1.6;">
+          <div style="margin-bottom: 0.5rem;">&copy; 2024 VitaRing. All rights reserved.</div>
+          <div><a href="/privacy" style="color: #3b82f6; text-decoration: none;">Privacy Policy</a></div>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </ion-content>
 </div>

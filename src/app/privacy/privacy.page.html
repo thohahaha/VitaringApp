@@ -1,71 +1,71 @@
 <div class="privacy-page">
   <ion-header class="header-container">
-    <ion-toolbar>
+    <ion-toolbar style="--background: #ffffff; --color: #1f2937; border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
       <ion-buttons slot="start">
-        <ion-button (click)="goBack()">
-          <ion-icon name="arrow-back"></ion-icon>
+        <ion-button (click)="goBack()" fill="clear" color="dark">
+          <ion-icon name="arrow-back" color="dark"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>Privacy Settings</ion-title>
+      <ion-title style="color: #1f2937; font-weight: 600;">Privacy Settings</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="content-container">
-    <div class="privacy-content">
-      <div class="section">
-        <div class="section-title">Data Collection</div>
-        <div class="setting-item">
+  <ion-content class="content-container" style="--background: #f9fafb; --color: #1f2937;">
+    <div class="privacy-content" style="padding: 1rem; color: #1f2937;">
+      <div class="section" style="margin-bottom: 2rem;">
+        <div class="section-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">Data Collection</div>
+        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <div class="setting-info">
-            <div class="setting-label">Health Data Collection</div>
-            <div class="setting-description">Allow VitaRing to collect your health metrics</div>
+            <div class="setting-label" style="font-weight: 500; color: #111827; margin-bottom: 0.25rem;">Health Data Collection</div>
+            <div class="setting-description" style="font-size: 0.875rem; color: #6b7280;">Allow VitaRing to collect your health metrics</div>
           </div>
           <ion-toggle [(ngModel)]="privacySettings.healthDataCollection"></ion-toggle>
         </div>
         
-        <div class="setting-item">
+        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <div class="setting-info">
-            <div class="setting-label">Activity Tracking</div>
-            <div class="setting-description">Track your daily activities and exercise</div>
+            <div class="setting-label" style="font-weight: 500; color: #111827; margin-bottom: 0.25rem;">Activity Tracking</div>
+            <div class="setting-description" style="font-size: 0.875rem; color: #6b7280;">Track your daily activities and exercise</div>
           </div>
           <ion-toggle [(ngModel)]="privacySettings.activityTracking"></ion-toggle>
         </div>
         
-        <div class="setting-item">
+        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <div class="setting-info">
-            <div class="setting-label">Location Services</div>
-            <div class="setting-description">Use location for workout tracking</div>
+            <div class="setting-label" style="font-weight: 500; color: #111827; margin-bottom: 0.25rem;">Location Services</div>
+            <div class="setting-description" style="font-size: 0.875rem; color: #6b7280;">Use location for workout tracking</div>
           </div>
           <ion-toggle [(ngModel)]="privacySettings.locationServices"></ion-toggle>
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Data Sharing</div>
-        <div class="setting-item">
+      <div class="section" style="margin-bottom: 2rem;">
+        <div class="section-title" style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">Data Sharing</div>
+        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <div class="setting-info">
-            <div class="setting-label">Analytics</div>
-            <div class="setting-description">Share anonymous usage data to improve the app</div>
+            <div class="setting-label" style="font-weight: 500; color: #111827; margin-bottom: 0.25rem;">Analytics</div>
+            <div class="setting-description" style="font-size: 0.875rem; color: #6b7280;">Share anonymous usage data to improve the app</div>
           </div>
           <ion-toggle [(ngModel)]="privacySettings.analytics"></ion-toggle>
         </div>
         
-        <div class="setting-item">
+        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.75rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <div class="setting-info">
-            <div class="setting-label">Third-party Integration</div>
-            <div class="setting-description">Allow integration with other health apps</div>
+            <div class="setting-label" style="font-weight: 500; color: #111827; margin-bottom: 0.25rem;">Third-party Integration</div>
+            <div class="setting-description" style="font-size: 0.875rem; color: #6b7280;">Allow integration with other health apps</div>
           </div>
           <ion-toggle [(ngModel)]="privacySettings.thirdPartyIntegration"></ion-toggle>
         </div>
       </div>
 
-      <div class="action-section">
-        <button class="action-btn export-btn" (click)="exportData()">
-          <ion-icon name="download"></ion-icon>
+      <div class="action-section" style="margin-top: 2rem;">
+        <button class="action-btn export-btn" (click)="exportData()" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.75rem; font-weight: 500; margin-bottom: 1rem; cursor: pointer;">
+          <ion-icon name="download" style="margin-right: 0.5rem;"></ion-icon>
           Export My Data
         </button>
         
-        <button class="action-btn delete-btn" (click)="deleteAccount()">
-          <ion-icon name="trash"></ion-icon>
+        <button class="action-btn delete-btn" (click)="deleteAccount()" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 0.75rem; font-weight: 500; cursor: pointer;">
+          <ion-icon name="trash" style="margin-right: 0.5rem;"></ion-icon>
           Delete Account
         </button>
       </div>

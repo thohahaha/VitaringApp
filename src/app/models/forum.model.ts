@@ -1,3 +1,30 @@
+export interface ForumPost {
+  id?: string;
+  title: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: Date | any; // Can be Date or Timestamp
+  updatedAt: Date | any; // Can be Date or Timestamp
+  isDeleted: boolean;
+  category: string;
+  comments: ForumComment[];
+  likeCount: number;
+  commentCount: number;
+  tags: string[];
+}
+
+export interface ForumComment {
+  id?: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: Date | any; // Can be Date or Timestamp
+  isDeleted: boolean;
+  likeCount: number;
+}
+
+// Legacy interface for backward compatibility
 export interface Post {
   id?: string;
   title: string;
@@ -15,6 +42,7 @@ export interface Post {
   category?: string;
 }
 
+// Legacy interface for backward compatibility
 export interface Comment {
   id?: string;
   postId: string;

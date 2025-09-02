@@ -11,9 +11,6 @@ import {
   IonButtons, 
   IonButton, 
   IonIcon, 
-  IonFooter, 
-  IonTabBar, 
-  IonTabButton,
   IonSpinner,
   IonText,
   IonTextarea,
@@ -23,11 +20,12 @@ import {
   IonRefresher,
   IonRefresherContent
 } from '@ionic/angular/standalone';
-import { ForumService } from '../services/forum.service';
+// import { ForumService } from '../services/forum.service';
 import { AuthService } from '../auth/auth.service';
 import { Post, Comment } from '../models/forum.model';
 import { Observable, Subscription, combineLatest } from 'rxjs';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
+import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack,
@@ -39,11 +37,7 @@ import {
   personCircleOutline,
   sendOutline,
   ellipsisVertical,
-  heartHalfOutline,
-  statsChartOutline,
-  newspaperOutline,
-  wifiOutline,
-  people, pin } from 'ionicons/icons';
+  pin } from 'ionicons/icons';
 
 @Component({
   selector: 'app-post-detail',
@@ -61,9 +55,6 @@ import {
     IonButtons,
     IonButton,
     IonIcon,
-    IonFooter,
-    IonTabBar,
-    IonTabButton,
     IonSpinner,
     IonText,
     IonTextarea,
@@ -73,7 +64,8 @@ import {
     IonRefresher,
     IonRefresherContent,
     TimeAgoPipe,
-    AsyncPipe
+    AsyncPipe,
+    NavbarComponent
   ]
 })
 export class PostDetailPage implements OnInit, OnDestroy {
@@ -90,7 +82,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private forumService: ForumService,
+    // private forumService: ForumService,
     private authService: AuthService
   ) {
     // Register icons
@@ -103,11 +95,6 @@ export class PostDetailPage implements OnInit, OnDestroy {
       chatbubbleOutline,
       sendOutline,
       personCircleOutline,
-      heartHalfOutline,
-      statsChartOutline,
-      newspaperOutline,
-      people,
-      wifiOutline,
       heartOutline,
       heart
     });
@@ -138,11 +125,11 @@ export class PostDetailPage implements OnInit, OnDestroy {
   }
 
   loadPostDetail() {
-    this.post$ = this.forumService.getPostDetail(this.postId);
+    // this.post$ = this.forumService.getPostDetail(this.postId);
   }
 
   loadComments() {
-    this.comments$ = this.forumService.getComments(this.postId);
+    // this.comments$ = this.forumService.getComments(this.postId);
   }
 
   async onLikePost(post: Post) {
@@ -152,7 +139,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
     }
 
     try {
-      await this.forumService.togglePostLike(post.id!, this.currentUserId);
+      // await this.forumService.togglePostLike(post.id!, this.currentUserId);
     } catch (error) {
       console.error('Error liking post:', error);
     }
@@ -165,7 +152,7 @@ export class PostDetailPage implements OnInit, OnDestroy {
     }
 
     try {
-      await this.forumService.toggleCommentLike(this.postId, comment.id!, this.currentUserId);
+      // await this.forumService.toggleCommentLike(this.postId, comment.id!, this.currentUserId);
     } catch (error) {
       console.error('Error liking comment:', error);
     }
@@ -185,12 +172,14 @@ export class PostDetailPage implements OnInit, OnDestroy {
 
     try {
       const user = this.authService.getCurrentUser();
+      /*
       await this.forumService.addComment(this.postId, {
         postId: this.postId,
         authorId: this.currentUserId,
         authorName: user?.email || 'Anonymous',
         content: this.newComment.trim()
       });
+      */
 
       this.newComment = '';
       // Comments will automatically update via Observable
@@ -254,19 +243,6 @@ export class PostDetailPage implements OnInit, OnDestroy {
 
   goBack() {
     this.location.back();
-  }
-
-  // Navigation methods
-  navigateToHome() {
-    this.router.navigate(['/home']);
-  }
-
-  navigateToNews() {
-    this.router.navigate(['/news']);
-  }
-
-  navigateToForum() {
-    this.router.navigate(['/forum']);
   }
 
   // Handle image loading errors

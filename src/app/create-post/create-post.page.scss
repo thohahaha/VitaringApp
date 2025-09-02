@@ -1,0 +1,145 @@
+.create-post-container {
+  min-height: 100vh;
+  
+  .form-card {
+    transition: box-shadow 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .form-section {
+    ion-item {
+      --background: transparent;
+      
+      ion-input, ion-textarea, ion-select {
+        --background: #f9fafb;
+        
+        &:focus-within {
+          --background: white;
+          border-color: #f97316 !important;
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+      }
+    }
+  }
+
+  .tags-container {
+    ion-chip {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        --background: #fde68a;
+        transform: translateY(-1px);
+      }
+      
+      ion-icon {
+        margin-left: 4px;
+        
+        &:hover {
+          color: #dc2626;
+        }
+      }
+    }
+  }
+
+  .add-tag-container {
+    ion-button {
+      --border-width: 1px;
+      --border-style: solid;
+      --border-color: #f97316;
+      
+      &:disabled {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .char-count {
+    transition: color 0.2s ease;
+    
+    &.warning {
+      color: #f59e0b;
+    }
+    
+    &.danger {
+      color: #dc2626;
+    }
+  }
+
+  .guidelines-card {
+    animation: slideInUp 0.5s ease;
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .action-buttons {
+    ion-button {
+      --border-radius: 0.75rem;
+      height: 48px;
+      
+      &[fill="outline"] {
+        --border-width: 1px;
+        --border-style: solid;
+      }
+      
+      &[color="warning"] {
+        --background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        
+        &:hover {
+          --background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .create-post-container {
+    padding: 0.75rem;
+    
+    .form-card {
+      padding: 1rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      
+      ion-button {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}
+
+// Loading state
+.is-submitting {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+// Form validation styles
+.invalid-field {
+  ion-input, ion-textarea, ion-select {
+    border-color: #dc2626 !important;
+    --background: #fef2f2 !important;
+  }
+}
+
+.valid-field {
+  ion-input, ion-textarea, ion-select {
+    border-color: #10b981 !important;
+    --background: #f0fdf4 !important;
+  }
+}
