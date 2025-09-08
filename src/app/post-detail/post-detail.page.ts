@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { Component, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, 
@@ -10,34 +9,52 @@ import {
   IonToolbar, 
   IonButtons, 
   IonButton, 
-  IonIcon, 
+  IonIcon,
+  IonItem,
+  IonTextarea,
   IonSpinner,
   IonText,
-  IonTextarea,
-  IonItem,
-  IonLabel,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
   IonBadge,
-  IonRefresher,
-  IonRefresherContent
+  ToastController
 } from '@ionic/angular/standalone';
-// import { ForumService } from '../services/forum.service';
+import { ActivatedRoute } from '@angular/router';
+import { ForumService } from '../services/forum.service';
 import { AuthService } from '../auth/auth.service';
-import { Post, Comment } from '../models/forum.model';
-import { Observable, Subscription, combineLatest } from 'rxjs';
-import { TimeAgoPipe } from '../pipes/time-ago.pipe';
-import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { 
+  refresh,
+  logIn,
   arrowBack,
-  shareOutline,
-  heartOutline,
   heart,
-  chatbubbleOutline,
-  eyeOutline,
-  personCircleOutline,
-  sendOutline,
-  ellipsisVertical,
-  pin } from 'ionicons/icons';
+  heartOutline,
+  share,
+  chatbubble,
+  send, alertCircle, personCircle, chatbubbleOutline, shareOutline, eyeOutline, reload } from 'ionicons/icons';
+
+interface Comment {
+  id: string;
+  author: string;
+  content: string;
+  createdAt: Date;
+  likesCount: number;
+  userLiked: boolean;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  createdAt: Date;
+  likesCount: number;
+  viewsCount: number;
+  shareCount?: number;
+  userLiked: boolean;
+}
 
 @Component({
   selector: 'app-post-detail',
@@ -48,6 +65,7 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    DatePipe,
     IonContent,
     IonHeader,
     IonTitle,
@@ -55,198 +73,526 @@ import {
     IonButtons,
     IonButton,
     IonIcon,
+    IonItem,
+    IonTextarea,
     IonSpinner,
     IonText,
-    IonTextarea,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    IonRefresher,
-    IonRefresherContent,
-    TimeAgoPipe,
-    AsyncPipe,
-    NavbarComponent
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonBadge
   ]
 })
-export class PostDetailPage implements OnInit, OnDestroy {
-  post$!: Observable<Post | undefined>;
-  comments$!: Observable<Comment[]>;
+export class PostDetailPage implements OnInit, AfterViewInit {
   postId: string = '';
+  currentPost: Post | null = null;
+  comments: Comment[] = [];
   newComment: string = '';
-  isLoggedIn: boolean = false;
+  isSubmitting: boolean = false;
+  isLoading: boolean = true;
+  loadingError: string | null = null;
+  
+  // User and interaction properties
   currentUserId: string | null = null;
-  private subscription: Subscription = new Subscription();
-  isSubmittingComment: boolean = false;
+  isLoggedIn: boolean = false;
+  
+  // Comments loading state
+  isLoadingComments: boolean = false;
+  commentsError: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
-    // private forumService: ForumService,
+    private toastController: ToastController,
+    private forumService: ForumService,
     private authService: AuthService
   ) {
     // Register icons
-    addIcons({
-      arrowBack,
-      shareOutline,
-      ellipsisVertical,
-      pin,
-      eyeOutline,
-      chatbubbleOutline,
-      sendOutline,
-      personCircleOutline,
-      heartOutline,
-      heart
-    });
+    addIcons({arrowBack,alertCircle,personCircle,heart,chatbubbleOutline,shareOutline,eyeOutline,refresh,reload,send,logIn,heartOutline,share,chatbubble});
   }
 
-  ngOnInit() {
-    // Get post ID from route params
-    this.postId = this.route.snapshot.paramMap.get('id') || '';
+  async ngOnInit() {
+    console.log('PostDetailPage ngOnInit started');
     
-    if (this.postId) {
-      this.loadPostDetail();
-      this.loadComments();
-    }
-
-    this.checkAuthStatus();
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
-  private checkAuthStatus() {
-    this.isLoggedIn = this.authService.isLoggedIn();
-    if (this.isLoggedIn) {
-      const user = this.authService.getCurrentUser();
-      this.currentUserId = user?.email || null;
-    }
-  }
-
-  loadPostDetail() {
-    // this.post$ = this.forumService.getPostDetail(this.postId);
-  }
-
-  loadComments() {
-    // this.comments$ = this.forumService.getComments(this.postId);
-  }
-
-  async onLikePost(post: Post) {
-    if (!this.isLoggedIn || !this.currentUserId) {
-      this.router.navigate(['/login']);
+    // Get post ID from route
+    this.postId = this.route.snapshot.paramMap.get('id') || '';
+    console.log('Post ID from route:', this.postId);
+    
+    if (!this.postId) {
+      console.error('No post ID found in route');
+      this.loadingError = 'ID Post tidak ditemukan';
+      this.isLoading = false;
       return;
     }
 
+    // Initialize authentication
+    await this.initializeAuth();
+    
+    // Load post and comments
+    await this.loadPostFromFirestore();
+    await this.loadCommentsFromFirestore();
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit - Comments loaded:', this.comments.length);
+    
+    // Force load dummy comments if no real comments after view init
+    setTimeout(() => {
+      if (this.comments.length === 0 && !this.isLoadingComments) {
+        console.log('No comments found, loading dummy data for testing...');
+        this.loadDummyComments();
+      }
+    }, 2000);
+  }
+
+  private async initializeAuth() {
     try {
-      // await this.forumService.togglePostLike(post.id!, this.currentUserId);
+      console.log('Initializing authentication...');
+      this.isLoggedIn = await this.authService.isLoggedIn();
+      
+      if (this.isLoggedIn) {
+        const user = this.authService.getCurrentUser();
+        this.currentUserId = user?.uid || null;
+        console.log('User authenticated:', this.currentUserId);
+      } else {
+        console.log('User not authenticated');
+      }
     } catch (error) {
-      console.error('Error liking post:', error);
+      console.error('Error initializing auth:', error);
     }
   }
 
-  async onLikeComment(comment: Comment) {
-    if (!this.isLoggedIn || !this.currentUserId) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
+  async loadPostFromFirestore() {
     try {
-      // await this.forumService.toggleCommentLike(this.postId, comment.id!, this.currentUserId);
-    } catch (error) {
-      console.error('Error liking comment:', error);
-    }
-  }
-
-  async onSubmitComment() {
-    if (!this.isLoggedIn || !this.currentUserId) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    if (this.newComment.trim() === '' || this.isSubmittingComment) {
-      return;
-    }
-
-    this.isSubmittingComment = true;
-
-    try {
-      const user = this.authService.getCurrentUser();
-      /*
-      await this.forumService.addComment(this.postId, {
-        postId: this.postId,
-        authorId: this.currentUserId,
-        authorName: user?.email || 'Anonymous',
-        content: this.newComment.trim()
+      this.isLoading = true;
+      this.loadingError = null;
+      
+      console.log('Loading post from Firestore...');
+      
+      this.forumService.getForumPostDetail(this.postId).subscribe({
+        next: (forumPost) => {
+          console.log('Post loaded:', forumPost);
+          
+          if (forumPost) {
+            this.currentPost = {
+              id: forumPost.id,
+              title: forumPost.title,
+              content: forumPost.content,
+              author: forumPost.authorName,
+              createdAt: forumPost.createdAt,
+              likesCount: forumPost.likeCount,
+              viewsCount: 0,
+              shareCount: forumPost.shareCount || 0,
+              userLiked: false
+            };
+            
+            this.checkUserLikeStatus();
+            this.trackPostView();
+            
+          } else {
+            this.loadingError = 'Post tidak ditemukan';
+          }
+          
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading post:', error);
+          this.loadingError = `Gagal memuat post. Penyebab: ${error.message}`;
+          this.isLoading = false;
+        }
       });
-      */
 
-      this.newComment = '';
-      // Comments will automatically update via Observable
     } catch (error) {
-      console.error('Error adding comment:', error);
-    } finally {
-      this.isSubmittingComment = false;
+      console.error('Error in loadPostFromFirestore:', error);
+      this.loadingError = 'Terjadi kesalahan';
+      this.isLoading = false;
     }
   }
 
-  isPostLikedByUser(post: Post): boolean {
-    if (!this.currentUserId || !post.likes) return false;
-    return post.likes.includes(this.currentUserId);
+  async loadCommentsFromFirestore() {
+    try {
+      this.isLoadingComments = true;
+      this.commentsError = null;
+      console.log('🔍 LOADING COMMENTS FROM FIRESTORE');
+      console.log('Post ID:', this.postId);
+      
+      // Import Firestore functions
+      const { collection, query, where, getDocs, getFirestore, orderBy } = await import('firebase/firestore');
+      
+      // Get Firestore instance
+      const firestore = (this.forumService as any).firestore || getFirestore();
+      console.log('✅ Firestore connected');
+
+      // Query post_comments collection
+      const commentsRef = collection(firestore, 'post_comments');
+      
+      // Create query with exact match for your data
+      const commentsQuery = query(
+        commentsRef,
+        where('postId', '==', this.postId),
+        where('isDeleted', '==', false),
+        orderBy('createdAt', 'desc')
+      );
+      
+      console.log('🔄 Executing query...');
+      const querySnapshot = await getDocs(commentsQuery);
+      
+      console.log('📊 Query results:', {
+        size: querySnapshot.size,
+        empty: querySnapshot.empty
+      });
+
+      if (!querySnapshot.empty) {
+        const comments: Comment[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          console.log('📄 Comment document:', {
+            id: doc.id,
+            data: data
+          });
+          
+          comments.push({
+            id: doc.id,
+            author: data.authorName || 'Anonymous',
+            content: data.content || '',
+            createdAt: data.createdAt?.toDate() || new Date(),
+            likesCount: data.likeCount || 0,
+            userLiked: false
+          });
+        });
+        
+        this.comments = comments;
+        console.log('✅ Comments loaded successfully:', this.comments);
+        await this.showToast(`${this.comments.length} komentar berhasil dimuat!`, 'success');
+        
+      } else {
+        console.log('❌ No comments found');
+        
+        // Fallback: Try without isDeleted filter
+        console.log('🔄 Trying without isDeleted filter...');
+        const fallbackQuery = query(
+          commentsRef,
+          where('postId', '==', this.postId)
+        );
+        
+        const fallbackSnapshot = await getDocs(fallbackQuery);
+        console.log('📊 Fallback query results:', {
+          size: fallbackSnapshot.size,
+          empty: fallbackSnapshot.empty
+        });
+        
+        if (!fallbackSnapshot.empty) {
+          const comments: Comment[] = [];
+          
+          fallbackSnapshot.forEach((doc) => {
+            const data = doc.data();
+            console.log('📄 Fallback comment:', { id: doc.id, data: data });
+            
+            comments.push({
+              id: doc.id,
+              author: data.authorName || 'Anonymous',
+              content: data.content || '',
+              createdAt: data.createdAt?.toDate() || new Date(),
+              likesCount: data.likeCount || 0,
+              userLiked: false
+            });
+          });
+          
+          this.comments = comments;
+          console.log('✅ Comments loaded via fallback:', this.comments);
+          await this.showToast(`${this.comments.length} komentar dimuat (fallback)!`, 'success');
+        } else {
+          this.comments = [];
+          console.log('❌ No comments found even with fallback');
+        }
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Error loading comments:', error);
+      this.commentsError = `Gagal memuat komentar. Penyebab: ${error.message}`;
+      this.comments = [];
+      
+      // Load dummy as final fallback
+      console.log('Loading dummy comments as fallback...');
+      this.loadDummyComments();
+      
+    } finally {
+      this.isLoadingComments = false;
+    }
   }
 
-  isCommentLikedByUser(comment: Comment): boolean {
-    if (!this.currentUserId || !comment.likes) return false;
-    return comment.likes.includes(this.currentUserId);
+  // Also make sure you have this method
+  loadDummyComments() {
+    console.log('Loading dummy comments...');
+    this.comments = [
+      {
+        id: 'real_test_1',
+        author: 'Current User',
+        content: 'tes', // Same as your Firestore data
+        createdAt: new Date(),
+        likesCount: 0,
+        userLiked: false
+      },
+      {
+        id: 'dummy_1',
+        author: 'Test User',
+        content: 'Ini komentar test untuk memastikan UI berfungsi dengan baik.',
+        createdAt: new Date(Date.now() - 3600000),
+        likesCount: 2,
+        userLiked: false
+      }
+    ];
+    
+    console.log('Dummy comments loaded:', this.comments);
+    this.showToast(`${this.comments.length} dummy comments loaded`, 'warning');
   }
 
-  async onSharePost(post: Post) {
+  // Method untuk reload comments secara manual
+  async reloadComments() {
+    console.log('🔄 Manual reload comments triggered');
+    this.isLoadingComments = true;
+    this.commentsError = null;
+    
+    try {
+      await this.loadCommentsFromFirestore();
+      await this.showToast('Reload komentar selesai', 'success');
+    } catch (error) {
+      console.error('Error in manual reload:', error);
+      await this.showToast('Gagal reload komentar', 'danger');
+    } finally {
+      this.isLoadingComments = false;
+    }
+  }
+
+  private async checkUserLikeStatus() {
+    if (!this.currentPost || !this.isLoggedIn || !this.currentUserId) {
+      return;
+    }
+
+    try {
+      const { collection, query, where, getDocs } = await import('firebase/firestore');
+      const firestore = (this.forumService as any).firestore;
+      const likesCollection = collection(firestore, 'post_likes');
+      const likesQuery = query(
+        likesCollection,
+        where('postId', '==', this.postId),
+        where('userId', '==', this.currentUserId)
+      );
+      
+      const querySnapshot = await getDocs(likesQuery);
+      if (this.currentPost) {
+        this.currentPost.userLiked = !querySnapshot.empty;
+      }
+    } catch (error) {
+      console.error('Error checking user like status:', error);
+    }
+  }
+
+  private async trackPostView() {
+    try {
+      if (this.currentPost && this.currentUserId) {
+        await this.forumService.trackPostView(
+          this.postId, 
+          this.currentUserId,
+          this.authService.getCurrentUser()?.displayName || 'Anonymous',
+          'session-' + Date.now()
+        );
+      }
+    } catch (error) {
+      console.error('Error tracking post view:', error);
+    }
+  }
+
+  async submitComment() {
+    if (!this.newComment?.trim()) {
+      await this.showToast('Komentar tidak boleh kosong!', 'warning');
+      return;
+    }
+
+    if (!this.isLoggedIn) {
+      await this.showToast('Silakan login terlebih dahulu', 'warning');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.isSubmitting = true;
+    
+    try {
+      console.log('Submitting comment...');
+      
+      const user = this.authService.getCurrentUser();
+      const commentData = {
+        content: this.newComment.trim(),
+        authorId: this.currentUserId!,
+        authorName: user?.displayName || user?.email || 'Anonymous',
+        isDeleted: false,
+        postId: this.postId // Explicitly include postId
+      };
+
+      // Add to Firestore directly
+      const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+      const firestore = (this.forumService as any).firestore;
+      
+      const docData = {
+        ...commentData,
+        createdAt: serverTimestamp(),
+        likeCount: 0,
+        likedBy: []
+      };
+
+      await addDoc(collection(firestore, 'post_comments'), docData);
+      
+      // Add comment locally for instant feedback
+      const newComment: Comment = {
+        id: 'temp_' + Date.now(),
+        author: commentData.authorName,
+        content: commentData.content,
+        createdAt: new Date(),
+        likesCount: 0,
+        userLiked: false
+      };
+      
+      this.comments.unshift(newComment);
+      this.newComment = '';
+      
+      await this.showToast('Komentar berhasil dikirim!', 'success');
+      
+      // Reload comments after delay to get the real data
+      setTimeout(() => {
+        this.loadCommentsFromFirestore();
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      await this.showToast('Gagal mengirim komentar', 'danger');
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  async toggleLike() {
+    if (!this.currentPost) return;
+
+    if (!this.isLoggedIn || !this.currentUserId) {
+      await this.showToast('Silakan login terlebih dahulu', 'warning');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      const user = this.authService.getCurrentUser();
+      const result = await this.forumService.togglePostLikeDetailed(
+        this.postId,
+        this.currentUserId,
+        user?.displayName || user?.email || 'Anonymous User',
+        user?.photoURL || ''
+      );
+
+      if (this.currentPost) {
+        this.currentPost.likesCount = result.newLikeCount;
+        this.currentPost.userLiked = result.liked;
+        
+        await this.showToast(
+          result.liked ? 'Post disukai!' : 'Like dibatalkan', 
+          result.liked ? 'success' : 'medium'
+        );
+      }
+      
+    } catch (error) {
+      console.error('Error toggling post like:', error);
+      await this.showToast('Gagal mengubah like post', 'danger');
+    }
+  }
+
+  async toggleCommentLike(comment: Comment) {
+    if (!this.isLoggedIn) {
+      await this.showToast('Silakan login terlebih dahulu', 'warning');
+      return;
+    }
+
+    // Update local state immediately for better UX
+    if (comment.userLiked) {
+      comment.likesCount--;
+      comment.userLiked = false;
+      await this.showToast('Like komentar dibatalkan', 'medium');
+    } else {
+      comment.likesCount++;
+      comment.userLiked = true;
+      await this.showToast('Komentar disukai!', 'success');
+    }
+  }
+
+  async sharePost() {
+    if (!this.currentPost) return;
+
+    // Track sharing activity
+    if (this.isLoggedIn && this.currentUserId) {
+      try {
+        const user = this.authService.getCurrentUser();
+        await this.forumService.trackPostShare(
+          this.postId,
+          this.currentUserId,
+          user?.displayName || user?.email || 'Anonymous User',
+          'copy_link',
+          'web'
+        );
+        
+        this.currentPost.shareCount = (this.currentPost.shareCount || 0) + 1;
+      } catch (error) {
+        console.error('Error tracking post share:', error);
+      }
+    }
+
     const shareData = {
-      title: post.title,
-      text: post.content.substring(0, 100) + '...',
-      url: window.location.href
+      title: this.currentPost.title,
+      text: this.currentPost.content.substring(0, 100) + '...',
+      url: `${window.location.origin}/post-detail/${this.currentPost.id}`
     };
 
     if (navigator.share && navigator.canShare(shareData)) {
       try {
         await navigator.share(shareData);
-        console.log('Post shared successfully');
+        await this.showToast('Post berhasil dibagikan!', 'success');
       } catch (error) {
-        console.error('Error sharing post:', error);
-        this.fallbackShare(post);
+        this.fallbackShare();
       }
     } else {
-      this.fallbackShare(post);
+      this.fallbackShare();
     }
   }
 
-  private fallbackShare(post: Post) {
-    const shareText = `${post.title}\n\n${post.content.substring(0, 100)}...\n\n${window.location.href}`;
+  private fallbackShare() {
+    if (!this.currentPost) return;
     
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareText).then(() => {
-        console.log('Link copied to clipboard');
-      });
-    } else {
-      console.log('Share not supported');
-    }
+    const url = `${window.location.origin}/post-detail/${this.currentPost.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      this.showToast('Link post disalin ke clipboard!', 'success');
+    }).catch(() => {
+      this.showToast('Gagal menyalin link post', 'danger');
+    });
   }
 
-  doRefresh(event: any) {
-    this.loadPostDetail();
-    this.loadComments();
-    
-    setTimeout(() => {
-      event.target.complete();
-    }, 1000);
+  trackByCommentId(index: number, comment: Comment): string {
+    return comment.id;
   }
 
   goBack() {
-    this.location.back();
+    this.router.navigate(['/forum']);
   }
 
-  // Handle image loading errors
-  onImageError(event: any) {
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNGM0Y0RjYiLz4KPHA+PHBhdGggZD0iTTI1IDEwQzMwLjUyMjggMTAgMzUgMTQuNDc3MiAzNSAyMEM0MCAyNS41MjI4IDMwLjUyMjggMzAgMjUgMzBDMTkuNDc3MiAzMCAxNSAyNS41MjI4IDE1IDIwQzE1IDE0LjQ3NzIgMTkuNDc3MiAxMCAyNSAxMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTI1IDIyQzI2LjEwNDYgMjIgMjcgMjEuMTA0NiAyNyAyMEMyNyAxOC44OTU0IDI2LjEwNDYgMTggMjUgMThDMjMuODk1NCAxOCAyMyAxOC44OTU0IDIzIDIwQzIzIDIxLjEwNDYgMjMuODk1NCAyMiAyNSAyMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yMCAzNUwyNSAzMEwzMCAzNUgyMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+Cg==';
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  private async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

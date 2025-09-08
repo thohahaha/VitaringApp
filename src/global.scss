@@ -504,6 +504,127 @@ ion-content {
   color: #1f2937 !important;
 }
 
+/* ============================================
+ * FORUM POSTS STYLING UTILITIES
+ * ============================================ */
+
+/* Global utilities for forum posts display */
+.post-card {
+  --background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.post-category-badge {
+  --background: #f97316 !important;
+  --color: #ffffff !important;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.post-tag-badge {
+  --background: #f3f4f6 !important;
+  --color: #6b7280 !important;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  margin-right: 4px;
+  border-radius: 4px;
+  font-weight: 400;
+}
+
+.post-stats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+  
+  div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    ion-icon {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+  }
+}
+
+.posts-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  
+  ion-spinner {
+    --color: #f97316;
+  }
+}
+
+.empty-posts {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+  
+  ion-icon {
+    font-size: 3rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+  }
+  
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* ============================================
+ * SEGMENT STYLING
+ * ============================================ */
+.profile-segment {
+  --background: #f3f4f6;
+  --color-checked: #f97316;
+  --indicator-color: #f97316;
+  --indicator-color-checked: #f97316;
+  border-radius: 12px;
+  padding: 4px;
+  margin: 0 1rem 1rem 1rem;
+  
+  ion-segment-button {
+    --background-checked: #ffffff;
+    --color: #6b7280;
+    --color-checked: #f97316;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 2px;
+    box-shadow: none;
+    
+    &.segment-button-checked {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
 /* Fix for navbar/footer being cut off */
 ion-footer {
   height: auto !important;

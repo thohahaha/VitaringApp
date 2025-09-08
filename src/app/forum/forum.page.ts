@@ -44,13 +44,15 @@ import {
   chatbubbleOutline,
   eyeOutline,
   personCircleOutline,
+  personCircle,
   heartHalfOutline,
   statsChartOutline,
   newspaperOutline,
   wifiOutline,
   people,
   trendingUp,
-  filterOutline, pin } from 'ionicons/icons';
+  filterOutline, 
+  pin, shareOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-forum',
@@ -88,7 +90,6 @@ import {
   ]
 })
 export class ForumPage implements OnInit {
-  posts$!: Observable<Post[]>;
   forumPosts$!: Observable<ForumPost[]>;
   forumStats$!: Observable<ForumStats>;
   selectedFilter: 'newest' | 'featured' | 'popular' = 'newest';
@@ -103,7 +104,7 @@ export class ForumPage implements OnInit {
     private location: Location
   ) {
     // Register icons
-    addIcons({arrowBack,add,searchOutline,menuOutline,trendingUp,heart,people,chatbubbleOutline,pin,eyeOutline,addOutline,heartOutline,heartHalfOutline,statsChartOutline,newspaperOutline,wifiOutline,personCircleOutline,filterOutline});
+    addIcons({arrowBack,add,searchOutline,menuOutline,trendingUp,heart,people,chatbubbleOutline,pin,personCircle,eyeOutline,shareOutline,addOutline,heartOutline,heartHalfOutline,statsChartOutline,newspaperOutline,wifiOutline,personCircleOutline,filterOutline});
   }
 
   ngOnInit() {
@@ -121,7 +122,6 @@ export class ForumPage implements OnInit {
   }
 
   loadPosts() {
-    this.posts$ = this.forumService.getPosts(this.selectedFilter);
     this.forumPosts$ = this.forumService.getForumPosts();
   }
 
@@ -141,19 +141,83 @@ export class ForumPage implements OnInit {
     if (query.trim() === '') {
       this.loadPosts();
     } else {
-      this.posts$ = this.forumService.searchPosts(query);
       this.forumPosts$ = this.forumService.searchForumPosts(query);
     }
   }
 
-  navigateToPostDetail(postId: string) {
+  async navigateToPostDetail(postId: string) {
     if (postId) {
-      this.router.navigate(['/forum', postId]);
+      // Track view if user is logged in
+      if (this.isLoggedIn && this.currentUserId) {
+        try {
+          const user = this.authService.getCurrentUser();
+          await this.forumService.trackPostView(
+            postId,
+            this.currentUserId,
+            user?.displayName || user?.email || 'Anonymous User'
+          );
+        } catch (error) {
+          console.error('Error tracking post view:', error);
+        }
+      }
+      
+      this.router.navigate(['/post-detail', postId]);
     }
   }
 
   navigateToCreatePost() {
     this.router.navigate(['/create-post']);
+  }
+
+  async onShareForumPost(post: ForumPost, event: Event) {
+    event.stopPropagation();
+    
+    // Track sharing activity
+    if (this.currentUserId) {
+      try {
+        const user = this.authService.getCurrentUser();
+        await this.forumService.trackPostShare(
+          post.id!,
+          this.currentUserId,
+          user?.displayName || user?.email || 'Anonymous User',
+          'copy_link',
+          'web'
+        );
+        
+        // Update local share count
+        post.shareCount = (post.shareCount || 0) + 1;
+      } catch (error) {
+        console.error('Error tracking post share:', error);
+      }
+    }
+
+    const shareData = {
+      title: post.title,
+      text: post.content.substring(0, 100) + '...',
+      url: `${window.location.origin}/post-detail/${post.id}`
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        console.log('Post shared successfully');
+      } catch (error) {
+        console.error('Error sharing post:', error);
+        this.fallbackShare(post);
+      }
+    } else {
+      this.fallbackShare(post);
+    }
+  }
+
+  private fallbackShare(post: ForumPost) {
+    const url = `${window.location.origin}/post-detail/${post.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      console.log('URL copied to clipboard');
+      // You might want to show a toast notification here
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
   }
 
   async onLike(post: Post, event: Event) {
@@ -182,15 +246,34 @@ export class ForumPage implements OnInit {
     }
 
     try {
-      await this.forumService.updatePostLikeCount(post.id, 1);
+      const user = this.authService.getCurrentUser();
+      const result = await this.forumService.togglePostLikeDetailed(
+        post.id!, 
+        this.currentUserId,
+        user?.displayName || user?.email || 'Anonymous User',
+        user?.photoURL || ''
+      );
+      
+      // Update local post data immediately for better UX
+      post.likeCount = result.newLikeCount;
+      post.likedBy = result.liked 
+        ? [...(post.likedBy || []), this.currentUserId]
+        : (post.likedBy || []).filter(id => id !== this.currentUserId);
+      
+      console.log(`Post ${result.liked ? 'liked' : 'unliked'}. New count: ${result.newLikeCount}`);
     } catch (error) {
-      console.error('Error liking forum post:', error);
+      console.error('Error toggling forum post like:', error);
     }
   }
 
   isPostLikedByUser(post: Post): boolean {
     if (!this.currentUserId || !post.likes) return false;
     return post.likes.includes(this.currentUserId);
+  }
+
+  isForumPostLikedByUser(post: ForumPost): boolean {
+    if (!this.currentUserId || !post.likedBy) return false;
+    return this.forumService.isPostLikedByUser(post, this.currentUserId);
   }
 
   onCreatePost() {

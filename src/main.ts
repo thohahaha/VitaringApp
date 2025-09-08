@@ -12,16 +12,19 @@ import {
   newspaperOutline, 
   wifiOutline, 
   personCircleOutline,
+  personCircle,
   batteryHalfOutline,
   heart,
   heartOutline,
   thermometerOutline,
+  thermometer,
   waterOutline,
   walkOutline,
   flameOutline,
   moonOutline,
   radioButtonOnOutline,
   arrowBack,
+  arrowForward,
   searchOutline,
   homeOutline,
   shareOutline,
@@ -30,26 +33,42 @@ import {
   eyeOutline,
   chatbubbleOutline,
   sendOutline,
+  send,
   pin,
-  people
+  people,
+  // Newly added icons to silence warnings
+  speedometerOutline,
+  trendingUpOutline,
+  sunnyOutline,
+  radioOutline,
+  serverOutline,
+  hardwareChipOutline,
+  documentTextOutline,
+  powerOutline,
+  timeOutline,
+  fitnessOutline
 } from 'ionicons/icons';
 
 addIcons({
+  // Existing icons
   'heart-half-outline': heartHalfOutline,
   'stats-chart-outline': statsChartOutline,
   'newspaper-outline': newspaperOutline,
   'wifi-outline': wifiOutline,
   'person-circle-outline': personCircleOutline,
+  'person-circle': personCircle,
   'battery-half-outline': batteryHalfOutline,
   'heart': heart,
   'heart-outline': heartOutline,
   'thermometer-outline': thermometerOutline,
+  'thermometer': thermometer,
   'water-outline': waterOutline,
   'walk-outline': walkOutline,
   'flame-outline': flameOutline,
   'moon-outline': moonOutline,
   'target-outline': radioButtonOnOutline,
   'arrow-back': arrowBack,
+  'arrow-forward': arrowForward,
   'search-outline': searchOutline,
   'home-outline': homeOutline,
   'share-outline': shareOutline,
@@ -58,8 +77,22 @@ addIcons({
   'eye-outline': eyeOutline,
   'chatbubble-outline': chatbubbleOutline,
   'send-outline': sendOutline,
+  'send': send,
   'pin': pin,
-  'people': people
+  'people': people,
+  // New global registrations to remove warnings
+  'speedometer-outline': speedometerOutline,
+  'trending-up-outline': trendingUpOutline,
+  'sunny-outline': sunnyOutline,
+  'radio-outline': radioOutline,
+  'server-outline': serverOutline,
+  'hardware-chip-outline': hardwareChipOutline,
+  'document-text-outline': documentTextOutline,
+  'power-outline': powerOutline,
+  'time-outline': timeOutline,
+  'fitness-outline': fitnessOutline,
+  // Alias: some templates still use database-outline, map to server icon
+  'database-outline': serverOutline
 });
 
 if (environment.production) {

@@ -35,7 +35,9 @@ import {
   batteryHalf, 
   wifi, 
   batteryHalfOutline, 
-  wifiOutline } from 'ionicons/icons';
+  wifiOutline, 
+  settingsOutline, 
+  refreshOutline, thermometerOutline } from 'ionicons/icons';
 
 interface DeviceSensors {
   heartRate: boolean;
@@ -77,7 +79,7 @@ export class PerangkatPage implements OnInit, OnDestroy {
   selectedDevice: Device = {
     name: 'VitaRing Pro',
     model: 'VitaRing Pro Gen 3',
-    serial: 'ESP32C3-A83B29E9EF0', // Default, will be updated from HealthMetrics
+    serial: 'ESP32C3-A8358206CF8', // Default, will be updated from HealthMetrics
     firmware: 'v2.1.3',
     batteryLevel: 78,
     isConnected: true
@@ -91,7 +93,7 @@ export class PerangkatPage implements OnInit, OnDestroy {
 
   constructor(private healthService: HealthService) {
     // Add icons
-    addIcons({batteryHalfOutline,wifiOutline,batteryHalf,wifi,notifications,heart,thermometer,walk,moon,chevronForward,sunny,fitness,refresh,sync,hardwareChip,checkmarkCircle,alertCircle,informationCircle,barcode,construct,bluetooth,settings,locate,download});
+    addIcons({hardwareChip,alertCircle,batteryHalfOutline,wifiOutline,wifi,settingsOutline,refreshOutline,informationCircle,heart,thermometer,sunny,fitness,walk,thermometerOutline,moon,batteryHalf,notifications,chevronForward,refresh,sync,checkmarkCircle,barcode,construct,bluetooth,settings,locate,download});
   }
 
   ngOnInit() {
@@ -111,23 +113,29 @@ export class PerangkatPage implements OnInit, OnDestroy {
       (data) => {
         this.healthData = data;
         if (data) {
-          // Update device status with real sensor data from Firestore
+          // Update device status with real sensor data from Realtime Database
           this.selectedDevice.isConnected = data.isDeviceOn;
           this.deviceConnected = data.isDeviceOn;
           this.batteryLevel = 85; // Keep static since sensor doesn't provide battery
           
-          // Update serial number from deviceID
+          // Update device name and serial number from sensor data
+          if (data.deviceName) {
+            this.selectedDevice.name = data.deviceName;
+            this.selectedDevice.model = data.deviceName; // Update model to use deviceName from realtime data
+          }
           if (data.deviceID) {
             this.selectedDevice.serial = data.deviceID;
           }
           
           console.log('📱 Perangkat page - Sensor data received:', {
+            deviceName: data.deviceName,
+            deviceID: data.deviceID,
+            model: this.selectedDevice.model, // Log the updated model
             bmpTemp: data.bmpTemp,
             objTemp: data.objTemp,
             altitude: data.altitude,
             pressure: data.pressure,
             ambTemp: data.ambTemp,
-            deviceID: data.deviceID,
             isDeviceOn: data.isDeviceOn,
             isConnected: this.selectedDevice.isConnected,
             serial: this.selectedDevice.serial,
@@ -193,6 +201,129 @@ export class PerangkatPage implements OnInit, OnDestroy {
 
   openHealthSettings() {
     console.log('Opening health settings...');
+  }
+
+  /**
+   * Open WiFi settings to connect to ESP32 device
+   * This will open the system WiFi settings page
+   */
+  openWiFiSettings() {
+    console.log('🔧 Opening WiFi settings to connect to ESP32...');
+    
+    try {
+      // Check if running on mobile device
+      if (window.navigator && 'userAgent' in window.navigator) {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+        
+        if (isMobile) {
+          // For mobile devices, try to open WiFi settings
+          if (userAgent.includes('android')) {
+            // Android WiFi settings
+            window.open('android-app://com.android.settings/.wifi.WifiSettings', '_system');
+          } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+            // iOS WiFi settings
+            window.open('App-Prefs:root=WIFI', '_system');
+          }
+        } else {
+          // For desktop/web, show instructions
+          this.showWiFiInstructions();
+        }
+      } else {
+        this.showWiFiInstructions();
+      }
+    } catch (error) {
+      console.error('❌ Error opening WiFi settings:', error);
+      this.showWiFiInstructions();
+    }
+  }
+
+  /**
+   * Show WiFi connection instructions for desktop users
+   */
+  private showWiFiInstructions() {
+    const instructions = `
+Untuk menghubungkan ke ESP32 VitaRing:
+
+1. Buka pengaturan WiFi komputer Anda
+2. Cari jaringan "VitaRing_ESP32" atau "ESP32-AP"
+3. Hubungkan ke jaringan tersebut
+4. Masukkan password jika diminta (biasanya: "vitaring123")
+5. Kembali ke aplikasi ini
+
+Jika menggunakan Windows:
+- Klik ikon WiFi di system tray
+- Pilih jaringan ESP32
+
+Jika menggunakan Mac:
+- Klik ikon WiFi di menu bar
+- Pilih jaringan ESP32
+    `;
+    
+    alert(instructions);
+  }
+
+  /**
+   * Disconnect from ESP32 device
+   * This will simulate disconnecting from the device
+   */
+  disconnectDevice() {
+    console.log('🔌 Disconnecting from ESP32 device...');
+    
+    if (confirm('Apakah Anda yakin ingin memutus koneksi dari perangkat ESP32?')) {
+      try {
+        // Stop the health service listener
+        this.healthService.stopListener();
+        
+        // Set device as offline
+        this.healthService.setOfflineMode(true);
+        
+        // Update local device status
+        this.selectedDevice.isConnected = false;
+        
+        // Show success message
+        console.log('✅ Successfully disconnected from ESP32');
+        
+        // Show user-friendly notification
+        setTimeout(() => {
+          alert('Berhasil memutus koneksi dari ESP32. Untuk menghubungkan kembali, gunakan tombol "Buka Pengaturan WiFi".');
+        }, 500);
+        
+      } catch (error) {
+        console.error('❌ Error disconnecting from device:', error);
+        alert('Gagal memutus koneksi. Silakan coba lagi.');
+      }
+    }
+  }
+
+  /**
+   * Reconnect to ESP32 device
+   * This will restart the connection to the device
+   */
+  reconnectDevice() {
+    console.log('🔄 Reconnecting to ESP32 device...');
+    
+    try {
+      // Restart the health service listener
+      this.healthService.restartListener();
+      
+      // Set device as online
+      this.healthService.setOfflineMode(false);
+      
+      // Update local device status
+      this.selectedDevice.isConnected = true;
+      
+      console.log('✅ Attempting to reconnect to ESP32');
+      
+      // Show user-friendly notification
+      setTimeout(() => {
+        alert('Mencoba menghubungkan kembali ke ESP32. Pastikan perangkat dalam jangkauan dan WiFi aktif.');
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Error reconnecting to device:', error);
+      alert('Gagal menghubungkan kembali. Silakan periksa koneksi WiFi Anda.');
+    }
   }
 
   resetDevice() {

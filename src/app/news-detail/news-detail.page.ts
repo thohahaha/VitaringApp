@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { NewsService } from '../services/news.service';
 import { AuthService } from '../auth/auth.service';
-import { News } from '../models/news.model';
+import { News } from '../models/news.interface';
 import { Observable, Subscription } from 'rxjs';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -126,17 +126,39 @@ export class NewsDetailPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async onLike() {
+  async onLike(news: News) {
     if (!this.isLoggedIn || !this.currentUserEmail || this.isLiking) {
       console.log('User not logged in or already liking');
+      // Optionally, prompt to log in
+      if (!this.isLoggedIn) {
+        this.router.navigate(['/login']);
+      }
       return;
     }
 
     this.isLiking = true;
+
+    const initialLikes = [...(news.likes || [])];
+    const userHasLiked = initialLikes.includes(this.currentUserEmail);
+
+    // Optimistic UI update
+    if (userHasLiked) {
+      news.likes = initialLikes.filter(email => email !== this.currentUserEmail);
+    } else {
+      news.likes = [...initialLikes, this.currentUserEmail];
+    }
+    // Update likesCount for the UI
+    news.likesCount = news.likes.length;
+
     try {
-      await this.newsService.updateNewsLikes(this.newsId, this.currentUserEmail);
+      // Call the service to update the backend
+      await this.newsService.updateNewsLikes(this.newsId, this.currentUserEmail, userHasLiked);
     } catch (error) {
       console.error('Error liking news:', error);
+      // Revert UI on error
+      news.likes = initialLikes;
+      news.likesCount = initialLikes.length;
+      // Optionally, show a toast notification to the user
     } finally {
       this.isLiking = false;
     }

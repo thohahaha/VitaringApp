@@ -53,7 +53,7 @@
             class="like-button"
             fill="solid"
             [class.liked]="isNewsLikedByUser(news)"
-            (click)="onLike()"
+            (click)="onLike(news)"
             [disabled]="isLiking || !isLoggedIn"
           >
             <ion-icon [name]="isNewsLikedByUser(news) ? 'heart' : 'heart-outline'" slot="start"></ion-icon>

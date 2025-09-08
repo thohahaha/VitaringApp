@@ -153,15 +153,34 @@
       align-items: center;
       gap: 12px;
 
-      .author-avatar {
+      .author-avatar-container {
+        position: relative;
         width: 48px;
         height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: 
-          0 8px 25px -8px rgba(0, 0, 0, 0.2),
-          0 0 0 2px rgba(255, 255, 255, 0.8);
-        transition: transform 0.3s ease;
+
+        .author-avatar {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          box-shadow: 
+            0 8px 25px -8px rgba(0, 0, 0, 0.2),
+            0 0 0 2px rgba(255, 255, 255, 0.8);
+          transition: transform 0.3s ease;
+        }
+
+        .author-avatar-icon {
+          width: 100%;
+          height: 100%;
+          font-size: 48px;
+          color: #f97316;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #fef3c7, #fed7aa);
+          box-shadow: 
+            0 8px 25px -8px rgba(0, 0, 0, 0.2),
+            0 0 0 2px rgba(255, 255, 255, 0.8);
+          transition: transform 0.3s ease;
+        }
       }
 
       .author-details {

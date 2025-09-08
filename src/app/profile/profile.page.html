@@ -18,43 +18,162 @@
     </div>
 
     <div class="profile-content">
-      <div class="profile-section">
-        <h3>Account Settings</h3>
-        <div class="setting-item" (click)="navigateToEditProfile()">
-          <ion-icon name="person-outline"></ion-icon>
-          <span>Edit Profile</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+      <!-- Segment Tabs -->
+      <ion-segment 
+        [(ngModel)]="activeTab" 
+        (ionChange)="onSegmentChange($event)"
+        style="margin-bottom: 1rem;">
+        <ion-segment-button value="posts">
+          <ion-label>My Posts</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="settings">
+          <ion-label>Settings</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Posts Tab -->
+      <div *ngIf="activeTab === 'posts'" class="posts-section">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 1rem;">
+          <h3 style="margin: 0; color: #1f2937; font-weight: 600;">Forum Posts Saya</h3>
+          <ion-button 
+            (click)="navigateToCreatePost()" 
+            fill="outline" 
+            size="small"
+            color="warning">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            Buat Post
+          </ion-button>
         </div>
-        <div class="setting-item">
-          <ion-icon name="notifications-outline"></ion-icon>
-          <span>Notifications</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoadingPosts" class="loading-container" style="text-align: center; padding: 2rem;">
+          <ion-spinner color="warning"></ion-spinner>
+          <p style="margin-top: 1rem; color: #6b7280;">Memuat posts...</p>
         </div>
-        <div class="setting-item" (click)="navigateToPrivacy()">
-          <ion-icon name="shield-outline"></ion-icon>
-          <span>Privacy</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+
+        <!-- Posts List -->
+        <div *ngIf="userPosts$ | async as posts" class="posts-list">
+          <div *ngIf="posts.length === 0 && !isLoadingPosts" class="empty-posts" style="text-align: center; padding: 3rem 1rem;">
+            <ion-icon name="document-text-outline" style="font-size: 4rem; color: #d1d5db; margin-bottom: 1rem;"></ion-icon>
+            <h4 style="color: #6b7280; margin-bottom: 0.5rem;">Belum Ada Post</h4>
+            <p style="color: #9ca3af; margin-bottom: 1.5rem;">Mulai berbagi di forum dengan membuat post pertama Anda!</p>
+            <ion-button (click)="navigateToCreatePost()" fill="solid" color="warning">
+              <ion-icon name="document-text-outline" slot="start"></ion-icon>
+              Buat Post Pertama
+            </ion-button>
+          </div>
+
+          <div 
+            *ngFor="let post of posts" 
+            (click)="navigateToPost(post.id!)"
+            class="modern-post-card">
+            
+            <!-- Post Header -->
+            <div class="post-header">
+              <div class="post-category-wrapper">
+                <div class="category-icon">
+                  <ion-icon [name]="getCategoryIcon(post.category)"></ion-icon>
+                </div>
+                <ion-badge class="category-badge">{{ post.category }}</ion-badge>
+              </div>
+              <div class="post-date">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ formatDate(post.createdAt) }}</span>
+              </div>
+            </div>
+
+            <!-- Post Content -->
+            <div class="post-content">
+              <h3 class="post-title">{{ post.title }}</h3>
+              <p class="post-excerpt">{{ post.content }}</p>
+              
+              <!-- Tags Section -->
+              <div *ngIf="post.tags && post.tags.length > 0" class="tags-container">
+                <div class="tag-item" *ngFor="let tag of post.tags.slice(0, 4)">
+                  <ion-icon name="pricetag"></ion-icon>
+                  <span>{{ tag }}</span>
+                </div>
+                <div *ngIf="post.tags.length > 4" class="more-tags">
+                  +{{ post.tags.length - 4 }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Post Footer -->
+            <div class="post-footer">
+              <div class="engagement-stats">
+                <div class="stat-item like">
+                  <ion-icon name="heart"></ion-icon>
+                  <span>{{ post.likeCount || 0 }}</span>
+                </div>
+                <div class="stat-item comment">
+                  <ion-icon name="chatbubble"></ion-icon>
+                  <span>{{ post.commentCount || 0 }}</span>
+                </div>
+                <div class="stat-item view">
+                  <ion-icon name="eye"></ion-icon>
+                  <span>{{ post.viewCount || 0 }}</span>
+                </div>
+              </div>
+              <div class="post-actions">
+                <ion-button fill="clear" size="small" class="action-btn">
+                  <ion-icon name="share-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" size="small" class="action-btn">
+                  <ion-icon name="bookmark-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Hover Effect Overlay -->
+            <div class="hover-overlay">
+              <ion-icon name="open-outline"></ion-icon>
+              <span>Baca Selengkapnya</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="profile-section">
-        <h3>Support</h3>
-        <div class="setting-item" (click)="navigateToHelpCenter()">
-          <ion-icon name="help-circle-outline"></ion-icon>
-          <span>Help Center</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+      <!-- Settings Tab -->
+      <div *ngIf="activeTab === 'settings'" class="settings-section">
+        <div class="profile-section">
+          <h3>Account Settings</h3>
+          <div class="setting-item" (click)="navigateToEditProfile()">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Edit Profile</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+          <div class="setting-item">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span>Notifications</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+          <div class="setting-item" (click)="navigateToPrivacy()">
+            <ion-icon name="shield-outline"></ion-icon>
+            <span>Privacy</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
         </div>
-        <div class="setting-item" (click)="navigateToAbout()">
-          <ion-icon name="information-circle-outline"></ion-icon>
-          <span>About</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
-      </div>
 
-      <div class="profile-section">
-        <div class="setting-item logout-item" (click)="logout()">
-          <ion-icon name="log-out-outline"></ion-icon>
-          <span>Logout</span>
+        <div class="profile-section">
+          <h3>Support</h3>
+          <div class="setting-item" (click)="navigateToHelpCenter()">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>Help Center</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+          <div class="setting-item" (click)="navigateToAbout()">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>About</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="setting-item logout-item" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+            <span>Logout</span>
+          </div>
         </div>
       </div>
     </div>

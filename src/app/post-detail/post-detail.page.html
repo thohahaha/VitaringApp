@@ -1,110 +1,94 @@
 <ion-header [translucent]="true">
-  <ion-toolbar style="--background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); --color: white;">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" fill="clear">
-        <ion-icon name="arrow-back" color="light"></ion-icon>
+        <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title style="font-weight: 800; color: white;">Detail Post</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="onSharePost(post)" *ngIf="post$ | async as post">
-        <ion-icon name="share-outline" color="light"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear">
-        <ion-icon name="ellipsis-vertical" color="light"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ion-title>Detail Post</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <!-- Pull to Refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content 
-      pulling-icon="chevron-down-circle-outline"
-      pulling-text="Tarik untuk refresh"
-      refreshing-spinner="circles"
-      refreshing-text="Memuat ulang...">
-    </ion-refresher-content>
-  </ion-refresher>
+<ion-content>
+  <div class="post-detail-container">
+    
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <ion-text>
+        <p>Memuat detail post...</p>
+      </ion-text>
+    </div>
 
-  <ng-container *ngIf="post$ | async as post; else loadingTemplate">
-    <div class="post-detail-container">
-      
+    <!-- Error State -->
+    <div class="error-container" *ngIf="loadingError && !isLoading">
+      <div class="error-content">
+        <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+        <h3>Terjadi Kesalahan</h3>
+        <p>{{ loadingError }}</p>
+        <ion-button (click)="loadPostFromFirestore()">
+          Coba Lagi
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Main Content - Only show when post is loaded -->
+    <div *ngIf="currentPost && !isLoading">
+    
       <!-- Main Post Card -->
       <div class="main-post-card">
-        <!-- Post Header -->
         <div class="post-header">
           <div class="author-info">
-            <img 
-              [src]="post.authorAvatar" 
-              [alt]="post.authorName"
-              class="author-avatar"
-              (error)="onImageError($event)"
-            />
+            <div class="author-avatar-container">
+              <ion-icon name="person-circle" class="author-avatar-icon"></ion-icon>
+            </div>
             <div class="author-details">
-              <span class="author-name">{{ post.authorName }}</span>
-              <span class="post-date">{{ post.createdAt | timeAgo }}</span>
+              <div class="author-name">{{ currentPost.author }}</div>
+              <div class="post-date">{{ currentPost.createdAt | date:'short' }}</div>
             </div>
           </div>
-
-          <!-- Pinned Badge -->
-          <div class="pinned-badge" *ngIf="post.isPinned">
-            <ion-icon name="pin"></ion-icon>
-            <span>Pinned</span>
-          </div>
         </div>
 
-        <!-- Post Content -->
         <div class="post-content">
-          <h1 class="post-title">{{ post.title }}</h1>
-          <div class="post-body" [innerHTML]="post.content"></div>
-          
-          <!-- Tags -->
-          <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
-            <ion-badge 
-              *ngFor="let tag of post.tags" 
-              color="warning"
-              class="tag-badge">
-              {{ tag }}
-            </ion-badge>
+          <h2 class="post-title">{{ currentPost.title }}</h2>
+          <div class="post-body">
+            <p>{{ currentPost.content }}</p>
           </div>
         </div>
 
-        <!-- Post Stats -->
         <div class="post-stats">
-          <div class="stat-item">
-            <ion-icon name="eye-outline"></ion-icon>
-            <span>{{ post.views }} views</span>
+          <div class="stat-item likes" [class.liked]="currentPost.userLiked">
+            <ion-icon name="heart"></ion-icon>
+            <span>{{ currentPost.likesCount }} suka</span>
           </div>
           <div class="stat-item">
             <ion-icon name="chatbubble-outline"></ion-icon>
-            <span>{{ post.commentsCount }} balasan</span>
+            <span>{{ comments.length }} komentar</span>
           </div>
-          <div class="stat-item likes" [class.liked]="isPostLikedByUser(post)">
-            <ion-icon [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"></ion-icon>
-            <span>{{ post.likes.length }} suka</span>
+          <div class="stat-item">
+            <ion-icon name="share-outline"></ion-icon>
+            <span>{{ currentPost.shareCount || 0 }} share</span>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>{{ currentPost.viewsCount || 0 }} views</span>
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="action-buttons">
           <ion-button 
-            fill="outline"
-            (click)="onLikePost(post)"
-            [class.liked]="isPostLikedByUser(post)"
-            class="like-button">
-            <ion-icon 
-              [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"
-              slot="start">
-            </ion-icon>
-            {{ isPostLikedByUser(post) ? 'Disukai' : 'Suka' }}
+            fill="outline" 
+            class="like-button"
+            [class.liked]="currentPost.userLiked"
+            (click)="toggleLike()">
+            <ion-icon name="heart" slot="start"></ion-icon>
+            {{ currentPost.userLiked ? 'Disukai' : 'Suka' }}
           </ion-button>
           
           <ion-button 
-            fill="outline"
-            (click)="onSharePost(post)"
-            class="share-button">
+            fill="outline" 
+            class="share-button"
+            (click)="sharePost()">
             <ion-icon name="share-outline" slot="start"></ion-icon>
             Bagikan
           </ion-button>
@@ -116,122 +100,200 @@
         <div class="comments-header">
           <h3 class="comments-title">
             <ion-icon name="chatbubble-outline"></ion-icon>
-            Balasan ({{ post.commentsCount }})
+            Komentar ({{ comments.length }})
           </h3>
+          <!-- Test button untuk memuat dummy comments (bisa dihapus di production) -->
+          <ion-button 
+            size="small" 
+            fill="outline" 
+            color="warning"
+            (click)="loadDummyComments()"
+            *ngIf="comments.length === 0">
+            Load Test Comments
+          </ion-button>
         </div>
 
-        <!-- Comments List -->
-        <ng-container *ngIf="comments$ | async as comments">
-          <div *ngIf="comments.length > 0; else noCommentsTemplate" class="comments-list">
-            <div 
-              class="comment-card" 
-              *ngFor="let comment of comments"
-            >
-              <!-- Comment Header -->
-              <div class="comment-header">
-                <div class="comment-author-info">
-                  <img 
-                    [src]="comment.authorAvatar" 
-                    [alt]="comment.authorName"
-                    class="comment-author-avatar"
-                    (error)="onImageError($event)"
-                  />
-                  <div class="comment-author-details">
-                    <span class="comment-author-name">{{ comment.authorName }}</span>
-                    <span class="comment-date">{{ comment.createdAt | timeAgo }}</span>
-                  </div>
+        <!-- Comments Loading State -->
+        <div class="loading-container" *ngIf="isLoadingComments">
+          <ion-spinner name="dots"></ion-spinner>
+          <ion-text>
+            <p>Memuat komentar...</p>
+          </ion-text>
+        </div>
+
+        <!-- Comments Error State -->
+        <div class="error-container" *ngIf="commentsError && !isLoadingComments">
+          <div class="error-content">
+            <ion-icon name="chatbubble-outline" class="error-icon"></ion-icon>
+            <h4>Gagal Memuat Komentar</h4>
+            <p>{{ commentsError }}</p>
+            <ion-button size="small" (click)="loadCommentsFromFirestore()">
+              Coba Lagi
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Comments List - BAGIAN UTAMA UNTUK MENAMPILKAN KOMENTAR -->
+        <div class="comments-list" *ngIf="comments && comments.length > 0 && !isLoadingComments">
+          <!-- Iterasi semua komentar -->
+          <div class="comment-card" 
+               *ngFor="let comment of comments; trackBy: trackByCommentId; index as i"
+               [@slideIn]="'in'">
+            
+            <!-- Header komentar dengan info author -->
+            <div class="comment-header">
+              <div class="comment-author-info">
+                <div class="comment-author-avatar-container">
+                  <ion-icon name="person-circle" class="comment-author-avatar-icon"></ion-icon>
+                </div>
+                <div class="comment-author-details">
+                  <div class="comment-author-name">{{ comment.author || 'Anonymous' }}</div>
+                  <div class="comment-date">{{ comment.createdAt | date:'short' }}</div>
                 </div>
               </div>
 
-              <!-- Comment Content -->
-              <div class="comment-content">
-                <p>{{ comment.content }}</p>
+              <!-- Badge untuk dummy comments (untuk testing) -->
+              <div class="comment-badge" *ngIf="comment.id && comment.id.includes('dummy')">
+                <ion-badge color="warning" size="small">TEST</ion-badge>
               </div>
-
-              <!-- Comment Footer -->
-              <div class="comment-footer">
-                <div class="comment-stats">
-                  <div class="stat-item likes" [class.liked]="isCommentLikedByUser(comment)">
-                    <ion-icon [name]="isCommentLikedByUser(comment) ? 'heart' : 'heart-outline'"></ion-icon>
-                    <span>{{ comment.likes.length }}</span>
-                  </div>
+            </div>
+            
+            <!-- Konten komentar -->
+            <div class="comment-content">
+              <p>{{ comment.content }}</p>
+            </div>
+            
+            <!-- Footer komentar dengan stats dan actions -->
+            <div class="comment-footer">
+              <div class="comment-stats">
+                <div class="stat-item likes" [class.liked]="comment.userLiked">
+                  <ion-icon name="heart"></ion-icon>
+                  <span>{{ comment.likesCount || 0 }}</span>
                 </div>
-
-                <ion-button 
-                  fill="clear"
-                  size="small"
-                  (click)="onLikeComment(comment)"
-                  [class.liked]="isCommentLikedByUser(comment)"
-                  class="comment-like-button">
-                  <ion-icon 
-                    [name]="isCommentLikedByUser(comment) ? 'heart' : 'heart-outline'"
-                    slot="start">
-                  </ion-icon>
-                  {{ isCommentLikedByUser(comment) ? 'Liked' : 'Like' }}
-                </ion-button>
               </div>
+              <ion-button 
+                fill="clear" 
+                size="small"
+                class="comment-like-button"
+                [class.liked]="comment.userLiked"
+                (click)="toggleCommentLike(comment)">
+                {{ comment.userLiked ? 'Disukai' : 'Suka' }}
+              </ion-button>
             </div>
           </div>
 
-          <ng-template #noCommentsTemplate>
-            <div class="no-comments">
-              <ion-icon name="chatbubble-outline" class="no-comments-icon"></ion-icon>
-              <h4>Belum ada balasan</h4>
-              <p>Jadilah yang pertama memberikan tanggapan!</p>
-            </div>
-          </ng-template>
-        </ng-container>
+          <!-- Message jika ada komentar yang dimuat -->
+          <div class="comments-summary" *ngIf="comments.length > 0">
+            <ion-text color="medium">
+              <p><small>{{ comments.length }} komentar dimuat</small></p>
+            </ion-text>
+          </div>
+        </div>
+
+        <!-- No Comments State - tampil jika benar-benar kosong -->
+        <div class="no-comments" *ngIf="(!comments || comments.length === 0) && !isLoadingComments && !commentsError">
+          <ion-icon name="chatbubble-outline" class="no-comments-icon"></ion-icon>
+          <h4>Belum ada komentar</h4>
+          <p>Jadilah yang pertama memberikan komentar pada post ini!</p>
+          
+          <!-- Debug info untuk development -->
+          <div class="debug-info" style="margin-top: 16px; padding: 12px; background: #f0f0f0; border-radius: 8px; font-size: 0.8rem;">
+            <p><strong>Debug Info:</strong></p>
+            <p>Post ID: {{ postId }}</p>
+            <p>Comments Array: {{ comments ? comments.length : 'null' }}</p>
+            <p>Is Loading: {{ isLoadingComments }}</p>
+            <p>Has Error: {{ commentsError ? 'Yes' : 'No' }}</p>
+          </div>
+          
+          <!-- Button untuk load test comments -->
+          <ion-button 
+            expand="block"
+            fill="outline" 
+            color="warning"
+            (click)="loadDummyComments()"
+            style="margin-top: 16px;">
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Load Test Comments
+          </ion-button>
+          
+          <!-- Button untuk reload dari Firestore -->
+          <ion-button 
+            expand="block"
+            fill="solid" 
+            color="primary"
+            (click)="reloadComments()"
+            [disabled]="isLoadingComments"
+            style="margin-top: 8px;">
+            <ion-icon name="reload" slot="start" *ngIf="!isLoadingComments"></ion-icon>
+            <ion-spinner *ngIf="isLoadingComments" slot="start"></ion-spinner>
+            {{ isLoadingComments ? 'Loading...' : 'Reload dari Firestore' }}
+          </ion-button>
+        </div>
       </div>
 
       <!-- Comment Form -->
-      <div class="comment-form" *ngIf="isLoggedIn">
+      <div class="comment-form">
         <div class="form-header">
-          <h4>Tulis Balasan</h4>
+          <h4>Tulis Komentar</h4>
+          <ion-text color="medium" *ngIf="!isLoggedIn">
+            <p><small>Silakan login untuk menulis komentar</small></p>
+          </ion-text>
         </div>
+        
         <div class="form-content">
           <ion-item class="comment-input-item">
-            <ion-textarea
+            <ion-textarea 
               [(ngModel)]="newComment"
-              placeholder="Tulis tanggapan Anda..."
-              [rows]="3"
-              [autoGrow]="true"
-              [disabled]="isSubmittingComment"
-              class="comment-textarea">
+              placeholder="Tulis komentar Anda di sini..."
+              rows="4"
+              class="comment-textarea"
+              maxlength="500"
+              [disabled]="!isLoggedIn">
             </ion-textarea>
           </ion-item>
+          
+          <!-- Character counter -->
+          <div class="character-counter" *ngIf="newComment">
+            <ion-text color="medium">
+              <small>{{ newComment.length }}/500 karakter</small>
+            </ion-text>
+          </div>
+          
           <ion-button 
-            (click)="onSubmitComment()"
-            [disabled]="newComment.trim() === '' || isSubmittingComment"
-            fill="solid"
-            color="warning"
-            class="submit-button">
-            <ion-icon name="send-outline" slot="start"></ion-icon>
-            {{ isSubmittingComment ? 'Mengirim...' : 'Kirim Balasan' }}
+            expand="block"
+            class="submit-button"
+            [disabled]="isSubmitting || !newComment?.trim() || !isLoggedIn"
+            (click)="submitComment()">
+            <ion-icon name="send" slot="start" *ngIf="!isSubmitting"></ion-icon>
+            <ion-spinner name="crescent" slot="start" *ngIf="isSubmitting"></ion-spinner>
+            {{ isSubmitting ? 'Mengirim...' : (isLoggedIn ? 'Kirim Komentar' : 'Login untuk Komentar') }}
+          </ion-button>
+          
+          <!-- Login prompt button -->
+          <ion-button 
+            expand="block"
+            fill="outline"
+            class="login-button"
+            *ngIf="!isLoggedIn"
+            (click)="goToLogin()">
+            <ion-icon name="log-in" slot="start"></ion-icon>
+            Login Sekarang
           </ion-button>
         </div>
       </div>
 
-      <!-- Login Prompt -->
-      <div class="login-prompt" *ngIf="!isLoggedIn">
-        <div class="prompt-content">
-          <ion-icon name="person-circle-outline" class="prompt-icon"></ion-icon>
-          <h4>Masuk untuk berpartisipasi</h4>
-          <p>Silakan masuk untuk memberikan like dan menulis balasan</p>
-          <ion-button [routerLink]="['/login']" fill="solid" color="warning">
-            Masuk Sekarang
-          </ion-button>
-        </div>
+      <!-- Manual Refresh Button untuk Development -->
+      <div class="dev-actions" style="margin-top: 20px; text-align: center;">
+        <ion-button 
+          fill="outline" 
+          size="small"
+          (click)="loadCommentsFromFirestore()">
+          <ion-icon name="refresh" slot="start"></ion-icon>
+          Reload Comments
+        </ion-button>
       </div>
-    </div>
-  </ng-container>
 
-  <ng-template #loadingTemplate>
-    <div class="loading-container">
-      <ion-spinner color="warning"></ion-spinner>
-      <ion-text>Memuat post...</ion-text>
     </div>
-  </ng-template>
+
+  </div>
 </ion-content>
-
-<!-- Navbar -->
-<app-navbar [activeTab]="'forum'"></app-navbar>

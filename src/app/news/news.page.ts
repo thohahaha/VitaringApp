@@ -5,7 +5,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, IonFooter, IonTabBar, IonTabButton, IonSpinner, IonText } from '@ionic/angular/standalone';
 import { NewsService } from '../services/news.service';
-import { News } from '../models/news.model';
+import { News } from '../models/news.interface';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';

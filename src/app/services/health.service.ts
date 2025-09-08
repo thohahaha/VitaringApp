@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { 
-  Firestore,
-  doc,
-  onSnapshot,
-  DocumentSnapshot
-} from '@angular/fire/firestore';
+  Database,
+  ref,
+  onValue,
+  off
+} from '@angular/fire/database';
 
 export interface HealthMetrics {
   altitude: number;      // Ketinggian
@@ -16,6 +16,7 @@ export interface HealthMetrics {
   objTemp: number;       // Suhu objek
   pressure: number;      // Tekanan udara
   deviceID: string;      // ID perangkat unik
+  deviceName: string;    // Nama perangkat yang mudah dibaca
   isDeviceOn: boolean;   // Status perangkat aktif
   isOnline: boolean;     // Status online perangkat
   timestamp: string;     // Waktu data (string format)
@@ -34,100 +35,46 @@ export class HealthService {
   
   private unsubscribe: (() => void) | null = null;
   private isManuallyOffline: boolean = false;
-  private sensorDataInterval: any = null;
-  private enableFirestoreListener: boolean = true; // Toggle untuk debugging
 
-  constructor(private firestore: Firestore) {
-    if (this.enableFirestoreListener) {
-      this.listenForSensorData();
-    } else {
-      console.log('🚫 Firestore listener DISABLED for debugging');
-    }
-    this.startSensorDataSimulation();
+  constructor(private database: Database) {
+    // Start with default device ID for Realtime Database connection
+    const defaultDeviceId = "ESP32C3-A835B29E9EF0";
+    this.listenForSensorData(defaultDeviceId);
   }
 
   /**
-   * Start sensor data simulation - updates every 10 seconds
+   * Listen for real-time sensor data changes from Firebase Realtime Database
+   * Accepts deviceId as parameter to listen for specific device data
    */
-  private startSensorDataSimulation(): void {
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
-    
-    this.sensorDataInterval = setInterval(() => {
-      const currentData = this.healthDataSubject.value;
-      
-      // Only simulate if device is online and we have data
-      if (currentData?.isDeviceOn) {
-        // Generate realistic sensor values
-        const newBmpTemp = 28 + Math.random() * 8; // 28-36°C
-        const newObjTemp = newBmpTemp + Math.random() * 4; // Slightly higher than ambient
-        const newAltitude = 100 + Math.random() * 50; // 100-150m
-        const newPressure = 995 + Math.random() * 15; // 995-1010 hPa
-        const newAmgTemp = newBmpTemp + (Math.random() - 0.5) * 2; // Close to bmpTemp
-        const newBpx = 70 + Math.random() * 20; // 70-90 bpm
-        const newIrValue = 1000 + Math.random() * 500; // IR sensor value
-        
-        const updatedData: HealthMetrics = {
-          ...currentData,
-          bmpTemp: Number(newBmpTemp.toFixed(2)),
-          objTemp: Number(newObjTemp.toFixed(2)),
-          altitude: Number(newAltitude.toFixed(2)),
-          pressure: Number(newPressure.toFixed(2)),
-          ambTemp: Number(newAmgTemp.toFixed(2)),
-          bpx: Number(newBpx.toFixed(0)),
-          irValue: Number(newIrValue.toFixed(0)),
-          deviceID: DEVICE_ID,
-          timestamp: new Date().toISOString()
-        };
-        
-        console.log(`🌡️ Sensor data: BMP:${updatedData.bmpTemp}°C, OBJ:${updatedData.objTemp}°C, BPX:${updatedData.bpx}bpm, Device:${updatedData.deviceID}`);
-        this.healthDataSubject.next(updatedData);
-      }
-    }, 10000); // Every 10 seconds
-    
-    console.log('🌡️ Sensor data simulation started (every 10 seconds)');
-  }
-
-  /**
-   * Stop sensor data simulation
-   */
-  private stopSensorDataSimulation(): void {
-    if (this.sensorDataInterval) {
-      clearInterval(this.sensorDataInterval);
-      this.sensorDataInterval = null;
-      console.log('🌡️ Sensor data simulation stopped');
-    }
-  }
-
-  /**
-   * Listen for real-time sensor data changes from Firestore
-   */
-  private listenForSensorData(): void {
+  private listenForSensorData(deviceId: string = "ESP32C3-A835B29E9EF0"): void {
     try {
-      const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
-      const deviceDocRef = doc(this.firestore, 'sensors', DEVICE_ID);
+      // Create reference to specific device path in Realtime Database
+      const deviceRef = ref(this.database, `realtimeSensorData/${deviceId}`);
       
-      const unsubscribeFunction = onSnapshot(deviceDocRef, (docSnapshot: DocumentSnapshot) => {
-        if (docSnapshot.exists()) {
-          const rawData = docSnapshot.data();
+      // Listen for data changes
+      const unsubscribeFunction = onValue(deviceRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const rawData = snapshot.val();
           const timestamp = new Date().toLocaleTimeString();
           
-          console.log(`📡 [${timestamp}] Raw sensor data from Firestore:`, rawData);
+          console.log(`📡 [${timestamp}] Raw sensor data from Realtime Database:`, rawData);
           
           try {
-            // Parse sensor data from Firestore
+            // Parse sensor data from Realtime Database
             const data: HealthMetrics = {
-              altitude: Number(rawData?.['altitude']) || 111.41,
-              ambTemp: Number(rawData?.['ambTemp']) || 31.91,
-              bmpTemp: Number(rawData?.['bmpTemp']) || 31.3,
-              bpx: Number(rawData?.['bpx']) || 75,
-              irValue: Number(rawData?.['irValue']) || 1250,
-              objTemp: Number(rawData?.['objTemp']) || 33.41,
-              pressure: Number(rawData?.['pressure']) || 999.94,
-              deviceID: rawData?.['deviceID'] || DEVICE_ID,
-              isDeviceOn: Boolean(rawData?.['isDeviceOn']) ?? true,
-              isOnline: Boolean(rawData?.['isOnline']) ?? true,
-              timestamp: rawData?.['timestamp'] || new Date().toISOString(),
-              type: rawData?.['type'] || 'sensor_data'
+              altitude: Number(rawData?.altitude) || 111.41,
+              ambTemp: Number(rawData?.ambTemp) || 31.91,
+              bmpTemp: Number(rawData?.bmpTemp) || 31.3,
+              bpx: Number(rawData?.bpx) || 75,
+              irValue: Number(rawData?.irValue) || 1250,
+              objTemp: Number(rawData?.objTemp) || 33.41,
+              pressure: Number(rawData?.pressure) || 999.94,
+              deviceID: rawData?.deviceID || deviceId,
+              deviceName: rawData?.deviceName || `VitaRing ${deviceId.slice(-6)}`,
+              isDeviceOn: rawData?.isDeviceOn !== undefined ? Boolean(rawData.isDeviceOn) : true,
+              isOnline: rawData?.isOnline !== undefined ? Boolean(rawData.isOnline) : true,
+              timestamp: rawData?.timestamp || new Date().toISOString(),
+              type: rawData?.type || 'sensor_data'
             };
             
             console.log(`📊 [${timestamp}] Parsed sensor data:`, {
@@ -142,40 +89,42 @@ export class HealthService {
               isDeviceOn: data.isDeviceOn,
               isOnline: data.isOnline,
               type: data.type,
-              source: 'FIRESTORE_LISTENER'
+              source: 'REALTIME_DATABASE'
             });
             
-            // Control sensor simulation based on device status
-            if (data.isDeviceOn) {
-              if (!this.sensorDataInterval) {
-                this.startSensorDataSimulation();
-              }
-            } else {
-              this.stopSensorDataSimulation();
-            }
-            
+            // Update subjects with realtime data
+            console.log('🔄 Updating BehaviorSubject with realtime data...');
             this.healthDataSubject.next(data);
             this.connectionStatusSubject.next(true);
+            
+            console.log('✅ Current BehaviorSubject value after update:', {
+              bmpTemp: data.bmpTemp,
+              pressure: data.pressure,
+              bpx: data.bpx,
+              timestamp: data.timestamp
+            });
             
           } catch (parseError) {
             console.error('❌ Error parsing sensor data:', parseError);
           }
         } else {
-          console.log('❌ Sensor data document does not exist');
+          const timestamp = new Date().toLocaleTimeString();
+          console.log(`❌ [${timestamp}] Sensor data for device ${deviceId} does not exist`);
+          
           this.healthDataSubject.next(null);
           this.connectionStatusSubject.next(false);
         }
       }, (error) => {
-        console.error('❌ Firestore listener error:', error);
+        console.error('❌ Realtime Database listener error:', error);
         this.healthDataSubject.next(null);
         this.connectionStatusSubject.next(false);
       });
 
       // Store the unsubscribe function
-      this.unsubscribe = unsubscribeFunction;
+      this.unsubscribe = () => off(deviceRef);
       
     } catch (error) {
-      console.error('❌ Error setting up Firestore listener:', error);
+      console.error('❌ Error setting up Realtime Database listener:', error);
       this.healthDataSubject.next(null);
       this.connectionStatusSubject.next(false);
     }
@@ -211,27 +160,28 @@ export class HealthService {
     // Make sure isOnline field matches isDeviceOn for compatibility
     const dataWithCompatibility = {
       ...data,
-      isOnline: data.isOnline || data.isDeviceOn  // Ensure both fields are synchronized
+      isOnline: data.isOnline || data.isDeviceOn
     };
-    
-    // Control sensor simulation based on device status
-    if (data.isDeviceOn) {
-      if (!this.sensorDataInterval) {
-        this.startSensorDataSimulation();
-      }
-    } else {
-      this.stopSensorDataSimulation();
-    }
     
     this.healthDataSubject.next(dataWithCompatibility);
   }
 
   /**
-   * Restart listening for sensor data
+   * Start listening for sensor data from a specific device
+   */
+  startListeningForDevice(deviceId: string): void {
+    console.log(`🔄 Starting listener for device: ${deviceId}`);
+    this.stopListener();
+    this.listenForSensorData(deviceId);
+  }
+
+  /**
+   * Restart listening for sensor data with default device
    */
   restartListener(): void {
+    const defaultDeviceId = "ESP32C3-A835B29E9EF0";
     this.stopListener();
-    this.listenForSensorData();
+    this.listenForSensorData(defaultDeviceId);
   }
 
   /**
@@ -258,10 +208,32 @@ export class HealthService {
   }
 
   /**
+   * Debug method to check current health data
+   */
+  debugCurrentData(): void {
+    const current = this.healthDataSubject.value;
+    console.log('🔍 Debug - Current health data:', current);
+    console.log('🔍 Debug - Connection status:', this.connectionStatusSubject.value);
+  }
+
+  /**
+   * Force restart realtime listener
+   */
+  forceRestartListener(): void {
+    const defaultDeviceId = "ESP32C3-A835B29E9EF0";
+    console.log('🔄 Force restarting realtime listener...');
+    this.stopListener();
+    
+    // Wait a bit before restarting
+    setTimeout(() => {
+      this.listenForSensorData(defaultDeviceId);
+    }, 1000);
+  }
+
+  /**
    * Clean up when service is destroyed
    */
   ngOnDestroy(): void {
     this.stopListener();
-    this.stopSensorDataSimulation();
   }
 }

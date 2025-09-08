@@ -24,16 +24,9 @@ export class NavbarComponent {
   }
 
   navigateToPage(route: string) {
-    console.log('🔄 Navigating to:', route);
-    console.log('🔄 Current URL:', this.router.url);
-    
     this.router.navigate([route]).then(success => {
-      if (success) {
-        console.log('✅ Navigation successful to:', route);
-        console.log('✅ New URL:', this.router.url);
-      } else {
+      if (!success) {
         console.log('❌ Navigation failed to:', route);
-        console.log('❌ Current URL:', this.router.url);
       }
     }).catch(error => {
       console.error('❌ Navigation error:', error);
@@ -41,8 +34,6 @@ export class NavbarComponent {
   }
 
   isActive(tab: string): boolean {
-    const active = this.activeTab === tab;
-    console.log(`Tab ${tab} is ${active ? 'active' : 'inactive'}`);
-    return active;
+    return this.activeTab === tab;
   }
 }

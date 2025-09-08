@@ -8,7 +8,7 @@ import { Subscription, Observable } from 'rxjs';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonSelect, IonSelectOption, IonFooter, IonTabBar, IonTabButton, IonLabel, IonRouterOutlet, IonToggle, IonApp } from '@ionic/angular/standalone';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { News } from '../models/news.model';
+import { News } from '../models/news.interface';
 import { TimeAgoPipe } from '../pipes/time-ago.pipe';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 
@@ -99,6 +99,9 @@ export class HomePage implements OnInit, OnDestroy {
   ];
   selectedDeviceId: string;
   selectedDevice: Device;
+  lastDeviceActiveState: boolean | undefined;
+  lastConnectionStatus: boolean | undefined;
+  deviceStatus: string = 'Offline'; // Property instead of getter to prevent excessive calls
   activeTab: string = 'dashboard';
   findRingActive: boolean = false;
   isLoggedIn: boolean = false;
@@ -169,6 +172,9 @@ export class HomePage implements OnInit, OnDestroy {
     
     // Subscribe to real-time health data
     this.subscribeToHealthData();
+    
+    // Initialize device status
+    this.updateDeviceStatus();
     
     // DON'T start health data simulation automatically - causes conflicts
     // setTimeout(() => {
@@ -472,11 +478,16 @@ export class HomePage implements OnInit, OnDestroy {
     return this.selectedDevice.batteryLevel;
   }
 
-  // Reactive getter for device status that ensures UI updates
-  get deviceStatus(): string {
+  // Update device status property - called when connection status changes
+  updateDeviceStatus(): void {
     const isOnline = this.getDeviceConnectionStatus();
-    console.log('🎯 deviceStatus getter called:', isOnline ? 'Online' : 'Offline');
-    return isOnline ? 'Online' : 'Offline';
+    const newStatus = isOnline ? 'Online' : 'Offline';
+    
+    // Only update if status actually changed
+    if (this.deviceStatus !== newStatus) {
+      this.deviceStatus = newStatus;
+      console.log('🎯 Device status updated:', this.deviceStatus);
+    }
   }
 
   getDeviceConnectionStatus(): boolean {
@@ -484,13 +495,17 @@ export class HomePage implements OnInit, OnDestroy {
       ? this.healthData.isDeviceOn 
       : this.selectedDevice?.isConnected || false;
     
-    console.log('🔗 getDeviceConnectionStatus:', {
-      healthDataDeviceOn: this.healthData?.isDeviceOn,
-      selectedDeviceConnected: this.selectedDevice?.isConnected,
-      result: result,
-      source: this.healthData?.isDeviceOn !== undefined ? 'FIRESTORE' : 'LOCAL_DEVICE',
-      healthDataExists: !!this.healthData
-    });
+    // Reduced logging - only log on state change
+    if (this.lastConnectionStatus !== result) {
+      console.log('🔗 Connection status changed:', {
+        from: this.lastConnectionStatus,
+        to: result,
+        source: this.healthData?.isDeviceOn !== undefined ? 'FIRESTORE' : 'LOCAL_DEVICE'
+      });
+      this.lastConnectionStatus = result;
+      // Update device status when connection changes
+      this.updateDeviceStatus();
+    }
     
     return result;
   }
@@ -501,12 +516,15 @@ export class HomePage implements OnInit, OnDestroy {
       ? this.healthData.isDeviceOn 
       : this.selectedDevice?.isConnected || false;
       
-    console.log('✅ isDeviceActive:', {
-      healthDataDeviceOn: this.healthData?.isDeviceOn,
-      selectedDeviceConnected: this.selectedDevice?.isConnected,
-      result: result,
-      timestamp: new Date().toLocaleTimeString()
-    });
+    // Reduced logging - only log on state change
+    if (this.lastDeviceActiveState !== result) {
+      console.log('✅ Device state changed:', {
+        from: this.lastDeviceActiveState,
+        to: result,
+        timestamp: new Date().toLocaleTimeString()
+      });
+      this.lastDeviceActiveState = result;
+    }
     
     return result;
   }
@@ -551,6 +569,13 @@ export class HomePage implements OnInit, OnDestroy {
     return 'Pegunungan';
   }
 
+  getHeartRateStatus(bpm: number): string {
+    if (bpm < 60) return 'Rendah';
+    if (bpm <= 100) return 'Normal';
+    if (bpm <= 120) return 'Tinggi';
+    return 'Sangat Tinggi';
+  }
+
   getStepsChange(steps: number): string {
     const target = 10000; // Daily target
     const percentage = Math.round((steps / target) * 100);
@@ -577,7 +602,8 @@ export class HomePage implements OnInit, OnDestroy {
         irValue: 1250,
         objTemp: 33.41,
         pressure: 999.94,
-        deviceID: "ESP32C3-A83B29E9EF0",
+        deviceID: "ESP32C3-A8358206CF8",
+        deviceName: "VitaRing Pro Max", // Add device name
         isDeviceOn: true,
         isOnline: true,
         timestamp: new Date().toISOString(),
@@ -600,7 +626,8 @@ export class HomePage implements OnInit, OnDestroy {
         irValue: this.healthData?.irValue || 1250,
         objTemp: this.healthData?.objTemp || 33.41,
         pressure: this.healthData?.pressure || 999.94,
-        deviceID: this.healthData?.deviceID || "ESP32C3-A83B29E9EF0",
+        deviceID: this.healthData?.deviceID || "ESP32C3-A8358206CF8",
+        deviceName: this.healthData?.deviceName || "VitaRing Pro Max", // Add device name
         isDeviceOn: false,
         isOnline: false,
         timestamp: new Date().toISOString(),
@@ -623,7 +650,7 @@ export class HomePage implements OnInit, OnDestroy {
         irValue: this.healthData?.irValue || 1250,
         objTemp: this.healthData?.objTemp || 33.41,
         pressure: this.healthData?.pressure || 999.94,
-        deviceID: this.healthData?.deviceID || "ESP32C3-A83B29E9EF0",
+        deviceID: this.healthData?.deviceID || "ESP32C3-A8358206CF8",
         isDeviceOn: this.healthData?.isDeviceOn ?? true,
         isOnline: this.healthData?.isOnline ?? true,
         timestamp: new Date().toISOString(),
@@ -670,4 +697,96 @@ export class HomePage implements OnInit, OnDestroy {
   //     console.error('❌ Error updating battery:', error);
   //   }
   // }
+
+  /**
+   * Start listening for data from a specific device ID
+   */
+  startListeningForDevice(deviceId: string): void {
+    console.log(`🔄 Starting to listen for device: ${deviceId}`);
+    this.healthService.startListeningForDevice(deviceId);
+  }
+
+  /**
+   * Debug current health data
+   */
+  debugHealthData(): void {
+    console.log('🔍 [HOME] Current health data:', this.healthData);
+    console.log('🔍 [HOME] Device connection status:', this.getDeviceConnectionStatus());
+    console.log('🔍 [HOME] Device status text:', this.deviceStatus);
+    this.healthService.debugCurrentData();
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Force restart realtime listener
+   */
+  restartRealtimeListener(): void {
+    console.log('🔄 [HOME] Forcing restart of realtime listener...');
+    this.healthService.forceRestartListener();
+    
+    // Force change detection after a delay
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 2000);
+  }
+
+  /**
+   * Force refresh data display
+   */
+  forceRefreshData(): void {
+    console.log('🔄 [HOME] Force refreshing data display...');
+    
+    // Get current data from service
+    const currentData = this.healthService.getCurrentHealthData();
+    if (currentData) {
+      this.healthData = { ...currentData };
+      console.log('✅ [HOME] Data refreshed:', this.healthData);
+    }
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Force restart listener with correct device ID
+   */
+  forceRestartWithCorrectDevice(): void {
+    console.log('🔄 [HOME] Force restarting with correct device ID ESP32C3-A835B29E9EF0...');
+    
+    // Stop current listener
+    this.healthService.stopListener();
+    
+    // Clear current data
+    this.healthData = null;
+    
+    // Wait and restart with correct device ID
+    setTimeout(() => {
+      this.healthService.startListeningForDevice('ESP32C3-A835B29E9EF0');
+      console.log('✅ [HOME] Restarted listener for ESP32C3-A835B29E9EF0');
+    }, 2000);
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Clear cache and force reload
+   */
+  clearCacheAndReload(): void {
+    console.log('🧹 [HOME] Clearing cache and reloading...');
+    
+    // Clear localStorage
+    localStorage.clear();
+    
+    // Clear session storage
+    sessionStorage.clear();
+    
+    // Force restart health service
+    this.forceRestartWithCorrectDevice();
+    
+    // Show notification
+    console.log('✅ [HOME] Cache cleared, listener restarted with correct device ID');
+  }
 }

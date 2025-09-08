@@ -46,6 +46,406 @@
 }
 
 .profile-content {
+  // Segment styling
+  ion-segment {
+    --background: #f3f4f6;
+    --color-checked: #f97316;
+    --indicator-color: #f97316;
+    --indicator-color-checked: #f97316;
+    border-radius: 12px;
+    padding: 4px;
+    margin: 0 1rem 1rem 1rem;
+    
+    ion-segment-button {
+      --background-checked: #ffffff;
+      --color: #6b7280;
+      --color-checked: #f97316;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      margin: 2px;
+      box-shadow: none;
+      
+      &.segment-button-checked {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // Posts section styling
+  .posts-section {
+    .section-header {
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+    }
+
+    .loading-container {
+      ion-spinner {
+        --color: #f97316;
+      }
+    }
+
+    .empty-posts {
+      ion-icon {
+        display: block;
+        margin: 0 auto 1rem auto;
+      }
+      
+      h4 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0 0 1.5rem 0;
+      }
+    }
+
+    // Modern Post Card Design
+    .modern-post-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 0 1rem 1.5rem 1rem;
+      box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(249, 115, 22, 0.1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #f97316, #fb923c, #f97316);
+        transition: left 0.5s ease;
+      }
+
+      &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 
+          0 20px 40px rgba(0, 0, 0, 0.15),
+          0 8px 16px rgba(249, 115, 22, 0.2);
+        border-color: rgba(249, 115, 22, 0.3);
+
+        &::before {
+          left: 0;
+        }
+
+        .hover-overlay {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .post-title {
+          color: #f97316;
+        }
+
+        .engagement-stats .stat-item {
+          transform: scale(1.1);
+        }
+      }
+
+      // Post Header
+      .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        .post-category-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+
+            ion-icon {
+              color: white;
+              font-size: 18px;
+            }
+          }
+
+          .category-badge {
+            background: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+          }
+        }
+
+        .post-date {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: #6b7280;
+          font-size: 0.8rem;
+          background: #f3f4f6;
+          padding: 4px 8px;
+          border-radius: 12px;
+
+          ion-icon {
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      // Post Content
+      .post-content {
+        margin-bottom: 16px;
+
+        .post-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1f2937;
+          line-height: 1.4;
+          margin: 0 0 12px 0;
+          transition: color 0.3s ease;
+        }
+
+        .post-excerpt {
+          color: #4b5563;
+          font-size: 0.9rem;
+          line-height: 1.6;
+          margin: 0 0 16px 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          line-clamp: 3;
+          overflow: hidden;
+        }
+
+        .tags-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          .tag-item {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #6b7280;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: linear-gradient(135deg, #f97316, #fb923c);
+              color: white;
+              transform: translateY(-2px);
+            }
+
+            ion-icon {
+              font-size: 0.8rem;
+            }
+          }
+
+          .more-tags {
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+          }
+        }
+      }
+
+      // Post Footer
+      .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .engagement-stats {
+          display: flex;
+          gap: 16px;
+
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+
+            ion-icon {
+              font-size: 1rem;
+            }
+
+            &.like {
+              ion-icon {
+                color: #ef4444;
+              }
+            }
+
+            &.comment {
+              ion-icon {
+                color: #3b82f6;
+              }
+            }
+
+            &.view {
+              ion-icon {
+                color: #10b981;
+              }
+            }
+          }
+        }
+
+        .post-actions {
+          display: flex;
+          gap: 4px;
+
+          .action-btn {
+            --color: #6b7280;
+            --padding-start: 8px;
+            --padding-end: 8px;
+            height: 32px;
+            transition: all 0.3s ease;
+
+            &:hover {
+              --color: #f97316;
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+
+      // Hover Overlay
+      .hover-overlay {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #f97316, #fb923c);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+
+        ion-icon {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .post-card {
+      --background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      ion-card-header {
+        padding-bottom: 8px;
+        
+        .post-meta {
+          ion-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+          }
+        }
+        
+        ion-card-title {
+          font-size: 1rem;
+          font-weight: 600;
+          line-height: 1.4;
+          margin: 0;
+          color: #1f2937;
+        }
+      }
+      
+      ion-card-content {
+        padding-top: 8px;
+        
+        p {
+          font-size: 0.875rem;
+          line-height: 1.5;
+          color: #4b5563;
+          margin: 0 0 1rem 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          line-clamp: 2; // Standard property for compatibility
+        }
+        
+        .post-tags {
+          margin-bottom: 1rem;
+          
+          ion-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            margin-right: 4px;
+            border-radius: 4px;
+            background: #f3f4f6;
+            color: #6b7280;
+          }
+        }
+        
+        .post-stats {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          font-size: 0.8rem;
+          color: #6b7280;
+          
+          div {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            
+            ion-icon {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .profile-section {
     background: #ffffff;
     border-radius: 16px;

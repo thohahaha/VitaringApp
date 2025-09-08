@@ -96,12 +96,12 @@
       </div>
     </div>
 
-    <!-- Posts List -->
-    <ng-container *ngIf="posts$ | async as posts; else loadingTemplate">
-      <div *ngIf="posts.length > 0; else emptyTemplate" class="posts-container">
+    <!-- Forum Posts List -->
+    <ng-container *ngIf="forumPosts$ | async as forumPosts; else loadingTemplate">
+      <div *ngIf="forumPosts.length > 0; else emptyTemplate" class="posts-container">
         <div 
           class="post-card" 
-          *ngFor="let post of posts; trackBy: trackByPostId"
+          *ngFor="let post of forumPosts; trackBy: trackByPostId"
           (click)="navigateToPostDetail(post.id!)"
         >
           <!-- Pinned Badge -->
@@ -113,17 +113,25 @@
           <!-- Post Header -->
           <div class="post-header">
             <div class="author-info">
-              <img 
-                [src]="post.authorAvatar" 
-                [alt]="post.authorName"
-                class="author-avatar"
-                (error)="onImageError($event)"
-              />
+              <div class="author-avatar-container">
+                <img 
+                  *ngIf="post.authorAvatar"
+                  [src]="post.authorAvatar" 
+                  [alt]="post.authorName"
+                  class="author-avatar"
+                  (error)="onImageError($event)">
+                <ion-icon 
+                  *ngIf="!post.authorAvatar"
+                  name="person-circle" 
+                  class="author-avatar-icon">
+                </ion-icon>
+              </div>
               <div class="author-details">
                 <span class="author-name">{{ post.authorName }}</span>
                 <span class="post-date">{{ post.createdAt | timeAgo }}</span>
               </div>
             </div>
+            <ion-badge color="warning" class="category-badge">{{ post.category }}</ion-badge>
           </div>
 
           <!-- Post Content -->
@@ -135,9 +143,9 @@
             <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
               <ion-badge 
                 *ngFor="let tag of post.tags.slice(0, 3)" 
-                color="warning"
+                color="light"
                 class="tag-badge">
-                {{ tag }}
+                #{{ tag }}
               </ion-badge>
             </div>
           </div>
@@ -147,30 +155,45 @@
             <div class="post-stats">
               <div class="stat-item">
                 <ion-icon name="eye-outline"></ion-icon>
-                <span>{{ post.views }}</span>
+                <span>{{ post.viewCount || 0 }}</span>
               </div>
               <div class="stat-item">
                 <ion-icon name="chatbubble-outline"></ion-icon>
-                <span>{{ post.commentsCount }}</span>
+                <span>{{ post.commentCount || 0 }}</span>
               </div>
-              <div class="stat-item likes" [class.liked]="isPostLikedByUser(post)">
-                <ion-icon [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"></ion-icon>
-                <span>{{ post.likes.length }}</span>
+              <div class="stat-item likes" [class.liked]="isForumPostLikedByUser(post)">
+                <ion-icon [name]="isForumPostLikedByUser(post) ? 'heart' : 'heart-outline'"></ion-icon>
+                <span>{{ post.likeCount || 0 }}</span>
+              </div>
+              <div class="stat-item">
+                <ion-icon name="share-outline"></ion-icon>
+                <span>{{ post.shareCount || 0 }}</span>
               </div>
             </div>
 
-            <ion-button 
-              fill="clear"
-              size="small"
-              (click)="onLike(post, $event)"
-              [class.liked]="isPostLikedByUser(post)"
-              class="like-button">
-              <ion-icon 
-                [name]="isPostLikedByUser(post) ? 'heart' : 'heart-outline'"
-                slot="start">
-              </ion-icon>
-              {{ isPostLikedByUser(post) ? 'Liked' : 'Like' }}
-            </ion-button>
+            <div class="post-actions">
+              <ion-button 
+                fill="clear"
+                size="small"
+                (click)="onLikeForumPost(post, $event)"
+                [class.liked]="isForumPostLikedByUser(post)"
+                class="like-button">
+                <ion-icon 
+                  [name]="isForumPostLikedByUser(post) ? 'heart' : 'heart-outline'"
+                  slot="start">
+                </ion-icon>
+                {{ isForumPostLikedByUser(post) ? 'Disukai' : 'Suka' }}
+              </ion-button>
+
+              <ion-button 
+                fill="clear"
+                size="small"
+                (click)="onShareForumPost(post, $event)"
+                class="share-button">
+                <ion-icon name="share-outline" slot="start"></ion-icon>
+                Bagikan
+              </ion-button>
+            </div>
           </div>
         </div>
       </div>

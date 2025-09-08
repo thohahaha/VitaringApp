@@ -49,7 +49,7 @@ export class HealthDataSimulator {
    */
   private generateAndUpdateHealthData(): void {
     const currentData = this.healthService.getCurrentHealthData();
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
+    const DEVICE_ID = "ESP32C3-A8358206CF8"; // Hardcoded device ID for demo
     
     // Generate realistic variations for sensor data
     const baseAltitude = currentData?.altitude || 111.41;
@@ -69,6 +69,7 @@ export class HealthDataSimulator {
       objTemp: Number((baseObjTemp + (Math.random() - 0.5) * 3).toFixed(2)), // ±1.5°C variation
       pressure: Number((basePressure + (Math.random() - 0.5) * 10).toFixed(2)), // ±5 hPa variation
       deviceID: DEVICE_ID,
+      deviceName: currentData?.deviceName || `VitaRing ${DEVICE_ID.slice(-6)}`, // Use existing deviceName or create fallback
       isDeviceOn: Math.random() > 0.1, // 90% chance device is on
       isOnline: Math.random() > 0.1, // 90% chance online
       timestamp: new Date().toISOString(),
@@ -90,7 +91,7 @@ export class HealthDataSimulator {
    * Generate specific test scenarios
    */
   simulateExercise(): void {
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
+    const DEVICE_ID = "ESP32C3-A8358206CF8"; // Hardcoded device ID for demo
     const exerciseData: HealthMetrics = {
       altitude: 120.0, // Slightly higher altitude
       ambTemp: 35.8, // Higher ambient temperature
@@ -100,6 +101,7 @@ export class HealthDataSimulator {
       objTemp: 38.5, // Higher object temperature
       pressure: 1005.5, // Different pressure
       deviceID: DEVICE_ID,
+      deviceName: `VitaRing ${DEVICE_ID.slice(-6)}`, // Add device name
       isDeviceOn: true,
       isOnline: true,
       timestamp: new Date().toISOString(),
@@ -111,7 +113,7 @@ export class HealthDataSimulator {
   }
 
   simulateRest(): void {
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
+    const DEVICE_ID = "ESP32C3-A8358206CF8"; // Hardcoded device ID for demo
     const restData: HealthMetrics = {
       altitude: 110.0, // Base altitude
       ambTemp: 29.1, // Lower ambient temperature
@@ -121,6 +123,7 @@ export class HealthDataSimulator {
       objTemp: 31.2, // Lower object temperature
       pressure: 998.2, // Different pressure
       deviceID: DEVICE_ID,
+      deviceName: `VitaRing ${DEVICE_ID.slice(-6)}`, // Add device name
       isDeviceOn: true,
       isOnline: true,
       timestamp: new Date().toISOString(),
@@ -132,7 +135,7 @@ export class HealthDataSimulator {
   }
 
   simulateOutdoor(): void {
-    const DEVICE_ID = "ESP32C3-A83B29E9EF0"; // Hardcoded device ID for demo
+    const DEVICE_ID = "ESP32C3-A8358206CF8"; // Hardcoded device ID for demo
     const outdoorData: HealthMetrics = {
       altitude: 125.3, // Slightly higher altitude
       ambTemp: 33.2, // Outdoor ambient temperature
@@ -142,6 +145,7 @@ export class HealthDataSimulator {
       objTemp: 34.5, // Object temperature outdoors
       pressure: 1002.1, // Outdoor pressure
       deviceID: DEVICE_ID,
+      deviceName: `VitaRing ${DEVICE_ID.slice(-6)}`, // Add device name
       isDeviceOn: true,
       isOnline: true,
       timestamp: new Date().toISOString(),

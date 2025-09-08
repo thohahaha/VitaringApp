@@ -5,12 +5,26 @@ import {
   IonToolbar, 
   IonTitle, 
   IonContent, 
-  IonIcon 
+  IonIcon,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonBadge,
+  IonButton,
+  IonSpinner
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { AuthService, AppUser } from '../auth/auth.service';
 import { UserProfileService, UserProfile } from '../services/user-profile.service';
+import { ForumService } from '../services/forum.service';
+import { ForumPost } from '../models/forum.model';
+import { Observable } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { 
   personCircle, 
@@ -20,7 +34,29 @@ import {
   helpCircleOutline, 
   informationCircleOutline, 
   logOutOutline, 
-  chevronForwardOutline 
+  chevronForwardOutline,
+  chatbubbleOutline,
+  heartOutline,
+  eyeOutline,
+  timeOutline,
+  documentTextOutline, 
+  pricetag, 
+  shareOutline, 
+  bookmarkOutline, 
+  openOutline,
+  medical,
+  hardwareChip,
+  flower,
+  fitness,
+  nutrition,
+  happy,
+  bulb,
+  star,
+  chatbubbles,
+  helpCircle,
+  heart,
+  chatbubble,
+  eye
 } from 'ionicons/icons';
 
 @Component({
@@ -30,11 +66,22 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonIcon,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonBadge,
+    IonButton,
+    IonSpinner,
     NavbarComponent
   ]
 })
@@ -42,32 +89,60 @@ export class ProfilePage implements OnInit {
 
   currentUser: AppUser | null = null;
   userProfile: UserProfile | null = null;
+  activeTab: string = 'posts';
+  userPosts$: Observable<ForumPost[]> | null = null;
+  isLoadingPosts: boolean = false;
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private forumService: ForumService
   ) {
     // Add icons
     addIcons({
       personCircle,
+      documentTextOutline,
+      timeOutline,
+      pricetag,
+      heart,
+      chatbubble,
+      eye,
+      shareOutline,
+      bookmarkOutline,
+      openOutline,
       personOutline,
+      chevronForwardOutline,
       notificationsOutline,
       shieldOutline,
       helpCircleOutline,
       informationCircleOutline,
       logOutOutline,
-      chevronForwardOutline
+      chatbubbleOutline,
+      heartOutline,
+      eyeOutline,
+      medical,
+      hardwareChip,
+      flower,
+      fitness,
+      nutrition,
+      happy,
+      bulb,
+      star,
+      chatbubbles,
+      helpCircle
     });
   }
 
   ngOnInit() {
     this.loadUserProfile();
+    this.loadUserPosts();
   }
 
   ionViewWillEnter() {
     // Refresh data when returning to this page
     this.loadUserProfile();
+    this.loadUserPosts();
   }
 
   async loadUserProfile() {
@@ -85,6 +160,55 @@ export class ProfilePage implements OnInit {
     } catch (error) {
       console.error('Error loading user profile:', error);
     }
+  }
+
+  loadUserPosts() {
+    if (this.currentUser) {
+      this.isLoadingPosts = true;
+      const userId = this.currentUser.uid || this.currentUser.email || '';
+      this.userPosts$ = this.forumService.getPostsByAuthor(userId);
+      this.isLoadingPosts = false;
+    }
+  }
+
+  onSegmentChange(event: any) {
+    this.activeTab = event.detail.value;
+  }
+
+  formatDate(date: Date): string {
+    if (!date) return '';
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return '1 hari yang lalu';
+    if (diffDays < 7) return `${diffDays} hari yang lalu`;
+    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} minggu yang lalu`;
+    return date.toLocaleDateString('id-ID');
+  }
+
+  getCategoryIcon(category: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Kesehatan': 'medical',
+      'Teknologi': 'hardware-chip',
+      'Lifestyle': 'flower',
+      'Fitness': 'fitness',
+      'Nutrisi': 'nutrition',
+      'Mental Health': 'happy',
+      'Tips': 'bulb',
+      'Review': 'star',
+      'Diskusi': 'chatbubbles',
+      'Pertanyaan': 'help-circle'
+    };
+    return iconMap[category] || 'document-text';
+  }
+
+  navigateToPost(postId: string) {
+    this.router.navigate(['/forum', postId]);
+  }
+
+  navigateToCreatePost() {
+    this.router.navigate(['/create-post']);
   }
 
   getUserDisplayName(): string {
