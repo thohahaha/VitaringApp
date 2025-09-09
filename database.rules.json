@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "realtimeSensorData": {
+      ".read": true,
+      ".write": true,
+      "$deviceId": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}

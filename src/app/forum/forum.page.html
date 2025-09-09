@@ -103,6 +103,7 @@
           class="post-card" 
           *ngFor="let post of forumPosts; trackBy: trackByPostId"
           (click)="navigateToPostDetail(post.id!)"
+          style="cursor: pointer;"
         >
           <!-- Pinned Badge -->
           <div class="pinned-badge" *ngIf="post.isPinned">

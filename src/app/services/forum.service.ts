@@ -567,6 +567,8 @@ export class ForumService {
    */
   async togglePostLikeDetailed(postId: string, userId: string, userName: string, userAvatar?: string): Promise<{ liked: boolean; newLikeCount: number }> {
     try {
+      console.log('🔄 togglePostLikeDetailed - Start:', { postId, userId, userName });
+      
       const likesCollection = collection(this.firestore, 'post_likes');
       const likesQuery = query(
         likesCollection,
@@ -574,9 +576,11 @@ export class ForumService {
         where('userId', '==', userId)
       );
       
-      const existingLikes = await collectionData(likesQuery).pipe(
-        map(likes => likes.length > 0)
-      ).toPromise();
+      // Use getDocs instead of deprecated collectionData().toPromise()
+      const existingLikesSnapshot = await getDocs(likesQuery);
+      const hasExistingLike = !existingLikesSnapshot.empty;
+      
+      console.log('📊 Existing like check:', { hasExistingLike, docsCount: existingLikesSnapshot.size });
 
       const postDoc = doc(this.firestore, `forum_posts/${postId}`);
       const postSnapshot = await getDoc(postDoc);
@@ -589,13 +593,13 @@ export class ForumService {
       let likeCountChange: number;
       let isLiked: boolean;
 
-      if (existingLikes) {
+      if (hasExistingLike) {
         // Unlike: Remove like record
-        const likesToDelete = await collectionData(likesQuery, { idField: 'id' }).toPromise();
-        if (likesToDelete && likesToDelete.length > 0) {
-          const likeDoc = doc(this.firestore, `post_likes/${likesToDelete[0].id}`);
-          await deleteDoc(likeDoc);
-        }
+        console.log('❌ UNLIKE - Removing like...');
+        existingLikesSnapshot.forEach(async (likeDoc) => {
+          await deleteDoc(likeDoc.ref);
+          console.log('🗑️ Deleted like document:', likeDoc.id);
+        });
         
         likeCountChange = -1;
         isLiked = false;
@@ -607,9 +611,12 @@ export class ForumService {
           likeCount: increment(likeCountChange),
           updatedAt: serverTimestamp()
         });
+        
+        console.log('✅ Unlike completed - New like count:', (postData.likeCount || 0) + likeCountChange);
       } else {
         // Like: Add like record
-        await addDoc(likesCollection, {
+        console.log('❤️ LIKE - Adding like...');
+        const newLikeDoc = await addDoc(likesCollection, {
           postId,
           userId,
           userName,
@@ -617,6 +624,7 @@ export class ForumService {
           createdAt: serverTimestamp(),
           type: 'like'
         });
+        console.log('➕ Added like document:', newLikeDoc.id);
         
         likeCountChange = 1;
         isLiked = true;
@@ -628,12 +636,17 @@ export class ForumService {
           likeCount: increment(likeCountChange),
           updatedAt: serverTimestamp()
         });
+        
+        console.log('✅ Like completed - New like count:', (postData.likeCount || 0) + likeCountChange);
       }
 
-      return {
+      const finalResult = {
         liked: isLiked,
         newLikeCount: (postData.likeCount || 0) + likeCountChange
       };
+      
+      console.log('🔚 togglePostLikeDetailed - Result:', finalResult);
+      return finalResult;
     } catch (error) {
       console.error('Error toggling detailed post like:', error);
       throw error;

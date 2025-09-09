@@ -6,6 +6,7 @@ import {
   onValue,
   off
 } from '@angular/fire/database';
+import { environment } from '../../environments/environment';
 
 export interface HealthMetrics {
   altitude: number;      // Ketinggian
@@ -37,8 +38,15 @@ export class HealthService {
   private isManuallyOffline: boolean = false;
 
   constructor(private database: Database) {
+    console.log('🏥 HealthService constructor - Database instance:', this.database);
+    console.log('🌍 Environment check:', {
+      production: environment.production,
+      databaseURL: environment.firebase.databaseURL
+    });
+    
     // Start with default device ID for Realtime Database connection
     const defaultDeviceId = "ESP32C3-A835B29E9EF0";
+    console.log('🔌 Starting Realtime Database listener for device:', defaultDeviceId);
     this.listenForSensorData(defaultDeviceId);
   }
 
@@ -48,11 +56,23 @@ export class HealthService {
    */
   private listenForSensorData(deviceId: string = "ESP32C3-A835B29E9EF0"): void {
     try {
+      console.log('🔄 listenForSensorData - Starting listener for deviceId:', deviceId);
+      console.log('🔄 Database instance check:', {
+        database: this.database,
+        databaseExists: !!this.database,
+        databaseType: typeof this.database
+      });
+      
       // Create reference to specific device path in Realtime Database
       const deviceRef = ref(this.database, `realtimeSensorData/${deviceId}`);
+      console.log('📍 Database path:', `realtimeSensorData/${deviceId}`);
+      console.log('📍 Reference created:', deviceRef);
       
       // Listen for data changes
       const unsubscribeFunction = onValue(deviceRef, (snapshot) => {
+        console.log('📡 onValue callback triggered');
+        console.log('📡 Snapshot exists:', snapshot.exists());
+        
         if (snapshot.exists()) {
           const rawData = snapshot.val();
           const timestamp = new Date().toLocaleTimeString();
@@ -110,12 +130,23 @@ export class HealthService {
         } else {
           const timestamp = new Date().toLocaleTimeString();
           console.log(`❌ [${timestamp}] Sensor data for device ${deviceId} does not exist`);
+          console.log('❌ Snapshot details:', {
+            exists: snapshot.exists(),
+            hasChildren: snapshot.hasChildren(),
+            key: snapshot.key,
+            ref: snapshot.ref.toString()
+          });
           
           this.healthDataSubject.next(null);
           this.connectionStatusSubject.next(false);
         }
       }, (error) => {
         console.error('❌ Realtime Database listener error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
         this.healthDataSubject.next(null);
         this.connectionStatusSubject.next(false);
       });
@@ -125,6 +156,12 @@ export class HealthService {
       
     } catch (error) {
       console.error('❌ Error setting up Realtime Database listener:', error);
+      console.error('❌ Setup error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
+      console.error('❌ Database configuration:', environment.firebase);
       this.healthDataSubject.next(null);
       this.connectionStatusSubject.next(false);
     }

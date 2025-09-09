@@ -5,6 +5,7 @@ export const environment = {
   firebase: {
     apiKey: "AIzaSyAtKiS7NYzXguZc0RqrtiuhLhQzoMyd4v8",
     authDomain: "vitaring-49c16.firebaseapp.com",
+    databaseURL: "https://vitaring-49c16-default-rtdb.asia-southeast1.firebasedatabase.app/",
     projectId: "vitaring-49c16",
     storageBucket: "vitaring-49c16.firebasestorage.app",
     messagingSenderId: "988321571107",

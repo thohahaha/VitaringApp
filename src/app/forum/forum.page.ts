@@ -146,22 +146,41 @@ export class ForumPage implements OnInit {
   }
 
   async navigateToPostDetail(postId: string) {
+    console.log('🔍 navigateToPostDetail called with postId:', postId);
+    console.log('🔍 PostId type:', typeof postId);
+    console.log('🔍 PostId truthy:', !!postId);
+    
     if (postId) {
+      console.log('✅ PostId is valid, proceeding with navigation...');
+      
       // Track view if user is logged in
       if (this.isLoggedIn && this.currentUserId) {
         try {
+          console.log('👤 User is logged in, tracking view...');
           const user = this.authService.getCurrentUser();
           await this.forumService.trackPostView(
             postId,
             this.currentUserId,
             user?.displayName || user?.email || 'Anonymous User'
           );
+          console.log('✅ View tracked successfully');
         } catch (error) {
-          console.error('Error tracking post view:', error);
+          console.error('❌ Error tracking post view:', error);
         }
+      } else {
+        console.log('🔓 User not logged in, skipping view tracking');
       }
       
-      this.router.navigate(['/post-detail', postId]);
+      console.log('🚀 About to navigate to:', ['/post-detail', postId]);
+      
+      try {
+        await this.router.navigate(['/post-detail', postId]);
+        console.log('✅ Navigation completed successfully');
+      } catch (navError) {
+        console.error('❌ Navigation failed:', navError);
+      }
+    } else {
+      console.error('❌ PostId is null/undefined/empty, cannot navigate. Received:', postId);
     }
   }
 
