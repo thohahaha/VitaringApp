@@ -427,6 +427,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.router.navigate(['/about-app']);
   }
 
+  openAiChat() {
+    console.log('Navigating to AI Chat page...');
+    this.router.navigate(['/ai-chat']);
+  }
+
   // News related methods
   loadLatestNews() {
     this.latestNews$ = this.newsService.getLatestNews();

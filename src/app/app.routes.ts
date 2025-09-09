@@ -87,6 +87,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./about/about.page').then((m) => m.AboutPage)
 	},
 	{
+		path: 'ai-chat',
+		loadComponent: () => import('./ai-chat/ai-chat.page').then((m) => m.AiChatPage)
+	},
+	{
 		path: '**',
 		redirectTo: 'get-started'
 	}

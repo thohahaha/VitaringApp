@@ -1,0 +1,577 @@
+/* Tailwind imports are now in global.scss */
+
+:root {
+  --ion-color-orange-500: #ff9f1c;
+  --ion-color-orange-400: #ffc46a;
+  --neo-accent: #ff7a00;
+  --neo-bg: #f8f9fa;
+  --neo-surface: #ffffff;
+}
+
+.main-container {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 2rem;
+  background: #f8f9fa;
+  min-height: 100vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+    height: 0px;
+  }
+}
+
+// Header Styles with VitaRing theme
+.header-toolbar {
+  --background: transparent;
+  --color: #2c3e50;
+  --border-style: none;
+  padding: 8px 16px;
+
+  .back-button, .clear-button {
+    --color: #6b7280;
+    --border-radius: 12px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin: 0 4px;
+  }
+
+  .back-icon, .clear-icon {
+    font-size: 20px;
+  }
+}
+
+// Welcome Section using VitaRing theme
+.welcome-section {
+  padding: 24px 20px;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background: #f8f9fa;
+}
+
+.welcome-card {
+  background: #ffffff;
+  border-radius: 25px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  .ai-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #ff9f1c, #ff7a00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 
+      4px 4px 8px rgba(255, 122, 0, 0.3),
+      -4px -4px 8px rgba(255, 200, 120, 0.5);
+
+    .large-ai-icon {
+      font-size: 40px;
+      color: white;
+    }
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+
+  p {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Quick Actions using VitaRing theme
+.quick-actions {
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 20px;
+    text-align: center;
+  }
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.action-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 
+      0 4px 8px rgba(0, 0, 0, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #ff9f1c, #ff7a00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 
+      3px 3px 6px rgba(255, 122, 0, 0.3),
+      -3px -3px 6px rgba(255, 200, 120, 0.5);
+
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+  }
+
+  p {
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.4;
+    text-align: left;
+  }
+}
+
+// Messages Container using VitaRing theme
+.messages-container {
+  padding: 20px 16px;
+  min-height: 100px;
+  background: #f8f9fa;
+
+  &.has-messages {
+    padding-top: 8px;
+  }
+}
+
+.message-wrapper {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+
+  &.user-message {
+    justify-content: flex-end;
+  }
+
+  &.ai-message {
+    justify-content: flex-start;
+  }
+
+  &.welcome-message {
+    .bubble-container {
+      background: linear-gradient(145deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 
+        4px 4px 8px rgba(118, 75, 162, 0.3),
+        -4px -4px 8px rgba(102, 126, 234, 0.3);
+      
+      .message-text {
+        color: white;
+      }
+    }
+  }
+}
+
+.message-bubble {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 85%;
+
+  &.user-bubble {
+    flex-direction: row-reverse;
+  }
+
+  &.ai-bubble {
+    flex-direction: row;
+  }
+}
+
+.avatar-container {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 
+    3px 3px 6px rgba(0, 0, 0, 0.1),
+    -3px -3px 6px rgba(255, 255, 255, 0.9);
+
+  &.ai-avatar {
+    background: linear-gradient(145deg, #667eea, #764ba2);
+  }
+
+  &.user-avatar {
+    background: linear-gradient(145deg, #ff9f1c, #ff7a00);
+  }
+
+  .avatar-icon {
+    font-size: 18px;
+    color: white;
+  }
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bubble-container {
+  padding: 16px 20px;
+  border-radius: 18px;
+  position: relative;
+  word-wrap: break-word;
+
+  &.ai-bubble-bg {
+    background: #ffffff;
+    box-shadow: 
+      0 6px 12px rgba(0, 0, 0, 0.08),
+      0 2px 4px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      bottom: 12px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 6px 8px 0;
+      border-color: transparent #ffffff transparent transparent;
+    }
+  }
+
+  &.user-bubble-bg {
+    background: linear-gradient(145deg, #ff9f1c, #ff7a00);
+    color: white;
+    box-shadow: 
+      4px 4px 8px rgba(255, 122, 0, 0.3),
+      -4px -4px 8px rgba(255, 200, 120, 0.5);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      right: -6px;
+      bottom: 12px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 8px 6px;
+      border-color: transparent transparent #ff9f1c transparent;
+    }
+  }
+}
+
+.message-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2c3e50;
+  margin: 0;
+
+  ::ng-deep {
+    strong {
+      font-weight: 600;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    br {
+      line-height: 1.8;
+    }
+  }
+
+  .user-bubble & {
+    color: white;
+  }
+}
+
+.message-timestamp {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 6px;
+  padding: 0 4px;
+
+  .user-message & {
+    text-align: right;
+  }
+
+  .ai-message & {
+    text-align: left;
+  }
+}
+
+// Typing Indicator using VitaRing theme
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .typing-animation {
+    display: flex;
+    gap: 4px;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6b7280;
+      animation: typing-pulse 1.4s infinite ease-in-out;
+
+      &:nth-child(1) {
+        animation-delay: -0.32s;
+      }
+
+      &:nth-child(2) {
+        animation-delay: -0.16s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0;
+      }
+    }
+  }
+
+  .typing-text {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+@keyframes typing-pulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Footer Input using VitaRing theme
+.chat-footer {
+  --background: #f8f9fa;
+  padding: 0;
+  margin-bottom: 90px;
+}
+
+.input-container {
+  padding: 16px 20px 20px;
+  background: #f8f9fa;
+}
+
+.input-wrapper {
+  background: #ffffff;
+  border-radius: 25px;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.message-input {
+  --background: transparent;
+  --border-color: transparent;
+  --padding-start: 20px;
+  --padding-end: 8px;
+  --min-height: 56px;
+
+  .custom-input {
+    --color: #2c3e50;
+    --placeholder-color: #9ca3af;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.send-button {
+  --color: white;
+  --background: linear-gradient(145deg, #ff9f1c, #ff7a00);
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin: 0;
+  transition: all 0.2s ease;
+  box-shadow: 
+    4px 4px 8px rgba(255, 122, 0, 0.3),
+    -4px -4px 8px rgba(255, 200, 120, 0.5);
+
+  &:not([disabled]):active {
+    transform: scale(0.95);
+  }
+
+  &[disabled] {
+    --background: #9ca3af;
+    --color: white;
+    opacity: 0.6;
+    box-shadow: 
+      2px 2px 4px rgba(0, 0, 0, 0.1),
+      -2px -2px 4px rgba(255, 255, 255, 0.9);
+  }
+
+  .send-icon {
+    font-size: 18px;
+  }
+
+  .send-spinner {
+    width: 18px;
+    height: 18px;
+    --color: white;
+  }
+}
+
+// ===== NEUROMORPHIC BASE CLASSES =====
+.neu-card-raised {
+  background: #ffffff;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.neu-card-subtle {
+  background: #ffffff;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.neu-button-raised {
+  box-shadow: 
+    4px 4px 8px rgba(255, 122, 0, 0.3),
+    -4px -4px 8px rgba(255, 200, 120, 0.5);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      6px 6px 12px rgba(255, 122, 0, 0.4),
+      -6px -6px 12px rgba(255, 200, 120, 0.6);
+  }
+}
+
+.neu-button-subtle {
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 4px 8px rgba(0, 0, 0, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .message-bubble {
+    max-width: 75%;
+  }
+
+  .welcome-section {
+    padding: 32px 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .messages-container {
+    padding: 20px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .input-container {
+    padding: 16px 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+// Dark Mode Support - Keep white background
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neo-bg: #f8f9fa;
+    --neo-surface: #ffffff;
+  }
+
+  .welcome-card,
+  .action-card,
+  .bubble-container.ai-bubble-bg,
+  .input-wrapper {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 
+      0 8px 16px rgba(0, 0, 0, 0.1),
+      0 4px 8px rgba(0, 0, 0, 0.05);
+    
+    h2, p, .message-text {
+      color: #2c3e50 !important;
+    }
+  }
+
+  .input-container,
+  .main-container,
+  .welcome-section,
+  .messages-container {
+    background: #f8f9fa !important;
+  }
+
+  .chat-footer {
+    --background: #f8f9fa !important;
+  }
+}

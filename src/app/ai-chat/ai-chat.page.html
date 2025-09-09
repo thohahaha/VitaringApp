@@ -1,0 +1,134 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goBack()" class="back-button neu-button-subtle">
+        <ion-icon name="arrow-back" class="back-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="header-title">
+      <div class="flex items-center justify-between bg-white rounded-2xl p-6 shadow-sm">
+        <div class="space-y-2">
+          <h1 class="text-3xl font-bold text-gray-800">AI Assistant</h1>
+          <p class="text-gray-600">VitaRing Health Guide</p>
+        </div>
+        <div class="flex items-center space-x-3 bg-orange-50 px-4 py-3 rounded-xl">
+          <ion-icon name="sparkles" class="w-5 h-5 text-orange-500"></ion-icon>
+          <span class="text-sm font-medium text-orange-700">AI Ready</span>
+        </div>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="clearChat()" class="clear-button neu-button-subtle">
+        <ion-icon name="refresh-outline" class="clear-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true" [scrollY]="true" style="--background: #f8f9fa;">
+  <div class="main-container">
+    <!-- Welcome Section (shown when no conversation started) -->
+    <div *ngIf="messages.length <= 1" class="welcome-section">
+      <div class="welcome-card neu-card-raised">
+        <div class="ai-avatar-large">
+          <ion-icon name="sparkles" class="large-ai-icon"></ion-icon>
+        </div>
+        <h2>Halo! Saya AI Assistant VitaRing</h2>
+        <p>Saya siap membantu Anda dengan informasi kesehatan, tips penggunaan VitaRing, dan panduan gaya hidup sehat.</p>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <div class="quick-actions">
+        <h3>💡 Mulai Percakapan</h3>
+        <div class="action-grid">
+          <div 
+            *ngFor="let suggestion of getQuickSuggestions()" 
+            class="action-card neu-card-subtle"
+            (click)="sendQuickMessage(suggestion)">
+            <div class="action-icon">
+              <ion-icon [name]="getQuickSuggestionIcon(suggestion)"></ion-icon>
+            </div>
+            <p>{{suggestion}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages Container -->
+    <div #messagesContainer class="messages-container" [class.has-messages]="messages.length > 1">
+      <div *ngFor="let message of messages; let first = first" 
+           class="message-wrapper" 
+           [ngClass]="{'user-message': message.isUser, 'ai-message': !message.isUser, 'welcome-message': first && !message.isUser}">
+        
+        <!-- AI Message -->
+        <div *ngIf="!message.isUser" class="message-bubble ai-bubble">
+          <div class="message-avatar">
+            <div class="avatar-container ai-avatar">
+              <ion-icon name="sparkles" class="avatar-icon"></ion-icon>
+            </div>
+          </div>
+          <div class="message-content">
+            <div class="bubble-container ai-bubble-bg neu-card-subtle">
+              <div *ngIf="message.isTyping" class="typing-indicator">
+                <div class="typing-animation">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <p class="typing-text">AI sedang mengetik...</p>
+              </div>
+              <div *ngIf="!message.isTyping" class="message-text" [innerHTML]="message.content | nl2br"></div>
+            </div>
+            <div class="message-timestamp">{{formatTimestamp(message.timestamp)}}</div>
+          </div>
+        </div>
+
+        <!-- User Message -->
+        <div *ngIf="message.isUser" class="message-bubble user-bubble">
+          <div class="message-content">
+            <div class="bubble-container user-bubble-bg">
+              <div class="message-text">{{message.content}}</div>
+            </div>
+            <div class="message-timestamp">{{formatTimestamp(message.timestamp)}}</div>
+          </div>
+          <div class="message-avatar">
+            <div class="avatar-container user-avatar">
+              <ion-icon name="person" class="avatar-icon"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="chat-footer ion-no-border">
+  <div class="input-container">
+    <div class="input-wrapper neu-card-raised">
+      <ion-item class="message-input" lines="none">
+        <ion-input
+          #messageInput
+          [(ngModel)]="currentMessage"
+          placeholder="Ketik pesan Anda..."
+          (keypress)="onKeyPress($event)"
+          [disabled]="isLoading"
+          class="custom-input">
+        </ion-input>
+        <div class="input-actions" slot="end">
+          <ion-button 
+            fill="clear" 
+            size="small"
+            (click)="sendMessage()"
+            [disabled]="!currentMessage.trim() || isLoading"
+            class="send-button neu-button-raised">
+            <ion-spinner *ngIf="isLoading" name="crescent" class="send-spinner"></ion-spinner>
+            <ion-icon *ngIf="!isLoading" name="send" class="send-icon"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </div>
+  </div>
+</ion-footer>
+
+<!-- Navbar Component -->
+<app-navbar [activeTab]="'ai-chat'"></app-navbar>

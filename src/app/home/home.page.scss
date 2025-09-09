@@ -216,6 +216,18 @@
       color: #2563eb;
     }
   }
+
+  &.ai-chat {
+    background: linear-gradient(145deg, #fdf2f8, #f9f0ff);
+    box-shadow: 
+      inset 2px 2px 4px rgba(0, 0, 0, 0.1),
+      inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+    
+    ion-icon {
+      font-size: 24px;
+      color: #9333ea;
+    }
+  }
 }
 
 .menu-text {
